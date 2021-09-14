@@ -320,4 +320,15 @@ class Inspeccion extends CI_Controller {
 			echo json_encode($respuesta);
 		}
 	}
+
+	public function prueba($idFolio)
+	{
+		$usuario = $this->session->userdata();
+		if($usuario){
+			$usuario['titulo'] = 'Verificar Identidad';
+			$usuario['controller'] = 'inspeccion';
+			$usuario['idTraspaso'] = $idFolio;
+			$this->load->view('prueba', $usuario);
+		}
+	}
 }

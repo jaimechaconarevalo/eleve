@@ -1,5 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,4 +37,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	  gtag('config', 'UA-166663376-1');
 	</script>-->
+
+	<?php 
+		/*$url = $_SERVER["PATH_INFO"];
+		if ($url === "/Inspeccion/agregarInspeccion") { ?>
+			<link href="<?php echo base_url();?>/assets/bootstrap-4.1.3/css/bootstrap.min.css" rel="stylesheet">
+		    <link href="<?php echo base_url();?>/assets/shards-1.1/css/shards.min.css" rel="stylesheet">
+		    <link rel="stylesheet" href="<?php echo base_url();?>/assets/font-awesome-4.7.0/css/font-awesome.min.css">
+		    <link rel="stylesheet" href="<?php echo base_url();?>/assets/image-picker/css/image-picker.css">
+		    <link href="<?php echo base_url();?>/assets/css/styles2.css" rel="stylesheet">
+		    <!-- Custom styles for this template -->
+		    <link href="https://fonts.googleapis.com/css?family=Droid+Sans|Roboto" rel="stylesheet">
+	<?php }*/	?>
+
+
 </head>

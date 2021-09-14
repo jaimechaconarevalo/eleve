@@ -106,7 +106,7 @@ $('body').on('click', '.take-photo', function(event) {
     // retake photo
     if ($(this).hasClass('retake') && $(this).siblings('.image').find('input[type="text"]').val() != '' &&
     $(this).siblings('.image').find('input[type="text"]').val().length > 0) {
-        $('.next').hide();
+        //$('.next').hide();
         $(this).removeClass('btn-outline-secondary').addClass('btn-secondary');
         refreshVideoStream('#' + $(this).parent('fieldset').attr('id'), true);
         $('.cameras').show();
@@ -114,19 +114,29 @@ $('body').on('click', '.take-photo', function(event) {
     }
     // save photo data
     var photoData = takePhoto();
-    var base64data = $(this).siblings('.image').find('img').attr('src').split(',');
+    $(document.getElementById('id_front')).attr('src', photoData);
+    //var base64data = $(this).siblings('.image').find('img').attr('src').split(',');
     $(this).removeClass('btn-secondary');
     $(this).siblings('.image').find('input[type="text"]').val(photoData);
     $(this).siblings('.image').find('img').attr('src', photoData).show().addClass('border border-success card-body');
-    $(this).siblings('h3').html(lang[app_locale]['check_orientation']);
+    //$(this).siblings('h3').html(lang[app_locale]['check_orientation']);
     $(this).siblings('img.check-orientation').show();
-    $(this).text(lang[app_locale]['retake']).addClass('btn-outline-secondary retake');
+    //$(this).text(lang[app_locale]['retake']).addClass('btn-outline-secondary retake');
     $('#video-stream').hide();
-    $('.cameras').hide();
+    //$('.cameras').hide();
     $('.btn.rotate').show();
-    $('.next').show();
-    checkApiFormData();
+    $('#id_front').show();
+    //checkApiFormData();
+    feather.replace();
 });
+
+$('body').on('click', '.refrescar', function(event) {
+    event.preventDefault();
+    $('#video-stream').show();
+    $('#id_front').hide();
+    feather.replace();
+});
+
 // Interaccion del cambio de valor al capturar foto con el móvil
 $('body').on('change', '[type="file"]', function(event) {
     event.preventDefault();

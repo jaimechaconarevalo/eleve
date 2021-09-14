@@ -114,7 +114,7 @@ $('body').on('click', '.take-photo', function(event) {
     }
     // save photo data
     var photoData = takePhoto();
-    var base64data = $(this).siblings('.image').find('img').attr('src').split(',');
+    //var base64data = $(this).siblings('.image').find('img').attr('src').split(',');
     $(this).removeClass('btn-secondary');
     $(this).siblings('.image').find('input[type="text"]').val(photoData);
     $(this).siblings('.image').find('img').attr('src', photoData).show().addClass('border border-success card-body');

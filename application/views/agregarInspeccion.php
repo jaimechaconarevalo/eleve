@@ -14,17 +14,17 @@
 
 		</div>
 	</div>
-	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFoto">Tomar una Foto</button>
-	 <!-- Inicio Selección de cámaras -->
-                        <div class="row">
-                            <div class="col">
-                                <div class="form-inline cameras" style="margin-bottom: 1%;">
-                                    <label for="videoSource" style="margin-right: 10px; " data-localize="select-camera">Seleccionar Cámara:</label>
-                                    <select id="videoSource" class="custom-select col-6"></select>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Fin Selección de cámaras -->
+	<!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFoto">Tomar una Foto</button>
+	
+    <div class="row">
+        <div class="col">
+            <div class="form-inline cameras" style="margin-bottom: 1%;">
+                <label for="videoSource" style="margin-right: 10px; " data-localize="select-camera">Seleccionar Cámara:</label>
+                <select id="videoSource" class="custom-select col-6"></select>
+            </div>
+        </div>
+    </div>-->
+
 	<div class="col-sm-12">
 		<div id="filtros" class="mt-3 mr-3 ml-3">
 			<form id="agregarInspeccion" action="agregarInspeccion" method="POST">
@@ -577,50 +577,87 @@
 <!-- FIN Modal Mensaje -->
 <!-- INICIO Modal FOTO -->
 <div class="modal fade" id="modalFoto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="tituloMCL" name="tituloMCL" data-idprograma="" data-nombreprograma="" ></h5>
+        <h5 class="modal-title" id="tituloMF" name="tituloMF" data-id=""></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-		<p id="parrafoMP"></p>
+		<p id="parrafoMF"></p>
 
-		<div class="tab-pane fade" role="tabpanel" id="front">
-            <fieldset id="front">
-                <h2 class="fs-title" data-localize="front-id">Foto Documento Frontal</h2>
-                <h3 class="fs-subtitle" style="display:inline;" data-localize="front-id-subtitle">Toma una foto de su cédula por el frente.</h3>
-                <div class="image">
-                    <div class="row">
-                        <div class="col-1">
-                            <a href="javascript:void(0);" data-dir="left" class="btn btn-sm btn-dark rotate float-left">
-                                <i class="fa fa-undo" aria-hidden="true"></i></a>
-                        </div>
-                        <div class="col-10">
-                            <input type="text" name="id_front" value="" hidden>
-                            <img id="id_front" class="img-fluid" src="">
-                            <div id="front-video">
-                                <div id="video-stream">
-                                    <video id="video" style="max-width:100%;"></video>
+
+		<div class="api">
+            <canvas id="photo" class="hide" style="display:none;" height="720" width="1280"></canvas>
+            <canvas id="rotated" class="hide" style="display:none;" height="720" width="1280"></canvas>
+            <img id="camera" src="" alt="" style="display:none">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <!-- Inicio Paso a Paso -->
+                    <div id="rootwizard">
+                    	<div class="row">
+                            <div class="col">
+                                <div class="form-inline cameras" style="margin-bottom: 1%;">
+                                    <label for="videoSource" style="margin-right: 10px; " data-localize="select-camera">Seleccionar Cámara:</label>
+                                    <select id="videoSource" class="custom-select col-6"></select>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-1">
-                            <a href="javascript:void(0);" data-dir="right" class="btn btn-sm btn-dark rotate float-right">
-                                <i class="fa fa-repeat" aria-hidden="true"></i></a>
-                        </div>
+                    	<div class="row">
+                        	<div class="col">
+                        		<div class="tab-content">
+									<div class="" role="tabpanel" id="front">
+									    <fieldset id="front">        
+									            <div class="row">
+									            	<div class="col-1">
+                                                        <a href="javascript:void(0);" data-dir="left" class="btn btn-info rotate float-left">
+                                                            <i data-feather="arrow-left" aria-hidden="true"></i></a>
+                                                    </div>
+									                <div class="col-10">
+									                    <input type="text" name="id_front" value="" hidden>
+									                    <img id="id_front" class="img-fluid" src="">
+									                    <div id="front-video">
+									                        <div id="video-stream">
+									                            <video id="video" style="max-width:100%;"></video>
+									                        </div>
+									                    </div>
+									                </div>
+									                <div class="col-1">
+									                    <a href="javascript:void(0);" data-dir="right" class="btn btn-info rotate float-right">
+									                        <i data-feather="arrow-right" aria-hidden="true"></i></a>
+									                </div>
+									            </div>
+									            <div class="row">
+									            	<div class="col-sm-12 text-center mt-3">
+									            		<input type="file" id="doc-front" name="doc-front" class="inputfile" accept="image/*" capture="camera">
+												        <label for="doc-front" class="images captura-btn"><i class="fa fa-camera" aria-hidden="true"></i> <span data-localize="capture">FOTO</span></label>
+												        <a href="#" class="btn btn-success take-photo">
+												        	<i data-feather="camera"></i>
+												        	<!--<i class="fa fa-camera" aria-hidden="true"></i> -->
+												        	<!--<span data-localize="capture">TOMAR FOTO</span>--></a>
+												        <a href="#" class="btn btn-warning refrescar">
+												        	<i data-feather="refresh-ccw"></i>
+												    	</a>
+									            	</div>
+									            </div>
+									    </fieldset>
+									</div>
+
+								</div>
+                            <!-- Fin Tabs -->
+	                        </div>
+	                    </div>
                     </div>
                 </div>
-                <input type="file" id="doc-front" name="doc-front" class="inputfile" accept="image/*" capture="camera">
-                <label for="doc-front" class="images captura-btn"><i class="fa fa-camera" aria-hidden="true"></i> <span data-localize="capture">FOTO</span></label>
-                <a href="#" class="btn btn-secondary take-photo"><i class="fa fa-camera" aria-hidden="true"></i> <span data-localize="capture">FOTO</span></a>
-            </fieldset>
-	    </div>
+            </div>
+        </div>
+		
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+        <button id="seleccionarFoto" type="button" class="btn btn-info" data-dismiss="modal" data-id="">Seleccionar Foto</button>
       </div>
     </div>
   </div>
@@ -630,67 +667,94 @@
 <div class="modal fade" id="modalBuscarNorma" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
+		<div class="modal-header">
+			<h5 class="modal-title" id="tituloMP">Selecciona un Norma</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+		</div>
+		<div class="modal-body">
+			<div class="table-responsive" id="listaSeleccionNorma">
+				<table id="tListaNormas" class="table table-sm table-hover table-bordered">
+					<thead class="thead-dark">
+						<tr>
+							<th scope="col" class="texto-pequenio text-center align-middle registro"># ID</th>
+						    <th scope="col" class="texto-pequenio text-center align-middle registro">Nombre</th>
+						    <th scope="col" class="texto-pequenio text-center align-middle registro">Observaci&oacute;n</th>
+						    <th scope="col" class="texto-pequenio text-center align-middle registro"></th>
+						</tr>
+					</thead>
+					<tbody id="tbodyNorma">
+				        <?php
+				        if(isset($normas))
+				        {
+					        foreach ($normas as $norma): ?>
+					  			<tr>
+							        <th scope="row" class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $norma['id']; ?></th>
+							        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $norma['nombre']; ?></p></td>
+							        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $norma['observaciones']; ?></p></td>
+							        <td class="text-center align-middle registro botonTabla paginate_button">
+						        		<button href="#" aria-controls="tListaNormas" data-id="<?php echo $norma['id']; ?>" data-nombre="<?php echo $norma['nombre']; ?>" tabindex="0" class="btn btn-outline-dark seleccionNorma">Seleccionar</button>
+						        	</td>
+						    	</tr>
+					  		<?php endforeach;
+				  		}?>
+				  </tbody>
+				</table>
+			</div>
+      	</div>
+		<div class="modal-footer">
+			<button id="btnCerrarMP" type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+		</div>
+    </div>
+  </div>
+</div>
+
+<!-- INICIO Modal Observacion -->
+<div class="modal fade" id="modalAgregarObservacion" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="tituloMP">Selecciona un Norma</h5>
+      	<i class="plusTitulo mb-2" data-feather="plus"></i>
+        <h5 class="modal-title" id="tituloAO" name="tituloAO" data-idherramienta="" data-herramienta=""> Agregar Observaci&oacute;n General</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-      	<div class="table-responsive" id="listaSeleccionNorma">
-					<table id="tListaNormas" class="table table-sm table-hover table-bordered">
-						<thead class="thead-dark">
-							<tr>
-								<th scope="col" class="texto-pequenio text-center align-middle registro"># ID</th>
-							    <th scope="col" class="texto-pequenio text-center align-middle registro">Nombre</th>
-							    <th scope="col" class="texto-pequenio text-center align-middle registro">Observaci&oacute;n</th>
-							    <th scope="col" class="texto-pequenio text-center align-middle registro"></th>
-							</tr>
-						</thead>
-						<tbody id="tbodyNorma">
-					        <?php
-					        if(isset($normas))
-					        {
-						        foreach ($normas as $norma): ?>
-						  			<tr>
-								        <th scope="row" class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $norma['id']; ?></th>
-								        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $norma['nombre']; ?></p></td>
-								        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $norma['observaciones']; ?></p></td>
-								        <td class="text-center align-middle registro botonTabla paginate_button">
-							        		<button href="#" aria-controls="tListaNormas" data-id="<?php echo $norma['id']; ?>" data-nombre="<?php echo $norma['nombre']; ?>" tabindex="0" class="btn btn-outline-dark seleccionNorma">Seleccionar</button>
-							        	</td>
-							    	</tr>
-						  		<?php endforeach;
-					  		}?>
-					  </tbody>
-					</table>
-				</div>
+      	<div class="row">
+			<div class="form-group col-sm-12">
+				<label for="inputObservaciones">Observaciones Generales</label>
+				<textarea class="form-control form-control-sm block" placeholder="Ingrese una Obseravaci&oacute;n" id="inputObservaciones" name="inputObservaciones" rows="4"></textarea>
+			</div>
+		</div>
       </div>
       <div class="modal-footer">
-        <button id="btnCerrarMP" type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
+        <button id="agregarObservacion" type="button" class="btn btn-success">Agregar Observaci&oacute;n</button>
       </div>
     </div>
   </div>
 </div>
 
+<!-- FIN Modal Agregar Observacion -->
 
 
-
-<!--<script src="<?php echo (base_url().'assets/jquery/jquery-3.2.1.min.js'); ?>"></script>
+<script src="<?php echo (base_url().'assets/jquery/jquery-3.2.1.min.js'); ?>"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-<script src="<?php echo (base_url().'assets/bootstrap-4.1.3/js/bootstrap.min.js'); ?>"></script>
-<script src="<?php echo (base_url().'assets/shards-1.1/js/shards.min.js'); ?>"></script>
-<script src="<?php echo (base_url().'assets/jquery-bootstrap-wizard/jquery.bootstrap.wizard.min.js'); ?>"></script>
-<script src="<?php echo (base_url().'assets/bootbox-v4.4.0/bootbox.min.js'); ?>"></script>
-<script src="<?php echo (base_url().'assets/momentjs-2.18.1/moment.min.js'); ?>"></script>
+<!--<script src="<?php //echo (base_url().'assets/bootstrap-4.1.3/js/bootstrap.min.js'); ?>"></script>-->
+<!--<script src="<?php //echo (base_url().'assets/shards-1.1/js/shards.min.js'); ?>"></script>-->-->
+<!--<script src="<?php echo (base_url().'assets/jquery-bootstrap-wizard/jquery.bootstrap.wizard.min.js'); ?>"></script>-->
+<!--<script src="<?php echo (base_url().'assets/bootbox-v4.4.0/bootbox.min.js'); ?>"></script>-->
+<!--<script src="<?php echo (base_url().'assets/momentjs-2.18.1/moment.min.js'); ?>"></script>-->
 <script src="https://cdn.webrtc-experiment.com/DetectRTC.js"></script>
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script src="<?php echo (base_url().'assets/localize/jquery.localize.min.js'); ?>"></script>
-<script src="<?php echo (base_url().'assets/image-picker/js/image-picker.min.js'); ?>"></script>
-<script src="<?php echo (base_url().'assets/scripts/ci_codes.js'); ?>"></script>
-<script src="<?php echo (base_url().'assets/locale/lang.js'); ?>"></script>
+<!--<script src="<?php echo (base_url().'assets/image-picker/js/image-picker.min.js'); ?>"></script>-->
+<!--<script src="<?php echo (base_url().'assets/scripts/ci_codes.js'); ?>"></script>-->
+<!--<script src="<?php echo (base_url().'assets/locale/lang.js'); ?>"></script>-->
 <script src="<?php echo (base_url().'assets/scripts/status.js'); ?>"></script>
 <script src="<?php echo (base_url().'assets/scripts/toc_utils.js'); ?>"></script>
 <script src="<?php echo (base_url().'assets/scripts/ui_interactions.js'); ?>"></script>
-<script src="<?php echo (base_url().'assets/scripts/app.js'); ?>"></script>-->
+<script src="<?php echo (base_url().'assets/scripts/app.js'); ?>"></script>
