@@ -35,7 +35,8 @@
         async defer></script>-->
   		<!--<script src="<?php //echo (base_url().'assets/scripts/api.js?onload=onloadCallback&render=explicit'); ?>"
         async defer></script>-->
-
+        <!--<script type="text/javascript" src="<?php #echo (base_url().'assets/MB5/js/modules/lightbox.min.js'); ?>"></script>-->
+        <!--<script type="text/javascript" src="<?php #echo (base_url().'assets/MB5/js/modules/lightbox.min.js'); ?>"></script>-->
 <!-- (Optional) Latest compiled and minified JavaScript translation files -->
 <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/i18n/defaults-*.min.js"></script>-->
 		<!--<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>-->

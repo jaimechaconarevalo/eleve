@@ -2,16 +2,193 @@
     $('[data-toggle="tooltip"]').tooltip();
     feather.replace();
 
-   $("#agregarInspeccion").on("submit", function(e){
+    //$('.stepper').mdbStepper();
+
+    $('#btnSeleccionarE').on('click', function(e) {
+        var tabla = $('#tListaEmpresas').DataTable();
+        var data = tabla.rows({selected:  true}).data();
+        if (data.length > 0) {
+            var id = data[0][0];
+            var rut = data[0][1];
+            var nombre = data[0][2];
+
+            $('#inputEmpresaMantenedora').val(rut.concat(' - ', nombre));
+            $('#idEmpresaMantenedora').val(id);
+            $('#modalBuscarEmpresa').modal('hide');
+        }else{
+            $('#inputEmpresaMantenedora').val('');
+            $('#idEmpresaMantenedora').val('');
+            $('#modalBuscarEmpresa').modal('hide');
+        }
+        
+    });
+
+    $('#modalBuscarEmpresa').on('shown.bs.modal', function () {
+    //$('#tListaNormas').on('click', '.seleccionNorma', function(e) {
+        
+        var baseurl =  window.origin + '/Empresa/json_listarEmpresas';
+        jQuery.ajax({
+            type: "POST",
+            url: baseurl,
+            dataType: 'json',
+            //data: {idNorma: idNorma},
+            success: function(data) {
+                if (data) {
+                    
+
+                    if (data.empresas_mantenedoras.length > 0) {
+                        var tabla_e = $(document.getElementById("tListaEmpresas")).dataTable();
+                        tabla_e.fnDestroy();
+                        $('#tListaEmpresas').DataTable( {
+                            "fnDrawCallback": function( oSettings ) {
+                                feather.replace();
+                                loader.setAttribute('hidden', '');
+                                $('[data-toggle="tooltip"]').tooltip();
+                            },
+                            "preDrawCallback": function( settings ) {
+                                var loader = document.getElementById("loader");
+                                loader.removeAttribute('hidden');
+                            },
+                            "processing": false,
+                            //"serverSide": true,
+                            "data": data.empresas_mantenedoras,
+                            searching: true,
+                            paging:         true,
+                            ordering:       true,
+                            info:           true,
+                            select: true,
+                            select:{
+                                style:     'os',
+                                className: 'table-success'
+                            },
+                            language: {
+                                select: {
+                                    rows: {
+                                        _: " Tienes %d filas seleccionadas",
+                                        0: " Haz click para seleccionar una fila",
+                                        1: " 1 fila seleccionada"
+                                    }
+                                }
+                            },
+                            
+                            //"order": [[ 0, "asc" ]],
+
+                            //paging:         false,
+                            //ordering:       false,
+                            //info:           true,
+                            //"scrollY": true,
+                            //scrollY:        "300px",
+                            //scrollX:        true,
+                            //scrollCollapse: true,
+                            //paging:         false,
+                            //fixedColumns:   true,
+                            "oLanguage": {
+                                "sProcessing":     function(){
+                                    let timerInterval
+                                },
+                                "sLengthMenu": "_MENU_ Registros por p&aacute;gina",
+                                "sZeroRecords": "No se encontraron registros",
+                                "sInfo": "Mostrando del _START_ al _END_ de _TOTAL_ registros",
+                                "sInfoEmpty": "Mostrando 0 de 0 registros",
+                                "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                                "sSearch":        "Buscar:",
+                                // "sProcessing" : '<img src="<?php //echo base_url(); ?>images/gif/spin2.svg" height="42" width="42" >',
+                                "oPaginate": {
+                                    "sFirst":    "Primero",
+                                    "sLast":    "Último",
+                                    "sNext":    "Siguiente",
+                                    "sPrevious": "Anterior"
+                                }
+                            },
+                            lengthMenu: [[20], [20]]
+                        });
+
+                        feather.replace();
+                        $('[data-toggle="tooltip"]').tooltip();
+                    }
+                }
+            }
+        });
+    });
+
+    
+    $("#agregarInspeccion").on("submit", function(e){
         var loader = document.getElementById("loader");
         loader.removeAttribute('hidden');
         var validacion = $("#agregarInspeccion").validate();
         if ($("#agregarInspeccion").valid()) {
             if(validacion.numberOfInvalids() == 0)
             {
+/*var imagenes = document.getElementsByClassName('img-thumbnail');
+                for (var i = 0; i < imagenes.length; i++) {
+                    var input_file = null;
+
+                    const img = document.getElementById(imagenes[i].id) 
+                    fetch(imagenes[i].src)
+                    .then(res => res.blob())
+                    .then(blob => {
+                      const file = new File([blob], 'dot.png', blob)
+                      input_file = file;
+
+                      let container = new DataTransfer();
+                      container.items.add(file);
+
+                      //fileInputElement.files = container.files;
+
+                      var imagenes = document.getElementsByClassName('img-thumbnail');
+                      var x = document.createElement("INPUT");
+                       x.setAttribute("type", "file");
+                       x.files = container.files;
+
+                       var div = document.getElementById('div_'.concat('6_1'));
+                       div.append(x);
+                       //var form = document.getElementById("agregarInspeccion");
+                       //var formData = new FormData(form);
+                       //formData.append('picture_'.concat(imagenes[0].id), x);
+
+
+                       //var avatar = document.getElementById('avatar');
+                       //avatar.value = blob;
+
+
+                      //
+                      //formData.append('file_111', blob);
+                      console.log(input_file);
+                      
+
+                      /*let reader = new FileReader();
+                        reader.onload = function(e) {
+                            let blob = new Blob([new Uint8Array(e.target.result)], {type: file.type });
+                            console.log(blob);
+                        };
+                        reader.readAsArrayBuffer(file);
+
+                        console.log(blob);*/
+
+
+                      //var fr = new FileReader();
+                       //formData.append('file_'.concat(imagenes[0].id), input_file);
+/*  });  */
+
+                    //var image = imagenes[i].src;
+                    //var base64ImageContent = image.replace(/^data:image\/(png|jpg);base64,/, "");
+                    //var blob = base64ToBlob(base64ImageContent, 'image/png');
+                    //formData.append('file_'.concat(imagenes[i].id), blob);
+                    
+/* }*/
+                /*const img = document.getElementById('#id_front') 
+                fetch(image.src)
+                .then(res => res.blob())
+                .then(blob => {
+                  const file = new File([blob], 'dot.png', blob);
+                  
+                });*/   
+
                 e.preventDefault();
                 var form = document.getElementById("agregarInspeccion");
                 var formData = new FormData(form);
+
+
 
                 var baseurl = (window.origin + '/Inspeccion/agregarInspeccion');
                 jQuery.ajax({
@@ -76,12 +253,12 @@
         },
         rules: {
           inputCodigo: {
-            required: true,
+            //required: true,
             minlength: 1,
             maxlength: 30
           },
           inputNombre: {
-            required: true,
+            //required: true,
             minlength: 1,
             maxlength: 100
           },
@@ -124,11 +301,36 @@
         $('#acordeonCarpeta').collapse('hide');
     });
 
+    $('#modalMensajeInspeccion').on('hidden.bs.modal', function(e) {
+        location.reload();   
+    });
+    
+
     $('#acordionCategorias').on('click', '.quitarImagen', function(e) {
         var id = e.currentTarget.dataset.id;
+        var id_div = e.currentTarget.dataset.id_div;
         var div_image = document.getElementById('div_image_'.concat(id));
-        div_image.remove(); 
+        div_image.remove();
 
+        for (var i = 1; i < document.getElementById('div_'.concat(id_div)).children.length; i++) {
+            var div = document.getElementById('div_'.concat(id_div)).children[i];
+            div.id = 'div_image_'.concat(id_div, '_', i);
+            div.children[1].id = id_div.concat('_', i);
+        }
+
+    });
+
+    $('#acordionCategorias').on('click', '.rbSI, .rbNA', function(e) {
+        var id_categoria = e.currentTarget.dataset.id_categoria;
+        var id_pregunta = e.currentTarget.dataset.id_pregunta;
+        $('#cat_pre_'.concat(id_categoria, '_',id_pregunta)).collapse('hide');
+    });
+
+
+    $('#acordionCategorias').on('click', '.rbNO', function(e) {
+        var id_categoria = e.currentTarget.dataset.id_categoria;
+        var id_pregunta = e.currentTarget.dataset.id_pregunta;
+        $('#cat_pre_'.concat(id_categoria, '_',id_pregunta)).collapse('show');
     });
 
     $('#acordionCategorias').on('click', '.pauta', function(e) {
@@ -214,7 +416,7 @@
         div.setAttribute('class', 'col-sm-2');
         //div.width = '170px !important';
         //div.setAttribute('style', ' width: 170px!important;');
-        div.id = 'div_image_'.concat(id);
+        div.id = 'div_image_'.concat(id, '_', ($('#div_'.concat(id)).children('input').length+1));
 
         var button = document.createElement("button");
         button.type = "button";
@@ -226,7 +428,8 @@
         span.setAttribute('aria-hidden', 'true');
         span.textContent = "×";
         span.id = 'close_'.concat(id);
-        span.dataset.id = id;
+        span.dataset.id = id.concat('_', ($('#div_'.concat(id)).children('input').length+1));
+        span.dataset.id_div = id;
         button.append(span);
         
 
@@ -235,9 +438,35 @@
         image.setAttribute('class', 'photo img-thumbnail');
         image.src = data_image;
         image.width = '150';
+        image.id = id.concat('_', ($('#div_'.concat(id)).children('input').length+1));
+
 
         div.append(button);
         div.append(image);
+
+        const img2 = document.getElementById(image.id)
+                    fetch(data_image)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        
+                        const file = new File([blob], 'picture_'.concat(id, '_',($('#div_'.concat(id)).children('input').length+1)), blob)
+                        input_file = file;
+
+                        let container = new DataTransfer();
+                        container.items.add(file);
+                        var x = document.createElement("INPUT");
+                        x.setAttribute("type", "file");
+                        x.files = container.files;
+                        x.id = 'picture_'.concat(id, '_',($('#div_'.concat(id)).children('input').length+1));
+                        x.name = 'picture_'.concat(id, '_',($('#div_'.concat(id)).children('input').length+1));
+                        x.setAttribute("hidden", true);
+                        $('#div_'.concat(id)).append(x);
+
+                    });
+
+
+
+
 
         $('#div_'.concat(id)).append(div);
         //$(document.getElementById('foto_1_'.concat(id))).attr('src', data_image);
@@ -284,6 +513,14 @@
                             var expandido = 'true';
                             $("#acordionCategorias").empty();
 
+                            var inputTC = '';
+                            inputTC = inputTC.concat('<input type="text" class="form-control form-control-sm" id="inputTotalCategorias" name="inputTotalCategorias" value="',data.data_total.length,'" hidden>');
+                            for (var i = 0; i < data.data_total.length; i++) {
+                                inputTC = inputTC.concat('<input type="text" class="form-control form-control-sm" id="inputTotalPreguntas_',(i+1),'" name="inputTotalPreguntas_',(i+1),'" value="',data.data_total[i].cantPreguntas,'" hidden>');
+                            }
+
+                            var contador = 0;
+
                             for (var i = 0; i < data.data_cp_n.length; i++) {
                                 var id_categoria = data.data_cp_n[i][2];
                                 var id_pregunta = data.data_cp_n[i][3];
@@ -292,6 +529,8 @@
                                 var cod_pregunta = data.data_cp_n[i][6];
                                 var pregunta = data.data_cp_n[i][7];
                                 var cant_preguntas = 0;
+
+                                contador++;
 
                                 if (id_categoria_i != id_categoria)
                                 {
@@ -348,18 +587,18 @@
                                     div = div.concat('<th class="text-center align-middle"><p>',id_categoria,'_',id_pregunta,'</p></th>');
                                     div = div.concat('<th class="text-center align-middle"><p>',cod_pregunta,'</p></th>');
                                     div = div.concat('<td class="text-center align-middle"><p>',pregunta,'</p></td>');
-                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" name="rbPregunta',id_categoria,'_',id_pregunta,'" class="pauta" data-id_categoria="',id_categoria,'"></td>');
-                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" name="rbPregunta',id_categoria,'_',id_pregunta,'" class="pauta" data-id_categoria="',id_categoria,'" data-toggle="collapse" data-target="#collapseExample',id_categoria,'_',id_pregunta,'" aria-expanded="false" aria-controls="collapseExample',id_categoria,'_',id_pregunta,'"></td>');
-                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" name="rbPregunta',id_categoria,'_',id_pregunta,'" class="pauta" data-id_categoria="',id_categoria,'"></td>');
+                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" id="rbPregunta',contador,'_SI" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbSI" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="si-',id_categoria,'_',id_pregunta,'"></td>');
+                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" id="rbPregunta',contador,'_NO" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNO" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="no-',id_categoria,'_',id_pregunta,'"></td>');
+                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" id="rbPregunta',contador,'_NA" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNA" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="na-',id_categoria,'_',id_pregunta,'"></td>');
                                     div = div.concat('</tr>');
                                     
                                     div = div.concat('<tr>');
-                                    div = div.concat('<td id="collapseExample',id_categoria,'_',id_pregunta,'" class="collapse" colspan="6">');
+                                    div = div.concat('<td id="cat_pre_',id_categoria,'_',id_pregunta,'" class="collapse" colspan="6">');
                                     div = div.concat('<div class="card card-body">');
                                     div = div.concat('<div class="row">');
                                     div = div.concat('<div class="col-sm-6">');
                                     div = div.concat('<label for="inputObservaciones',id_categoria,'_',id_pregunta,'">Observaciones</label>');
-                                    div = div.concat('<textarea class="form-control form-control-sm block" placeholder="Ingrese una Obseravaci&oacute;n" id="inputObservaciones',id_categoria,'_',id_pregunta,'" name="inputObservaciones',id_categoria,'_',id_pregunta,'" rows="2"></textarea>');
+                                    div = div.concat('<textarea class="form-control form-control-sm block" placeholder="Ingrese una Obseravaci&oacute;n" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" rows="2"></textarea>');
                                     div = div.concat('</div>');
                                     div = div.concat('<div id="div_',id_categoria,'_',id_pregunta,'" class="col-sm-6 row">');
 
@@ -388,18 +627,18 @@
                                     div = div.concat('<th class="text-center align-middle"><p>',id_categoria,'_',id_pregunta,'</p></th>');
                                     div = div.concat('<th class="text-center align-middle"><p>',cod_pregunta,'</p></th>');
                                     div = div.concat('<td class="text-center align-middle"><p>',pregunta,'</p></td>');
-                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" name="rbPregunta',id_categoria,'_',id_pregunta,'" class="pauta" data-id_categoria="',id_categoria,'"></td>');
-                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" name="rbPregunta',id_categoria,'_',id_pregunta,'" class="pauta" data-id_categoria="',id_categoria,'" data-toggle="collapse" data-target="#collapseExample',id_categoria,'_',id_pregunta,'" aria-expanded="false" aria-controls="collapseExample',id_categoria,'_',id_pregunta,'"></td>');
-                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" name="rbPregunta',id_categoria,'_',id_pregunta,'" class="pauta" data-id_categoria="',id_categoria,'"></td>');
+                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" id="rbPregunta',contador,'_SI" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbSI" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="si-',id_categoria,'_',id_pregunta,'"></td>');
+                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" id="rbPregunta',contador,'_NO" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNO" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="no-',id_categoria,'_',id_pregunta,'"></td>');
+                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" id="rbPregunta',contador,'_NA" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNA" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="na-',id_categoria,'_',id_pregunta,'"></td>');
                                     div = div.concat('</tr>');
                                     
                                     div = div.concat('<tr>');
-                                    div = div.concat('<td id="collapseExample',id_categoria,'_',id_pregunta,'" class="collapse" colspan="6">');
+                                    div = div.concat('<td id="cat_pre_',id_categoria,'_',id_pregunta,'" class="collapse" colspan="6">');
                                     div = div.concat('<div class="card card-body">');
                                     div = div.concat('<div class="row">');
                                     div = div.concat('<div class="col-sm-6">');
                                     div = div.concat('<label for="inputObservaciones',id_categoria,'_',id_pregunta,'">Observaciones</label>');
-                                    div = div.concat('<textarea class="form-control form-control-sm block" placeholder="Ingrese una Obseravaci&oacute;n" id="inputObservaciones',id_categoria,'_',id_pregunta,'" name="inputObservaciones',id_categoria,'_',id_pregunta,'" rows="2"></textarea>');
+                                    div = div.concat('<textarea class="form-control form-control-sm block" placeholder="Ingrese una Obseravaci&oacute;n" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" rows="2"></textarea>');
                                     div = div.concat('</div>');
                                     div = div.concat('<div id="div_',id_categoria,'_',id_pregunta,'" class="col-sm-6 row">');
                                     div = div.concat('<div class="col-sm-2">');
@@ -421,6 +660,7 @@
                             }
                             div = div.concat('</div>');
                             div = div.concat('</div>');
+                            $("#acordionCategorias").append(inputTC);
                             $("#acordionCategorias").append(div);
                             feather.replace();
                             $('[data-toggle="tooltip"]').tooltip();
@@ -432,7 +672,6 @@
       });
 
 });
-
 
 
 window.onload = function () {

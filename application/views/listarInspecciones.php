@@ -28,8 +28,13 @@
 				<thead class="thead-dark">
 					<tr>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"># ID</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Codigo</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Tecnico</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Rut Admin</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre Admin</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Email Admin</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre Mant.</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Marca Ascensor</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Capacidad</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Estado</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
@@ -43,22 +48,28 @@
 				        foreach ($inspecciones as $inspeccion): ?>
 				  			<tr>
 						        <th scope="row" class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['id']; ?></th>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['codigo']; ?></p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['nombre']; ?></p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo ($inspeccion["estado"] == "1" ? "Activo" : "Eliminado"); ?></p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['nombre_tecnico']; ?></p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['rut_admin']; ?></p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['nombre_admin']; ?></p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['email_admin']; ?></p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['nombre_mant_2']; ?></p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['marca_ascensor']; ?></p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['capacidad_personas']; ?></p></td>
+
+						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo ($inspeccion["id_estado"] == "1" ? "Activo" : "Eliminado"); ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['created_at']; ?></p></td>
 					        	<td class="text-center align-middle registro botonTabla">
-						        	<a id="edit_<?php echo $inspeccion['id']; ?>" class="view_convenio" href="ModificarInspeccion/?idInspeccion=<?php echo $inspeccion['id']; ?>">
-						        		<i data-feather="edit-3" data-toggle="tooltip" data-placement="top" title="Modificar"></i>       		
+						        	<a id="edit_<?php echo $inspeccion['id']; ?>" class="view_convenio" href="visualizarInspeccion/?idInspeccion=<?php echo $inspeccion['id']; ?>">
+						        		<i data-feather="search" data-toggle="tooltip" data-placement="top" title="Visualizar"></i>
 					        		</a>
 					        	</td>
 					        	<td class="text-center align-middle registro botonTabla">
-					        		<?php if ($inspeccion["estado"] == "1") { ?>
-						        					<a id="trash_<?php echo $inspeccion['id']; ?>" class="trash" href="#" data-toggle="modal" data-target="#modalEliminarInspeccion" data-id="<?php echo $inspeccion['id']; ?>" data-inspeccion="<?php echo $inspeccion['nombre']; ?>">
+					        		<?php if ($inspeccion["id_estado"] == "1") { ?>
+						        					<a id="trash_<?php echo $inspeccion['id']; ?>" class="trash" href="#" data-toggle="modal" data-target="#modalEliminarInspeccion" data-id="<?php echo $inspeccion['id']; ?>" data-inspeccion="<?php echo $inspeccion['id']; ?>">
 										        		<i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="Eliminar"></i>       		
 									        		</a>
 					        		<?php }else{ ?>
-					        						<a id="trash_<?php echo $inspeccion['id']; ?>" class="trash" href="#" data-toggle="modal" data-target="#modalActivarInspeccion" data-id="<?php echo $inspeccion['id']; ?>" data-inspeccion="<?php echo $inspeccion['nombre']; ?>">
+					        						<a id="trash_<?php echo $inspeccion['id']; ?>" class="trash" href="#" data-toggle="modal" data-target="#modalActivarInspeccion" data-id="<?php echo $inspeccion['id']; ?>" data-inspeccion="<?php echo $inspeccion['id']; ?>">
 										        		<i data-feather="check-circle" data-toggle="tooltip" data-placement="top" title="Activar"></i>       		
 									        		</a>
 					        		<?php } ?>
