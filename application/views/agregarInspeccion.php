@@ -389,7 +389,6 @@
 									<div class="col-sm-3">
 										<button href="SeleccionarNorma" class="btn btn-link" type="button" id="btnBuscarNorma"  data-toggle="modal" data-target="#modalBuscarNorma" style="padding-top: 6px;">
 											<i stop-color data-feather="plus" class="mb-2" data-toggle="tooltip" data-placement="top" title="Seleccionar una Norma"></i>
-											<input type="file" aria-invalid="false" id="picture_6_1" name="picture_6_1">
 										</button>
 									</div>
 								</div>
