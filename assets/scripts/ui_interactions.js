@@ -140,35 +140,50 @@ $('body').on('click', '.refrescar', function(event) {
 // Interaccion del cambio de valor al capturar foto con el móvil
 $('body').on('change', '[type="file"]', function(event) {
     event.preventDefault();
-    var img_id = $(this).siblings().find('img').attr('id');
-    var input_id = $(this).siblings().find('input').attr('name');
-    $(this).siblings('h3').html(lang[app_locale]['check_orientation']);
-    $(this).siblings('img.check-orientation').show();
-    var canvas = document.getElementById('photo');
-    var canvasContext = canvas.getContext('2d');
-    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-    // limit the image to 1280x720 maximum size
-    var maxWidth = 1280;
-    var maxHeight = 720;
-    var img = new Image;
-    dataURL = null;
-    img.onload = function() {
-        var imageWidth = img.width;
-        var imageHeight = img.height;
-        var scale = Math.min((maxWidth / imageWidth), (maxHeight / imageHeight));
-        var iwScaled = imageWidth * scale;
-        var ihScaled = imageHeight * scale;
-        canvas.width = iwScaled;
-        canvas.height = ihScaled;
-        canvasContext.drawImage(img, 0, 0, iwScaled, ihScaled);
-        dataURL = canvas.toDataURL('image/jpeg');
-        $('img#' + img_id).attr({src: dataURL, 'style' : 'margin:1%;width:85%;'}).addClass('border border-success card-body');
-        $('input[name="' + input_id + '"]').val(dataURL);
-        $('#' + input_id + '').val(dataURL);
-        $('.next').show();
-        checkApiFormData();
+
+    if (DetectRTC.isMobileDevice) {
+        var selectedFile = event.target.files[0];
+        var reader = new FileReader();
+
+        var imgtag = document.getElementById("id_front");
+        imgtag.title = selectedFile.name;
+
+        reader.onload = function(event) {
+        imgtag.src = event.target.result;
+        };
+
+        reader.readAsDataURL(selectedFile);
+    }else{
+        var img_id = $(this).siblings().find('img').attr('id');
+        var input_id = $(this).siblings().find('input').attr('name');
+        $(this).siblings('h3').html(lang[app_locale]['check_orientation']);
+        $(this).siblings('img.check-orientation').show();
+        var canvas = document.getElementById('photo');
+        var canvasContext = canvas.getContext('2d');
+        canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+        // limit the image to 1280x720 maximum size
+        var maxWidth = 1280;
+        var maxHeight = 720;
+        var img = new Image;
+        dataURL = null;
+        img.onload = function() {
+            var imageWidth = img.width;
+            var imageHeight = img.height;
+            var scale = Math.min((maxWidth / imageWidth), (maxHeight / imageHeight));
+            var iwScaled = imageWidth * scale;
+            var ihScaled = imageHeight * scale;
+            canvas.width = iwScaled;
+            canvas.height = ihScaled;
+            canvasContext.drawImage(img, 0, 0, iwScaled, ihScaled);
+            dataURL = canvas.toDataURL('image/jpeg');
+            $('img#' + img_id).attr({src: dataURL, 'style' : 'margin:1%;width:85%;'}).addClass('border border-success card-body');
+            $('input[name="' + input_id + '"]').val(dataURL);
+            $('#' + input_id + '').val(dataURL);
+            $('.next').show();
+            checkApiFormData();
+        }
+        img.src = URL.createObjectURL(event.target.files[0]);
     }
-    img.src = URL.createObjectURL(event.target.files[0]);
 });
 // Interaccion del boton de realizar nuevo proceso
 $('body').on('click', '.again', function(event) {
