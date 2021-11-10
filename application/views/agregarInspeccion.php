@@ -35,6 +35,7 @@
 				<div class="row">
 					<div class="col-sm-12 mb-5">
 						<hr class="my-3">
+						<video  id="video1" controls autoplay width="95%"></video>
 						<h5><i class="mb-2" data-feather="check-square" ></i> PARTICIPANTES EN LA REVISION</h5>
 					</div>
 					<div class="form-group col-sm-6">
