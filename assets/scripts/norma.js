@@ -141,7 +141,7 @@
                 var preguntas_seleccionadas = JSON.parse(localStorage.getItem("preguntas_seleccionadas"));
                 formData.append("preguntas_seleccionadas", JSON.stringify(preguntas_seleccionadas));
 
-                var baseurl = (window.origin + '/eleve/Norma/agregarNorma');
+                var baseurl = (window.origin + '/Norma/agregarNorma');
                 jQuery.ajax({
                 type: form.getAttribute('method'),
                 url: baseurl,
@@ -242,7 +242,7 @@
     });
 
     $("#modalMensajeNorma").on("hidden.bs.modal", function () {
-        var pagina = window.location.pathname.split('/')[3].toLowerCase();
+        var pagina = window.location.pathname.split('/')[2].toLowerCase();
         if (pagina == "modificarnorma") {
             location.reload();
         }
@@ -257,7 +257,7 @@ window.onload = function () {
     localStorage.removeItem('categorias_seleccionadas');
     localStorage.removeItem('preguntas_seleccionadas');
 
-    if(window.location.pathname.split('/')[3].toLowerCase() == 'listarNormas'.toLowerCase())
+    if(window.location.pathname.split('/')[2].toLowerCase() == 'listarNormas'.toLowerCase())
     {
         $('#tListaNormas').dataTable({
             searching: true,
@@ -292,7 +292,7 @@ window.onload = function () {
         feather.replace();
     }
 
-    if(window.location.pathname.split('/')[3].toLowerCase() == 'agregarNorma'.toLowerCase() || window.location.pathname.split('/')[3].toLowerCase() == 'modificarNorma'.toLowerCase())
+    if(window.location.pathname.split('/')[2].toLowerCase() == 'agregarNorma'.toLowerCase() || window.location.pathname.split('/')[2].toLowerCase() == 'modificarNorma'.toLowerCase())
     {
         $('#tListaCategorias').dataTable({
             searching: true,
@@ -357,7 +357,7 @@ window.onload = function () {
 
         var idNorma = document.getElementById('inputIdNorma').value;
         if (idNorma) {
-            var baseurl =  window.origin + '/eleve/Norma/json_listarCategoriasPreguntas';
+            var baseurl =  window.origin + '/Norma/json_listarCategoriasPreguntas';
             jQuery.ajax({
                 type: "POST",
                 url: baseurl,

@@ -108,7 +108,7 @@
     });
 
     $("#modalMensajeCarpeta").on("hidden.bs.modal", function () {
-        var pagina = window.location.pathname.split('/')[3].toLowerCase();
+        var pagina = window.location.pathname.split('/')[2].toLowerCase();
         if (pagina == "modificarcarpeta") {
             location.reload();
         }
@@ -119,7 +119,7 @@
 
 
 window.onload = function () {
-    if(window.location.pathname.split('/')[3].toLowerCase() == 'listarCarpetas'.toLowerCase())
+    if(window.location.pathname.split('/')[2].toLowerCase() == 'listarCarpetas'.toLowerCase())
     {
         $('#tListaCarpetas').dataTable({
             searching: true,

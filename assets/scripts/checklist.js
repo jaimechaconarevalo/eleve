@@ -140,7 +140,7 @@
                 var preguntas_seleccionadas = JSON.parse(localStorage.getItem("preguntas_seleccionadas"));
                 formData.append("preguntas_seleccionadas", JSON.stringify(preguntas_seleccionadas));
 
-                var baseurl = (window.origin + '/eleve/CheckList/agregarCheckList');
+                var baseurl = (window.origin + '/CheckList/agregarCheckList');
                 jQuery.ajax({
                 type: form.getAttribute('method'),
                 url: baseurl,
@@ -241,7 +241,7 @@
     });
 
     $("#modalMensajeCheckList").on("hidden.bs.modal", function () {
-        var pagina = window.location.pathname.split('/')[3].toLowerCase();
+        var pagina = window.location.pathname.split('/')[2].toLowerCase();
         if (pagina == "modificarchecklist") {
             location.reload();
         }
@@ -255,7 +255,7 @@
         $('#modalBuscarNorma').modal('hide');
         
         if (idNorma) {
-            var baseurl =  window.origin + '/eleve/Norma/json_listarCategoriasPreguntas';
+            var baseurl =  window.origin + '/Norma/json_listarCategoriasPreguntas';
             jQuery.ajax({
                 type: "POST",
                 url: baseurl,
@@ -357,7 +357,7 @@
 
 
 window.onload = function () {
-    if(window.location.pathname.split('/')[3].toLowerCase() == 'listarCheckLists'.toLowerCase())
+    if(window.location.pathname.split('/')[2].toLowerCase() == 'listarCheckLists'.toLowerCase())
     {
         $('#tListaCheckLists').dataTable({
             searching: true,
@@ -392,7 +392,7 @@ window.onload = function () {
         feather.replace();
     }
 
-    if(window.location.pathname.split('/')[3].toLowerCase() == 'agregarCheckList'.toLowerCase())
+    if(window.location.pathname.split('/')[2].toLowerCase() == 'agregarCheckList'.toLowerCase())
     {
         $('#tListaCategorias').dataTable({
             searching: true,
