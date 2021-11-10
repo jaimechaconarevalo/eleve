@@ -403,8 +403,7 @@
             isMobile = true;
         }
         alert(isMobile);
-
-    }
+    });
 
     $('#seleccionarFoto').on('click',  function(e) {
         var id = document.getElementById('seleccionarFoto').dataset.id;
