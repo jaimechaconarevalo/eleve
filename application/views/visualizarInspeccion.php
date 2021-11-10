@@ -505,9 +505,17 @@
 
                                     //$div = $div.'<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFoto">Tomar una Foto</button>';
                                     
-                                    $div = $div.'<div class="col-sm-2">';
-                                    $div = $div.'<button type="button" class="btn btn-primary tomarFoto" data-toggle="modal" data-target="#modalFoto" data-id="'.$id_categoria.'_'.$id_pregunta.'">Tomar una Foto</button>';
-                                    $div = $div.'</div>';
+                                    #$div = $div.'<div class="col-sm-2">';
+                                    #$div = $div.'<button type="button" class="btn btn-primary tomarFoto" data-toggle="modal" data-target="#modalFoto" data-id="'.$id_categoria.'_'.$id_pregunta.'">Tomar una Foto</button>';
+                                    #$div = $div.'</div>';
+
+                                    if ($respuesta_pre_rb == 2 && is_numeric($cant_archivos)) {
+                                    	for ($g=0; $g < (int)$cant_archivos; $g++) { 
+                                    		$div = $div.'<div class="col-sm-2" id="div_image_'.$id_categoria.'_'.$id_pregunta.'_'.strval($g+1).'">';
+                                    		$div = $div.'<img id="picture_'.$id_categoria.'_'.$id_pregunta.'_'.strval($g+1).'" class="img-fluid" src="'.base_url().'assets/files/image/'.strval($nombre_archivo.($g+1)).'.png" width="150">';
+                                    		$div = $div.'</div>';
+                                    	}
+                                    }
                                     
                                     //$div = $div.'<label for="doc-front" class="images captura-btn"><i class="fa fa-camera" aria-hidden="true"></i> <span data-localize="capture">Agregar Foto</span></label>';
                                     //$div = $div.'<a href="#" class="btn btn-secondary take-photo"><i class="fa fa-camera" aria-hidden="true"></i> <span data-localize="capture">FOTO</span></a>';
