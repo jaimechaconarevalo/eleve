@@ -396,7 +396,7 @@
 
     });
 
-    $('#seleccionarFoto').on('click',  function(e) {
+    $('#seleccionarFoto').on('click touchstart',  function(e) {
         var id = document.getElementById('seleccionarFoto').dataset.id;
         var data_image = document.getElementById('id_front').src;
 
