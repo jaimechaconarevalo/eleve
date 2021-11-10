@@ -35,7 +35,6 @@
 				<div class="row">
 					<div class="col-sm-12 mb-5">
 						<hr class="my-3">
-						<video  id="video1" controls autoplay width="95%"></video>
 						<h5><i class="mb-2" data-feather="check-square" ></i> PARTICIPANTES EN LA REVISION</h5>
 					</div>
 					<div class="form-group col-sm-6">
@@ -497,7 +496,7 @@
 									            <div class="row">
 									            	<div class="col-sm-12 text-center mt-3">
 									            		<input type="file" id="doc-front" name="doc-front" class="inputfile" accept="image/*" capture="camera">
-												        <label for="doc-front" class="images captura-btn"><i class="fa fa-camera" aria-hidden="true"></i> <span data-localize="capture">FOTO</span></label>
+												        <label for="doc-front" class="images captura-btn"><i class="fa fa-camera" aria-hidden="true"></i> <span id="span_foto" data-localize="capture">FOTO</span></label>
 												        <a href="#" class="btn btn-success take-photo">
 												        	<i data-feather="camera"></i>
 												        	<!--<i class="fa fa-camera" aria-hidden="true"></i> -->
