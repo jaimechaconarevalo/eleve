@@ -129,6 +129,9 @@ class Empresa extends CI_Controller {
 				$data['resultado'] = $resultado;
 				$data['mensaje'] = $mensaje;
 				$data['id_empresa'] = $idEmpresa;
+				$data['rut_empresa'] = $rut;
+				$data['nombre_empresa'] = $nombre;
+
 				echo json_encode($data);
 			}else{
 				$usuario['titulo'] = 'Agregar Empresa';

@@ -106,14 +106,15 @@
 									<option value="2">No</option>
 								</select>
 							</div>-->
-							<div class="form-group col-sm-5">
-								<label for="inputNombre">Nombre mantenedor</label>
+
+							<div class="form-group col-10 col-sm-4">
+								<label for="inputNombre">Empresa Mantenedora</label>
 								<input type="text" class="form-control" id="idEmpresaMantenedora" minlength="1" name="idEmpresaMantenedora" value="" hidden>
 								<input type="text" class="form-control  form-control-sm" id="inputEmpresaMantenedora" minlength="1" placeholder="Seleccione una Empresa Mantenedora" name="inputNombre" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>" readonly>
 							</div>
-							<div class="form-group col-sm-1 mt-4">
-								<div class="col-sm-3">
-									<button href="SeleccionarEmpresa" class="btn btn-link" type="button" id="btnBuscarEmpresa"  data-toggle="modal" data-target="#modalBuscarEmpresa" style="padding-top: 6px;">
+							<div class="form-group col-2 col-sm-2 pt-1">
+								<div class="align-middle pt-2">
+									<button href="SeleccionarEmpresa" class="btn btn-link align-middle text-center pt-4" type="button" id="btnBuscarEmpresa"  data-toggle="modal" data-target="#modalBuscarEmpresa" style="padding-top: 6px;">
 										<i stop-color data-feather="search" class="mb-2" data-toggle="tooltip" data-placement="top" title="Seleccionar una Empresa Mantenedora"></i>
 									</button>
 								</div>
@@ -150,38 +151,36 @@
 
 
 						<div id="acordeonCarpeta" class="collapse col-sm-12">
-							<div class="card card-body">
-								<table class="table">
-								  <thead>
-								    <tr>
-								      <th scope="col" class="text-center align-middle">#</th>
-								      <th scope="col" class="text-center align-middle">CARPETA T&Eacute;CNICA</th>
-								      <th scope="col" class="text-center align-middle">SI</th>
-								      <th scope="col" class="text-center align-middle">NO</th>
-								    </tr>
-								  </thead>
+							<table class="table">
+							  <thead>
+							    <tr>
+							      <!--<th scope="col" class="text-left align-middle">#</th>-->
+							      <th scope="col" class="text-left align-middle">CARPETA T&Eacute;CNICA</th>
+							      <th scope="col" class="text-left align-middle">SI</th>
+							      <th scope="col" class="text-left align-middle">NO</th>
+							    </tr>
+							  </thead>
 
-								  <tbody id="tbodyHerramientas">
-						  			<?php
-							        if(isset($carpetas))
-							        {
-							        	$contador = 0;
-								        foreach ($carpetas as $carpeta): 
-								        	$contador++;
-								        ?>
-								  			<tr>
-										        <th class="text-center align-middle"><p><?php echo $carpeta['codigo']; ?></p></th>
-										        <td class="text-center align-middle"><p><?php echo $carpeta['nombre']; ?></p></td>
-										        <td class="text-center align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_si" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta" value="si-<?php echo $carpeta['id']; ?>"></td>
-								      			<td class="text-center align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_no" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta" value="no-<?php echo $carpeta['id']; ?>"></td>
-									    	</tr>
-									  		<?php 
-									  		endforeach;
-									  		echo '<input type="text" class="form-control" id="inputTotalCarpetas" minlength="1" name="inputTotalCarpetas" value="'.$contador.'" hidden>';
-							  		}?>
-						  		  </tbody>
-								</table>
-							</div>
+							  <tbody id="tbodyHerramientas">
+					  			<?php
+						        if(isset($carpetas))
+						        {
+						        	$contador = 0;
+							        foreach ($carpetas as $carpeta): 
+							        	$contador++;
+							        ?>
+							  			<tr>
+									        <!--<th class="text-left align-middle"><p><?php echo $carpeta['codigo']; ?></p></th>-->
+									        <td class="text-left align-middle"><p><?php echo $carpeta['nombre']; ?></p></td>
+									        <td class="text-left align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_si" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta" value="si-<?php echo $carpeta['id']; ?>"></td>
+							      			<td class="text-left align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_no" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta" value="no-<?php echo $carpeta['id']; ?>"></td>
+								    	</tr>
+								  		<?php 
+								  		endforeach;
+								  		echo '<input type="text" class="form-control" id="inputTotalCarpetas" minlength="1" name="inputTotalCarpetas" value="'.$contador.'" hidden>';
+						  		}?>
+					  		  </tbody>
+							</table>
 						</div>
 					</div>
 
@@ -195,10 +194,10 @@
 								<table class="table">
 								  <thead>
 								    <tr>
-								      <th scope="col" class="text-center align-middle">#</th>
-								      <th scope="col" class="text-center align-middle">NORMA</th>
-								      <th scope="col" class="text-center align-middle">SI</th>
-								      <th scope="col" class="text-center align-middle">NO</th>
+								      <th scope="col" class="text-left align-middle">#</th>
+								      <th scope="col" class="text-left align-middle">NORMA</th>
+								      <th scope="col" class="text-left align-middle">SI</th>
+								      <th scope="col" class="text-left align-middle">NO</th>
 								    </tr>
 								  </thead>
 
@@ -211,10 +210,10 @@
 								        	$contador++;
 							        	?>
 								  			<tr>
-										        <th class="text-center align-middle"><p><?php echo $norma['codigo']; ?></p></th>
-										        <td class="text-center align-middle"><p><?php echo $norma['nombre']; ?></p></td>
-										        <td class="text-center align-middle"><input type="radio" id="rbNorma<?php echo $contador;#$norma['id']; ?>_si" name="rbNorma<?php echo $contador;#$norma['id']; ?>" class="pauta" value="si-<?php echo $norma['id']; ?>"></td>
-								      			<td class="text-center align-middle"><input type="radio" id="rbNorma<?php echo $contador;#$norma['id']; ?>_no" name="rbNorma<?php echo $contador;#$norma['id']; ?>" class="pauta" value="no-<?php echo $norma['id']; ?>"></td>
+										        <th class="text-left align-middle"><p><?php echo $norma['codigo']; ?></p></th>
+										        <td class="text-left align-middle"><p><?php echo $norma['nombre']; ?></p></td>
+										        <td class="text-left align-middle"><input type="radio" id="rbNorma<?php echo $contador;#$norma['id']; ?>_si" name="rbNorma<?php echo $contador;#$norma['id']; ?>" class="pauta" value="si-<?php echo $norma['id']; ?>"></td>
+								      			<td class="text-left align-middle"><input type="radio" id="rbNorma<?php echo $contador;#$norma['id']; ?>_no" name="rbNorma<?php echo $contador;#$norma['id']; ?>" class="pauta" value="no-<?php echo $norma['id']; ?>"></td>
 									    	</tr>
 									  		<?php endforeach;
 									  		echo '<input type="text" class="form-control" id="inputTotalNormas" minlength="1" name="inputTotalNormas" value="'.$contador.'" hidden>';
@@ -236,10 +235,10 @@
 								<table class="table">
 								  <thead>
 								    <tr>
-								      <th scope="col" class="text-center align-middle">#</th>
-								      <th scope="col" class="text-center align-middle">EQUIPO Y HERRAMIENTA</th>
-								      <th scope="col" class="text-center align-middle">SI</th>
-								      <th scope="col" class="text-center align-middle">NO</th>
+								      <th scope="col" class="text-left align-middle">#</th>
+								      <th scope="col" class="text-left align-middle">EQUIPO Y HERRAMIENTA</th>
+								      <th scope="col" class="text-left align-middle">SI</th>
+								      <th scope="col" class="text-left align-middle">NO</th>
 								    </tr>
 								  </thead>
 
@@ -252,10 +251,10 @@
 								        	$contador++;
 								        ?>
 								  			<tr>
-										        <th class="text-center align-middle"><p><?php echo $herramienta['codigo']; ?></p></th>
-										        <td class="text-center align-middle"><p><?php echo $herramienta['nombre']; ?></p></td>
-										        <td class="text-center align-middle"><input type="radio" id="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>_si" name="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>" class="pauta" value="si-<?php echo $herramienta['id']; ?>" checked></td>
-								      			<td class="text-center align-middle"><input type="radio" id="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>_no" name="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>" class="pauta" value="no-<?php echo $herramienta['id']; ?>"></td>
+										        <th class="text-left align-middle"><p><?php echo $herramienta['codigo']; ?></p></th>
+										        <td class="text-left align-middle"><p><?php echo $herramienta['nombre']; ?></p></td>
+										        <td class="text-left align-middle"><input type="radio" id="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>_si" name="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>" class="pauta" value="si-<?php echo $herramienta['id']; ?>" checked></td>
+								      			<td class="text-left align-middle"><input type="radio" id="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>_no" name="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>" class="pauta" value="no-<?php echo $herramienta['id']; ?>"></td>
 									    	</tr>
 									  		<?php endforeach;
 									  		echo '<input type="text" class="form-control" id="inputTotalHerramientas" minlength="1" name="inputTotalHerramientas" value="'.$contador.'" hidden>';
@@ -374,39 +373,32 @@
 						<a id="btnAgregarChecklist" class="btn btn-link" data-toggle="modal" data-target="#modalAgregarChecklist"><i stop-color data-feather="plus" class="pb-1"></i>Agregar CheckList</a>
 					</div>
 					<input type="text" class="form-control" id="inputTotalChecklist" minlength="1" name="inputTotalChecklist" value="" hidden>
-					<div class="col-sm-12 mb-2">
+					<div class="col-sm-12">
 						<h5><i class="mb-2" data-feather="check-square" ></i> CHECKLIST # 1</h5>
+					</div>
 
-						
-						<div class="row">
-							<div class="form-group col-sm-5 pt-3">
-								<label for="inputNorma">Norma</label>
-								<input type="text" class="form-control" id="idNorma" minlength="1" placeholder="Seleccione una Norma" name="idNorma" value="" hidden>
-								<input type="text" class="form-control" id="inputNorma" minlength="1" placeholder="Seleccione una Norma" name="inputNorma" readonly>
-							</div>
-							<div class="col-sm-1 mt-5">
-								<div class="row">
-									<div class="col-sm-3">
-										<button href="SeleccionarNorma" class="btn btn-link" type="button" id="btnBuscarNorma"  data-toggle="modal" data-target="#modalBuscarNorma" style="padding-top: 6px;">
-											<i stop-color data-feather="plus" class="mb-2" data-toggle="tooltip" data-placement="top" title="Seleccionar una Norma"></i>
-										</button>
-									</div>
-								</div>
-							</div>
+					<div class="col-10 col-sm-4">
+						<label for="inputNorma">Norma</label>
+						<input type="text" class="form-control" id="idNorma" minlength="1" placeholder="Seleccione una Norma" name="idNorma" value="" hidden>
+						<input type="text" class="form-control" id="inputNorma" minlength="1" placeholder="Seleccione una Norma" name="inputNorma" readonly>
+					</div>
+					<div class="col-2 col-sm-2 pt-1">
+						<div class="align-middle pt-2">
+							<button href="SeleccionarNorma" class="btn btn-link align-middle text-center pt-4" type="button" id="btnBuscarNorma"  data-toggle="modal" data-target="#modalBuscarNorma">
+								<i stop-color data-feather="plus" data-toggle="tooltip" data-placement="top" title="Seleccionar una Norma"></i>
+							</button>
 						</div>
 					</div>
+
 				</div>
 
-				<div id="acordeon" class="collapse show col-sm-12">
-				</div>
+				<div class="accordion mt-3" id="acordionCategorias"></div>
 
-				<div class="accordion" id="acordionCategorias"></div>
-
-				<div id="botones" class="row m-3">
-					<div class="col-sm-6 text-left">
+				<div id="botones" class="row mt-5">
+					<div class="col-6 text-left">
 						<a class="btn btn-link"  href="<?php echo base_url();?>Inspeccion/listarInspecciones">Volver</a>
 					</div>
-					<div  class="col-sm-6 text-right">
+					<div  class="col-6 text-right">
 					 	<button type="submit" class="btn btn-primary submit"><?php echo $titulo;?></button>
 					</div>
 				</div>
@@ -586,6 +578,9 @@
 				</button>
 		</div>
 		<div class="modal-body">
+			<div id="dAgregarEmpresa" class="col-sm-12 text-right">
+				<button type="button" class="btn btn-link" data-toggle="modal" data-target="#modalAgregarEmpresa"><i stop-color data-feather="plus" class="pb-1"></i>Agregar Empresa</button>
+			</div>
 			<div class="table-responsive" id="listaSeleccionEmpresa">
 				<table id="tListaEmpresas" class="table table-sm table-hover table-bordered">
 					<thead class="thead-dark">
@@ -608,6 +603,84 @@
 			<button id="btnCerrarE" type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
 			<button id="btnSeleccionarE" type="button" class="btn btn-success" data-dismiss="modal">Seleccionar</button>
 		</div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="modalAgregarEmpresa" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+		<div class="modal-header">
+			<h5 class="modal-title" id="tituloMP">
+				<i class="plusTitulo mb-2" data-feather="plus" ></i>
+				Agregar Empresa
+			</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+		</div>
+		<div class="modal-body">
+			<form id="agregarEmpresa" action="agregarEmpresa" method="POST">
+				<div class="row">
+					<input type="text" class="form-control form-control-sm" id="inputIdEmpresa" name="inputIdEmpresa" value="" hidden>
+				</div>
+				<div class="row">
+					<div class="form-group col-sm-6">
+						<label for="inputRut">R.U.T.</label>
+						<input type="text" class="form-control  form-control-sm" id="inputRut" minlength="1" placeholder="Ingrese un R.U.T. de la Empresa" name="inputRut" value="">
+					</div>
+					<div class="form-group col-sm-6">
+						<label for="inputRazonSocial">Raz&oacute;n Social</label>
+						<input type="text" class="form-control  form-control-sm" id="inputRazonSocial" minlength="1" placeholder="Ingrese una Raz&oacute;n Social de la Empresa" name="inputRazonSocial" value="">
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-sm-6">
+						<label for="inputNumRegistro">N° Registro</label>
+						<input type="text" class="form-control  form-control-sm" id="inputNumRegistro" minlength="1" placeholder="Ingrese un N° de Registro de la Empresa" name="inputNumRegistro" value="">
+					</div>
+					<div class="form-group col-sm-6">
+						<label for="inputDireccion">Direcci&oacute;n</label>
+						<input type="text" class="form-control  form-control-sm" id="inputDireccion" minlength="1" placeholder="Ingrese una Dirección de la Empresa" name="inputDireccion" value="">
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-sm-6">
+						<label for="inputEmail">Email</label>
+						<input type="text" class="form-control  form-control-sm" id="inputEmail" minlength="1" placeholder="Ingrese una Email de la Empresa" name="inputEmail" value="">
+					</div>
+					<div class="form-group col-sm-6">
+						<label for="inputObservaciones">Observaciones</label>
+						<textarea class="form-control form-control-sm block" placeholder="Ingrese una Obseravaci&oacute;n" id="inputObservaciones" name="inputObservaciones" rows="2"></textarea>
+					</div>
+				</div>
+			</form>			
+      	</div>
+		<div class="modal-footer">
+			<button id="btnCerrarAE" type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+			<button id="btnAgregarE" type="button" class="btn btn-success">Agregar Empresa</button>
+		</div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Mensaje -->
+<div class="modal fade" id="modalMensajeEmpresa" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tituloME" name="tituloME" data-idprograma="" data-nombreprograma="" ></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+		<p id="parrafoME"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+      </div>
     </div>
   </div>
 </div>

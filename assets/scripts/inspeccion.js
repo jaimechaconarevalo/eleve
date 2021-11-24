@@ -395,6 +395,7 @@
         }
 
     });
+
      $('#modalFoto').on('show.bs.modal', function () {
         var isMobile = false; //initiate as false
         // device detection
@@ -411,6 +412,150 @@
         }else{
             $('#doc-front').removeAttr('hidden');
             $('#span_foto').removeAttr('hidden');
+        }
+    });
+
+    $('#modalAgregarEmpresa').on('show.bs.modal', function (event) {
+       $('#modalBuscarEmpresa').modal('hide');
+    });
+
+    /*$('#modalAgregarEmpresa').on('hide.bs.modal', function (event) {
+       $('#modalBuscarEmpresa').modal('show');
+    });*/
+
+    $('#btnAgregarE').on('click', function(e) {
+        $("#modalAgregarEmpresa #agregarEmpresa").submit();
+    });
+
+    $("#modalAgregarEmpresa #agregarEmpresa").on("submit", function(e){
+        var loader = document.getElementById("loader");
+        loader.removeAttribute('hidden');
+        var validacion = $("#modalAgregarEmpresa #agregarEmpresa").validate();
+        if ($("#modalAgregarEmpresa #agregarEmpresa").valid()) {
+            if(validacion.numberOfInvalids() == 0)
+            {
+                e.preventDefault();
+                var form = document.getElementById("agregarEmpresa");
+                var formData = new FormData(form);
+                var baseurl = (window.origin + '/Empresa/agregarEmpresa');
+                jQuery.ajax({
+                type: form.getAttribute('method'),
+                url: baseurl,
+                dataType: 'json',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function(data) {
+                    if (data) {
+                         if(data['resultado'] == '1')
+                         {
+                            var id = data['id_empresa'];
+                            var rut = data['rut_empresa'];
+                            var nombre = data['nombre_empresa'];
+
+                            $('#inputEmpresaMantenedora').val(rut.concat(' - ', nombre));
+                            $('#idEmpresaMantenedora').val(id);
+                            $('#modalBuscarEmpresa').modal('hide');
+
+                            $('#tituloME').empty();
+                            $("#parrafoME").empty();
+                            $("#tituloME").append('<i class="plusTitulo mb-2" data-feather="check"></i> Exito!!!');
+                            $("#parrafoME").append(data.mensaje);
+                            $('#modalAgregarEmpresa').modal('hide');
+                            $('#modalMensajeEmpresa').modal({
+                              show: true
+                            });
+                            feather.replace();
+                            $('[data-toggle="tooltip"]').tooltip();
+                            document.getElementById("agregarEmpresa").reset();
+                        }else{
+                            $('#tituloME').empty();
+                            $("#parrafoME").empty();
+                            $("#tituloME").append('<i class="plusTituloError mb-2" data-feather="x-circle"></i> Error!!!');
+                            $("#parrafoME").append('Ha ocurrido un error al intentar agregar la Empresa.');
+                            $("#parrafoME").append('</br></br>Detalle: </br>', data.mensaje);
+                            $('#modalAgregarEmpresa').modal('hide');
+                            $('#modalMensajeEmpresa').modal({
+                              show: true
+                            });
+                            feather.replace();
+                        }
+                        feather.replace();
+                        $('[data-toggle="tooltip"]').tooltip();
+                    }
+                }
+                });
+            }else{
+                var loader = document.getElementById("loader");
+                loader.setAttribute('hidden', '');
+            }
+        }else{
+            var loader = document.getElementById("loader");
+            loader.setAttribute('hidden', '');
+        }
+        loader.setAttribute('hidden', '');
+        feather.replace();
+    });
+
+    $.validator.addMethod("customemail", 
+        function(value, element) {
+            return /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value);
+        },
+    );
+
+    $("#modalAgregarEmpresa #agregarEmpresa").validate({
+        errorClass:'invalid-feedback',
+        errorElement:'span',
+        highlight: function(element, errorClass, validClass) {
+          $(element).addClass("is-invalid").removeClass("invalid-feedback");
+        },
+        unhighlight: function(element, errorClass, validClass) {
+          $(element).removeClass("is-invalid");
+        },
+        rules: {
+          inputRut: {
+            required: true,
+            minlength: 1,
+            maxlength: 12
+          },
+          inputRazonSocial: {
+            required: true,
+            minlength: 1,
+            maxlength: 300
+          },
+          inputEmail: {
+            required: true,
+            customemail: true,
+            minlength: 1,
+            maxlength: 254
+          },
+          inputObservaciones: {
+            required: false,
+            maxlength: 300
+          }
+        },
+        messages:{
+          inputRut: {
+            required: "Ingrese un R.U.T.",
+            minlength: "Ingrese un R.U.T.",
+            maxlength: "El R.U.T. no puede superar los {0} caracteres."
+          },
+          inputRazonSocial: {
+            required: "Ingrese una Razón Social.",
+            minlength: "Ingrese una Razón Social.",
+            maxlength: "La Razón Social no puede superar los {0} caracteres."
+          },
+          inputEmail: {
+            required: "Ingrese un Email.",
+            minlength: "Ingrese un Email",
+            maxlength: "El Email no puede superar los {0} caracteres.",
+            //email: "Ingrese un Email válido.",
+            customemail: "el Emial no es valido"
+          },
+          inputObservaciones: {
+            maxlength: "La Observacion tiene que ser menor o igual a {0} caracteres."
+          }
         }
     });
 
@@ -569,10 +714,10 @@
                                         
                                     div = div.concat('<div id="categoria',id_categoria,'" class="card card-body">');
                                     div = div.concat('<div class="table-responsive">');
-                                    div = div.concat('<table id="tabla_',id_categoria,'" class="table">');
+                                    div = div.concat('<table id="tabla_',id_categoria,'" class="table table-sm">');
                                     div = div.concat('<thead>');
                                     div = div.concat('<tr class="border-1">');
-                                    div = div.concat('<td colspan="3" class="ml-3 text-left">');
+                                    div = div.concat('<td colspan="2" class="ml-3 text-left">');
                                     div = div.concat('<h5 class="mb-0">');
                                     div = div.concat('<button id="button_cat_',id_categoria,'" class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#tbodyCategoria',id_categoria,'" aria-expanded="true" aria-controls="tbodyCategoria',id_categoria,'">');
                                     div = div.concat(cod_categoria, ' - ', categoria);
@@ -592,26 +737,26 @@
                                     div = div.concat('<tbody id="tbodyCategoria',id_categoria,'" class="collapse show" aria-labelledby="categoria',id_categoria,'" data-parent="#categoria',id_categoria,'" >');
 
                                     div = div.concat('<tr>');
-                                    div = div.concat('<th scope="col" class="text-center align-middle">#</th>');
-                                    div = div.concat('<th scope="col" class="text-center align-middle">Codigo</th>');
-                                    div = div.concat('<th scope="col" class="text-center align-middle">Pregunta</th>');
-                                    div = div.concat('<th scope="col" class="text-center align-middle">SI</th>');
-                                    div = div.concat('<th scope="col" class="text-center align-middle">NO</th>');
-                                    div = div.concat('<th scope="col" class="text-center align-middle">N/A</th>');
+                                    div = div.concat('<!--<th scope="col" class="text-left align-middle">#</th>-->');
+                                    div = div.concat('<th scope="col" class="text-left align-middle">Codigo</th>');
+                                    div = div.concat('<th scope="col" class="text-left align-middle celdaAsignado">Pregunta</th>');
+                                    div = div.concat('<th scope="col" class="text-left align-middle">SI</th>');
+                                    div = div.concat('<th scope="col" class="text-left align-middle">NO</th>');
+                                    div = div.concat('<th scope="col" class="text-left align-middle">N/A</th>');
                                     div = div.concat('</tr>');
 
 
                                     div = div.concat('<tr class="pregunta',id_categoria,'_',id_pregunta,' preguntas">');
-                                    div = div.concat('<th class="text-center align-middle"><p>',id_categoria,'_',id_pregunta,'</p></th>');
-                                    div = div.concat('<th class="text-center align-middle"><p>',cod_pregunta,'</p></th>');
-                                    div = div.concat('<td class="text-center align-middle"><p>',pregunta,'</p></td>');
-                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" id="rbPregunta',contador,'_SI" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbSI" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="si-',id_categoria,'_',id_pregunta,'"></td>');
-                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" id="rbPregunta',contador,'_NO" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNO" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="no-',id_categoria,'_',id_pregunta,'"></td>');
-                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" id="rbPregunta',contador,'_NA" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNA" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="na-',id_categoria,'_',id_pregunta,'"></td>');
+                                    div = div.concat('<!--<th class="text-left align-middle"><p>',id_categoria,'_',id_pregunta,'</p></th>-->');
+                                    div = div.concat('<th class="text-left align-middle"><p class="texto-pequenio text-left align-middle registro">',cod_pregunta,'</p></th>');
+                                    div = div.concat('<td class="text-left align-middle celdaAsignado"><p class="texto-pequenio text-left align-middle registro">',pregunta,'</p></td>');
+                                    div = div.concat('<td class="text-left align-middle radio"><input type="radio" id="rbPregunta',contador,'_SI" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbSI" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="si-',id_categoria,'_',id_pregunta,'"></td>');
+                                    div = div.concat('<td class="text-left align-middle radio"><input type="radio" id="rbPregunta',contador,'_NO" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNO" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="no-',id_categoria,'_',id_pregunta,'"></td>');
+                                    div = div.concat('<td class="text-left align-middle radio"><input type="radio" id="rbPregunta',contador,'_NA" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNA" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="na-',id_categoria,'_',id_pregunta,'"></td>');
                                     div = div.concat('</tr>');
                                     
                                     div = div.concat('<tr>');
-                                    div = div.concat('<td id="cat_pre_',id_categoria,'_',id_pregunta,'" class="collapse" colspan="6">');
+                                    div = div.concat('<td id="cat_pre_',id_categoria,'_',id_pregunta,'" class="collapse" colspan="5">');
                                     div = div.concat('<div class="card card-body">');
                                     div = div.concat('<div class="row">');
                                     div = div.concat('<div class="col-sm-6">');
@@ -642,16 +787,16 @@
                                 }else{
 
                                     div = div.concat('<tr class="pregunta',id_categoria,'_',id_pregunta,' preguntas">');
-                                    div = div.concat('<th class="text-center align-middle"><p>',id_categoria,'_',id_pregunta,'</p></th>');
-                                    div = div.concat('<th class="text-center align-middle"><p>',cod_pregunta,'</p></th>');
-                                    div = div.concat('<td class="text-center align-middle"><p>',pregunta,'</p></td>');
-                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" id="rbPregunta',contador,'_SI" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbSI" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="si-',id_categoria,'_',id_pregunta,'"></td>');
-                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" id="rbPregunta',contador,'_NO" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNO" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="no-',id_categoria,'_',id_pregunta,'"></td>');
-                                    div = div.concat('<td class="text-center align-middle radio"><input type="radio" id="rbPregunta',contador,'_NA" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNA" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="na-',id_categoria,'_',id_pregunta,'"></td>');
+                                    div = div.concat('<!--<th class="text-left align-middle"><p class="texto-pequenio text-left align-middle registro">',id_categoria,'_',id_pregunta,'</p></th>-->');
+                                    div = div.concat('<th class="text-left align-middle"><p class="texto-pequenio text-left align-middle registro">',cod_pregunta,'</p></th>');
+                                    div = div.concat('<td class="text-left align-middle celdaAsignado"><p class="texto-pequenio text-left align-middle registro">',pregunta,'</p></td>');
+                                    div = div.concat('<td class="text-left align-middle radio"><input type="radio" id="rbPregunta',contador,'_SI" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbSI" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="si-',id_categoria,'_',id_pregunta,'"></td>');
+                                    div = div.concat('<td class="text-left align-middle radio"><input type="radio" id="rbPregunta',contador,'_NO" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNO" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="no-',id_categoria,'_',id_pregunta,'"></td>');
+                                    div = div.concat('<td class="text-left align-middle radio"><input type="radio" id="rbPregunta',contador,'_NA" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNA" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="na-',id_categoria,'_',id_pregunta,'"></td>');
                                     div = div.concat('</tr>');
                                     
                                     div = div.concat('<tr>');
-                                    div = div.concat('<td id="cat_pre_',id_categoria,'_',id_pregunta,'" class="collapse" colspan="6">');
+                                    div = div.concat('<td id="cat_pre_',id_categoria,'_',id_pregunta,'" class="collapse" colspan="5">');
                                     div = div.concat('<div class="card card-body">');
                                     div = div.concat('<div class="row">');
                                     div = div.concat('<div class="col-sm-6">');
