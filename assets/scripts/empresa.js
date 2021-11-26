@@ -85,7 +85,11 @@
 
     $.validator.addMethod("customemail", 
         function(value, element) {
-            return /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value);
+            if (element.value.trim().length> 0) {
+                return /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value);    
+            }else{
+                return true;
+            }
         },
     );
 
