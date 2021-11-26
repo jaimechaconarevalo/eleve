@@ -342,6 +342,9 @@
 									<option selected>Seleccione un Tipo Tracción</option>
 									<option value="1">Cable</option>
 									<option value="2">Cinta</option>
+									<option value="3">Directa</option>
+									<option value="4">Indirecta</option>
+									<option value="5">Cadena</option>
 								</select>
 							</div>
 						</div>
