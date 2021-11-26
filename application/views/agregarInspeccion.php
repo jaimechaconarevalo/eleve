@@ -304,8 +304,11 @@
 								<label for="inputSuspension">Suspension</label>
 								<select id="selectSuspension" name="selectSuspension" class="custom-select custom-select-sm">
 									<option selected>Seleccione una Suspension</option>
-									<option value="3">Suspension Hidraulica</option>
-									<option value="4">Suspension Mecanica</option>
+									<option value="3">1:1</option>
+									<option value="4">2:1</option>
+									<option value="5">3:1</option>
+									<option value="6">4:1</option>
+									<option value="7">Hidraulico</option>
 								</select>
 							</div>
 							<div class="form-group col-sm-6">
