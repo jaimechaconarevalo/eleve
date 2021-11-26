@@ -47,7 +47,7 @@ class Pregunta_model extends CI_Model
 
 	public function buscarPregunta($filtroPregunta, $id_usuario)
 	{
-		$this->db->select('preguntas.id, preguntas.codigo, preguntas.nombre');
+		$this->db->select('preguntas.id, preguntas.codigo, preguntas.nombre, preguntas.filtro, preguntas.observaciones');
 		$this->db->from('preguntas');
 		//$this->db->from('usuarios');
 		//$this->db->join('usuarios_perfiles','usuarios.id_usuario = usuarios_perfiles.id_usuario');
@@ -77,7 +77,7 @@ class Pregunta_model extends CI_Model
 
 	public function listarPreguntas($id_usuario)
 	{
-		$this->db->select('h.id, h.codigo, h.nombre, h.estado, h.created_at, h.updated_at');
+		$this->db->select('h.id, h.codigo, h.nombre, h.filtro, h.observaciones, h.estado, h.created_at, h.updated_at');
 		$this->db->from('preguntas h');
 		$this->db->where('h.estado', 1);
 		$pregunta = $this->db->get();
@@ -181,7 +181,7 @@ class Pregunta_model extends CI_Model
 	    return $resultado;
 	}
 
-	public function agregarPregunta($idPregunta, $codigo, $nombre, $observacion, $id_usuario){
+	public function agregarPregunta($idPregunta, $codigo, $nombre, $filtro, $observacion, $id_usuario){
 		try{
 			$this->db->db_debug = FALSE; 
 			$respuesta = array('resultado' => null, 
@@ -192,6 +192,7 @@ class Pregunta_model extends CI_Model
 		        //'id_pregunta' => $idPregunta,
 				'codigo' => $codigo,
 				'nombre' => $nombre,
+				'filtro' => $filtro,
 				'observaciones' => $observacion,
 				'id_usuario' => $id_usuario
 			);
@@ -488,4 +489,126 @@ class Pregunta_model extends CI_Model
 
 		return $respuesta;
 	}
+
+	public function agregarRespuestaPregunta($id, $orden, $nombre, $observacion, $idPregunta, $id_usuario){
+		try{
+			$this->db->db_debug = FALSE; 
+			$respuesta = array('resultado' => null, 
+				'mensaje' => null,
+				'id_respuesta_pregunta' => null);
+
+			if (isset($id)) {
+				$id_respuesta_pregunta = null;
+				$this->db->select('r.id, r.orden, r.nombre, r.observaciones, r.id_usuario, r.id_pregunta, r.id_estado, r.created_at, r.updated_at');
+				$this->db->from('respuestas r');
+				$this->db->where('r.id_pregunta', $idPregunta);
+				$this->db->where('r.id', $id);
+				$this->db->where('r.id_estado', 1);
+				$empresa_cc = $this->db->get();
+				$empresa_cc = $empresa_cc->result_array();
+
+				if (sizeof($empresa_cc) > 0)
+					$id_respuesta_pregunta = $empresa_cc[0]["id"];
+			}
+
+			$data = array(
+				'orden' => $orden,
+				'nombre' => $nombre,
+				'observaciones' => $observacion,
+				'id_pregunta' => $idPregunta,
+				'id_usuario' => $id_usuario
+			);
+
+			if ($id_respuesta_pregunta && !is_null($id_respuesta_pregunta) ) {
+				$this->db->where('id', $id_respuesta_pregunta);
+				$this->db->update('respuestas', $data);
+
+				if ($this->db->affected_rows() >= 1) {
+					$respuesta['id_respuesta_pregunta'] = $id_respuesta_pregunta;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = "Se ha actualizado correctamente el Edificio a la Empresa.";
+				}else{
+					$respuesta['id_respuesta_pregunta'] = -1;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = $this->db->error();
+				}
+			}else{
+				$this->db->insert('respuestas', $data);
+				if ($this->db->affected_rows() >= 1) {
+					$id_respuesta_pregunta = $this->db->insert_id();
+					$respuesta['id_respuesta_pregunta'] = $id_respuesta_pregunta;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = "Se ha insertado correctamente el Edificio a la Empresa.";
+				}else{
+					$respuesta['id_respuesta_pregunta'] = -1;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = $this->db->error();
+				}
+			}
+		}catch(Exception $e){
+			$respuesta['resultado'] = -1;
+		    $respuesta['mensaje'] = $e["code"].", Mensaje: ".$e["message"];
+		    $respuesta['id_respuesta_pregunta'] = -1;
+		}
+		return $respuesta;
+	}
+
+
+	public function listarRespuestasPreguntas($idPregunta, $idUsuario)
+	{	
+		try{   
+		    $this->db->select('r.id, r.orden, r.nombre, r.observaciones, r.id_usuario, r.id_pregunta, r.id_estado, r.created_at, r.updated_at');
+			$this->db->from('respuestas r');
+			$this->db->where('r.id_estado', 1);
+			$this->db->where('r.id_pregunta', $idPregunta);
+			$resultado = $this->db->get();
+			return $resultado->result_array();
+		}catch(Exception $e){
+			$respuesta['resultado'] = -1;
+		    $respuesta['mensaje'] = $e;
+		    $respuesta['id_norma'] = -1;
+		}
+	}
+
+	public function eliminarRespuestasPregunta($idPregunta, $id_usuario){
+		try{
+			$respuestas = $this->db->get_where('respuestas', array('id_pregunta' => $idPregunta))->result();
+			$respuesta = array('resultado' => null,
+						'mensaje' => null,
+						'id_pregunta' => null
+					  );
+
+			$data = array(
+				'id_estado' => -1,
+				'id_usuario' => $id_usuario,
+				'updated_at' => 'now()'
+			);
+
+			if (sizeof($respuestas) > 0) {
+			    $this->db->where('id_pregunta', $idPregunta);
+				$this->db->update('respuestas', $data);
+
+			    if ($this->db->affected_rows() >= 1) {
+					$respuesta['id_pregunta'] = $idPregunta;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = "Se ha eliminado correctamente las Respuestas a la Pregunta.";
+				}else{
+					$respuesta['id_pregunta'] = -1;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = $this->db->error();
+				}
+			}else{
+				$respuesta['id_pregunta'] = $idPregunta;
+				$respuesta['resultado'] = 1;
+				$respuesta['mensaje'] = "La Pregunta no posee Respuestas Asociadas.";
+			}
+		}catch(Exception $e){
+			$respuesta['resultado'] = -1;
+		    $respuesta['mensaje'] = $e;
+		    $respuesta['id_pregunta'] = -1;
+		}
+
+		return $respuesta;
+	}
+
 }

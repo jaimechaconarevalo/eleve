@@ -36,7 +36,9 @@ class Pregunta extends CI_Controller {
 				$idPregunta = null;
 				$codigo = null;
 				$nombre = null;
+				$filtro = null;
 				$observacion = null;
+				$respuestas_preguntas = null;
 
 				if(!is_null($this->input->POST('inputCodigo')) && trim($this->input->POST('inputCodigo')) != "")
 					$codigo = trim($this->input->POST('inputCodigo'));
@@ -44,8 +46,14 @@ class Pregunta extends CI_Controller {
 				if(!is_null($this->input->POST('inputNombre')) && trim($this->input->POST('inputNombre')) != "")
 					$nombre = trim($this->input->POST('inputNombre'));
 
+				if(!is_null($this->input->POST('inputFiltro')) && trim($this->input->POST('inputFiltro')) != "")
+					$filtro = trim($this->input->POST('inputFiltro'));
+
 				if(!is_null($this->input->POST('inputObservaciones')) && trim($this->input->POST('inputObservaciones')) != "")
 					$observacion = trim($this->input->POST('inputObservaciones'));
+
+				if(!is_null($this->input->POST('respuestas_preguntas')) && trim($this->input->POST('respuestas_preguntas')) != "")
+					$respuestas_preguntas = json_decode($this->input->POST('respuestas_preguntas'), true);
 
 				if(!is_null($this->input->POST('inputIdPregunta')) && is_numeric($this->input->POST('inputIdPregunta')))
 				{
@@ -55,7 +63,7 @@ class Pregunta extends CI_Controller {
 
 				$respuesta = 0;
 				$mensaje = '';
-				$resultado = $this->pregunta_model->agregarPregunta($idPregunta, $codigo, $nombre, $observacion, $usuario["id_usuario"]);
+				$resultado = $this->pregunta_model->agregarPregunta($idPregunta, $codigo, $nombre, $filtro, $observacion, $usuario["id_usuario"]);
 				if($resultado && $resultado["resultado"] > 0)
 				{
 					if($resultado['id_pregunta'])
@@ -63,12 +71,59 @@ class Pregunta extends CI_Controller {
 						if(is_null($idPregunta)){
 							$idPregunta = (int)$resultado['id_pregunta'];
 
+							$resultado_erp = $this->pregunta_model->eliminarRespuestasPregunta($idPregunta, $usuario["id_usuario"]);
+
+							$contador = 0;
+							if (isset($resultado_erp) && $resultado_erp["resultado"] > 0) {
+
+								if (sizeof($respuestas_preguntas) > 0) {
+									foreach ($respuestas_preguntas as $respuesta) {
+										$id = $respuesta[0];
+										$orden = $respuesta[1];
+										$nombre = $respuesta[2];
+										$observacion = $respuesta[3];
+
+										$resultado = $this->pregunta_model->agregarRespuestaPregunta($id, $orden, $nombre, $observacion, $idPregunta, $usuario["id_usuario"]);
+										if (isset($resultado) && $resultado["resultado"] == 1)
+											$contador++;
+									}
+								}
+							}
+							
+
 							$resultado = 1;
 							$mensaje = 'Se ha '.$accion.' la Pregunta exitosamente. </br></br>ID: '.$idPregunta.'</br></br>'.$resultado["mensaje"];
+
+							if ($contador > 0) {
+								$mensaje .= ' Se han agregado '.$contador.' Respuestas a la Pregunta.</br></br>';
+							}
 						}else{
 							if (isset($resultado) && $resultado["resultado"] > 0) {
+								$resultado_erp = $this->pregunta_model->eliminarRespuestasPregunta($idPregunta, $usuario["id_usuario"]);
+								$contador = 0;
+								if (isset($resultado_erp) && $resultado_erp["resultado"] > 0) {
+
+									if (sizeof($respuestas_preguntas) > 0) {
+										foreach ($respuestas_preguntas as $respuesta) {
+											$id = $respuesta[0];
+											$orden = $respuesta[1];
+											$nombre = $respuesta[2];
+											$observacion = $respuesta[3];
+
+											$resultado = $this->pregunta_model->agregarRespuestaPregunta($id, $orden, $nombre, $observacion, $idPregunta, $usuario["id_usuario"]);
+											if (isset($resultado) && $resultado["resultado"] == 1)
+												$contador++;
+										}
+									}
+								}
+								
+
 								$resultado = 1;
 								$mensaje = 'Se ha '.$accion.' la Pregunta exitosamente. </br></br>ID: '.$idPregunta.'</br></br>'.$resultado["mensaje"];
+
+								if ($contador > 0) {
+									$mensaje .= ' Se han agregado '.$contador.' Respuestas a la Pregunta.</br></br>';
+								}
 							}else{
 								$mensaje = 'Ha ocurrido un error al '.$accion.' la Pregunta, '.$resultado["mensaje"];
 							}
@@ -166,6 +221,7 @@ class Pregunta extends CI_Controller {
 						<th scope="col" class="texto-pequenio text-center align-middle registro"># ID</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Codigo</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Filtro</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Estado</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Cluster</th>
@@ -186,6 +242,7 @@ class Pregunta extends CI_Controller {
 						        <th scope="row" class="text-center align-middle registro"><p class="texto-pequenio">'.$pregunta['id'].'</th>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$pregunta['codigo'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$pregunta['nombre'].'</p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$pregunta['filtro'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.($pregunta["estado"] == "1" ? "Activo" : "Desactivado").'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$pregunta['created_at'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$pregunta['cluster'].'</p></td>
@@ -268,6 +325,44 @@ class Pregunta extends CI_Controller {
 			if($resultado > 0)
 				$respuesta = 1;
 			echo json_encode($respuesta);
+		}
+	}
+
+	public function json_listarRespuestasPregunta()
+	{
+		$usuario = $this->session->userdata();
+		if($usuario["id_usuario"]){
+
+			$idPregunta = null;
+			$respuestas_pregunta = array();
+			$data = array();
+
+			if(!is_null($this->input->post('idPregunta')) && $this->input->post('idPregunta') != "-1"  && $this->input->post('idPregunta') != "")
+				$idPregunta = $this->input->post('idPregunta');
+
+			if (isset($idPregunta)) {
+				$respuestas_preguntas = $this->pregunta_model->listarRespuestasPreguntas($idPregunta, $usuario['id_usuario']);
+				if (sizeof($respuestas_preguntas) > 0) {
+					foreach ($respuestas_preguntas as $respuesta_pregunta) {
+						$row_cp_n = array();
+						$row_cp_n[] = '<p class="texto-pequenio">'.$respuesta_pregunta['id'].'</p>';
+						$row_cp_n[] = '<p class="texto-pequenio">'.$respuesta_pregunta['orden'].'</p>';
+						$row_cp_n[] = '<p class="texto-pequenio">'.$respuesta_pregunta['nombre'].'</p>';
+						$row_cp_n[] = '<p class="texto-pequenio">'.$respuesta_pregunta['observaciones'].'</p>';
+						$row_cp_n[] = '<p class="texto-pequenio">'.$respuesta_pregunta['created_at'].'</p>';
+						$row_cp_n[] = '<a class="trash eliminarRespuesta" href="#" data-id="'.$respuesta_pregunta['orden'].'" ><i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="eliminar"></i></a>';
+						$respuestas_pregunta[] = $row_cp_n;
+					}
+				}
+			}
+			
+			$output = array(
+				'respuestas_pregunta' => $respuestas_pregunta
+			);
+			echo json_encode($output);
+		}else
+		{
+			redirect('Inicio');
 		}
 	}
 }

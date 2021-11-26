@@ -1,6 +1,12 @@
 .celdaAsignado{
+    /*word-break: break-all !important;*/
+    white-space: normal !important;
+    /*width : 150px !important;*/
+}
+
+.celdaAsignadoWidth{
     word-break: break-all !important;
-    white-space: nowrap !important;
+    white-space: normal !important;
     width : 150px !important;
 }
 

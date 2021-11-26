@@ -30,6 +30,7 @@
 						<th scope="col" class="texto-pequenio text-center align-middle registro"># ID</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Codigo</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Filtro</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Estado</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
@@ -45,10 +46,11 @@
 						        <th scope="row" class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $pregunta['id']; ?></th>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $pregunta['codigo']; ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $pregunta['nombre']; ?></p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $pregunta['filtro']; ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo ($pregunta["estado"] == "1" ? "Activo" : "Eliminado"); ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $pregunta['created_at']; ?></p></td>
 					        	<td class="text-center align-middle registro botonTabla">
-						        	<a id="edit_<?php echo $pregunta['id']; ?>" class="view_convenio" href="ModificarPregunta/?idPregunta=<?php echo $pregunta['id']; ?>">
+						        	<a id="edit_<?php echo $pregunta['id']; ?>" class="view_convenio" href="modificarPregunta/?idPregunta=<?php echo $pregunta['id']; ?>">
 						        		<i data-feather="edit-3" data-toggle="tooltip" data-placement="top" title="Modificar"></i>       		
 					        		</a>
 					        	</td>

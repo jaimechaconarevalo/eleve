@@ -161,7 +161,7 @@
 							    </tr>
 							  </thead>
 
-							  <tbody id="tbodyHerramientas">
+							  <tbody id="tbodyCarpetas">
 					  			<?php
 						        if(isset($carpetas))
 						        {
@@ -172,8 +172,8 @@
 							  			<tr>
 									        <!--<th class="text-left align-middle"><p><?php echo $carpeta['codigo']; ?></p></th>-->
 									        <td class="text-left align-middle"><p><?php echo $carpeta['nombre']; ?></p></td>
-									        <td class="text-left align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_si" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta" value="si-<?php echo $carpeta['id']; ?>"></td>
-							      			<td class="text-left align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_no" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta" value="no-<?php echo $carpeta['id']; ?>"></td>
+									        <td class="text-left align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_si" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta pauta_carpeta" value="si-<?php echo $carpeta['id']; ?>"></td>
+							      			<td class="text-left align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_no" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta pauta_carpeta" value="no-<?php echo $carpeta['id']; ?>"></td>
 								    	</tr>
 								  		<?php 
 								  		endforeach;
@@ -531,13 +531,13 @@
 		</div>
 		<div class="modal-body">
 			<div class="table-responsive" id="listaSeleccionNorma">
-				<table id="tListaNormas" class="table table-sm table-hover table-bordered">
+				<table id="tListaNormas" class="table table-sm table-hover table-condensed table-bordered">
 					<thead class="thead-dark">
 						<tr>
-							<th scope="col" class="texto-pequenio text-center align-middle registro"># ID</th>
-						    <th scope="col" class="texto-pequenio text-center align-middle registro">Nombre</th>
+							<th scope="col" class="texto-pequenio text-center align-middle registro" style="width: 20% !important"># ID</th>
+						    <th scope="col" class="texto-pequenio text-center align-middle registro" style="width: 30% !important">Nombre</th>
 						    <th scope="col" class="texto-pequenio text-center align-middle registro">Observaci&oacute;n</th>
-						    <th scope="col" class="texto-pequenio text-center align-middle registro"></th>
+						    <!--<th scope="col" class="texto-pequenio text-center align-middle registro"></th>-->
 						</tr>
 					</thead>
 					<tbody id="tbodyNorma">
@@ -548,10 +548,10 @@
 					  			<tr>
 							        <th scope="row" class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $norma['id']; ?></th>
 							        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $norma['nombre']; ?></p></td>
-							        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $norma['observaciones']; ?></p></td>
-							        <td class="text-center align-middle registro botonTabla paginate_button">
+							        <td class="text-center align-middle registro celdaAsignado"><p class=""><?php echo $norma['observaciones']; ?></p></td>
+							        <!--<td class="text-center align-middle registro botonTabla paginate_button">
 						        		<button href="#" aria-controls="tListaNormas" data-id="<?php echo $norma['id']; ?>" data-nombre="<?php echo $norma['nombre']; ?>" tabindex="0" class="btn btn-outline-dark seleccionNorma">Seleccionar</button>
-						        	</td>
+						        	</td>-->
 						    	</tr>
 					  		<?php endforeach;
 				  		}?>
@@ -560,7 +560,8 @@
 			</div>
       	</div>
 		<div class="modal-footer">
-			<button id="btnCerrarMP" type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+			<button id="btnCerrarBN" type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+			<button id="btnSeleccionarBN" type="button" class="btn btn-success" data-dismiss="modal">Seleccionar</button>
 		</div>
     </div>
   </div>

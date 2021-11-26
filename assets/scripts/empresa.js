@@ -110,7 +110,7 @@
             maxlength: 300
           },
           inputEmail: {
-            required: true,
+            required: false,
             customemail: true,
             minlength: 1,
             maxlength: 254
