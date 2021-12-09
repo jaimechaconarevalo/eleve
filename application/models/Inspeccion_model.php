@@ -238,14 +238,12 @@ class Inspeccion_model extends CI_Model
 				'mensaje' => null,
 				'id_inspeccion' => null);
 			
-			var_dump($rutE);
 			if ($idE > 0 && !is_null($idE)) {
 				$edificios = $this->db->get_where('edificios', array('rol' => $idE))->result();
 				if (sizeof($edificios) > 0) {
 					$id_edificio = $edificios[0]->id;
 				}
 			}else{
-				var_dump("entro aca");
 				if (!is_null($nombreE) || !is_null($direccionE) || !is_null($rutE)) {
 					$dataE = array(
 						'nombre' => $nombreE,
@@ -263,8 +261,7 @@ class Inspeccion_model extends CI_Model
 							$respuesta['id_inspeccion'] = -1;
 							$respuesta['resultado'] = $this->db->affected_rows();
 							$respuesta['mensaje'] = $this->db->error();
-						}	
-						var_dump($respuesta);
+						}
 					}
 					catch(Exception $e){
 						$respuesta['id_inspeccion'] = -1;
