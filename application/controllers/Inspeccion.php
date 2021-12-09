@@ -14,6 +14,8 @@ class Inspeccion extends CI_Controller {
 		$this->load->model('categoria_model');
 		$this->load->model('herramienta_model');
 		$this->load->model('carpeta_model');
+		$this->load->model('suspension_model');
+		$this->load->model('traccion_model');
 	}
 
 	public function index()
@@ -87,6 +89,7 @@ class Inspeccion extends CI_Controller {
 				$recorrido = null;
 				$paradas = null;
 				$idTipoTraccion = null;
+				$cantidad = null;
 				$diamTraccion = null;
 				$enclavamientoE = null;
 				$enclavamientoM = null;
@@ -225,16 +228,19 @@ class Inspeccion extends CI_Controller {
 
 				$respuestas_normas = array();
 				if (isset($totalNormas) && is_numeric($totalNormas) && (int)$totalNormas > 0) {
-					for ($i=0; $i < $totalNormas; $i++) { 
-						$respuesta = null;
 
-						if(!is_null($this->input->POST('rbNorma'.strval($i+1))) && trim($this->input->POST('rbNorma'.strval($i+1))) != "")
-							$respuesta = trim($this->input->POST('rbNorma'.strval($i+1)));
-						if (isset($respuesta) && strlen($respuesta) > 0 && strpos($respuesta, '-') > 0) {
-							$respuesta_norma = explode("-", $respuesta);
-							$id_norma = $respuesta_norma[1];
-							$respuesta_norma_rb = ($respuesta_norma[0] == "si" ? true : false);
-							$respuestas_normas[] = array('id_norma' => $id_norma, 'respuesta' => $respuesta_norma_rb);
+					if(!is_null($this->input->POST('rbNorma1')) && trim($this->input->POST('rbNorma1')) != ""){
+						for ($i=0; $i < $totalNormas; $i++) { 
+							$respuesta = null;
+
+							if(!is_null($this->input->POST('rbNorma'.strval($i+1))) && trim($this->input->POST('rbNorma'.strval($i+1))) != "")
+								$respuesta = trim($this->input->POST('rbNorma'.strval($i+1)));
+							if (isset($respuesta) && strlen($respuesta) > 0 && strpos($respuesta, '-') > 0) {
+								$respuesta_norma = explode("-", $respuesta);
+								$id_norma = $respuesta_norma[1];
+								$respuesta_norma_rb = ($respuesta_norma[0] == "si" ? true : false);
+								$respuestas_normas[] = array('id_norma' => $id_norma, 'respuesta' => $respuesta_norma_rb);
+							}
 						}
 					}
 				}
@@ -264,6 +270,7 @@ class Inspeccion extends CI_Controller {
 					for ($f=0; $f < (int)$cant_respuestas; $f++) {
 						$respuesta_cat_pre_check = null;
 						$observacion_pregunta = null;
+						$id_respuesta = null;
 
 						if(!is_null($this->input->POST('rbPregunta'.strval($f+1))) && trim($this->input->POST('rbPregunta'.strval($f+1))) != "" && strlen($this->input->POST('rbPregunta'.strval($f+1))) > 0)
 							$respuesta_cat_pre_check = trim($this->input->POST('rbPregunta'.strval($f+1)));
@@ -277,6 +284,10 @@ class Inspeccion extends CI_Controller {
 						if(!is_null($this->input->POST('inputObservaciones'.strval($f+1))) && trim($this->input->POST('inputObservaciones'.strval($f+1))) != "" && strlen($this->input->POST('inputObservaciones'.strval($f+1))) > 0)
 							$observacion_pregunta = trim($this->input->POST('inputObservaciones'.strval($f+1)));
 
+						if(!is_null($this->input->POST('sRespuesta'.strval($f+1))) && trim($this->input->POST('sRespuesta'.strval($f+1))) != "" && is_numeric($this->input->POST('sRespuesta'.strval($f+1))) && (int)$this->input->POST('sRespuesta'.strval($f+1)) > 0)
+							$id_respuesta = trim($this->input->POST('sRespuesta'.strval($f+1)));
+						
+
 						#$respuesta_pregunta = array();
 						$observacion = null;
 						if (isset($observacion_pregunta) && strlen($observacion_pregunta) > 0)
@@ -288,7 +299,8 @@ class Inspeccion extends CI_Controller {
 							$id_categoria = $id_cat_pre[0];
 							$id_pregunta = $id_cat_pre[1];
 							$respuesta_pregunta_rb = ($respuesta_cat_pre[0] == "si" ? 1 : ($respuesta_cat_pre[0] == "no" ? 2 : 3));
-							$respuestas_checklists[] = array('id_categoria' => $id_categoria, 'id_pregunta' => $id_pregunta, 'respuesta' => $respuesta_pregunta_rb, 'observacion' => $observacion, 'orden' => strval($f+1));
+							$respuestas_checklists[] = array('id_categoria' => $id_categoria, 'id_pregunta' => $id_pregunta, 'respuesta' => $respuesta_pregunta_rb, 'observacion' => $observacion, 'orden' => strval($f+1), 'id_respuesta' => $id_respuesta
+							);
 
 						}
 						/*if (isset($respuesta_no) && strlen($respuesta_no) > 0) {
@@ -354,6 +366,9 @@ class Inspeccion extends CI_Controller {
 				if(!is_null($this->input->POST('selectTipoTraccion')) && trim($this->input->POST('selectTipoTraccion')) != "" && is_numeric($this->input->POST('selectTipoTraccion')) && (int)$this->input->POST('selectTipoTraccion') > 0)
 					$idTipoTraccion = trim($this->input->POST('selectTipoTraccion'));
 
+				if(!is_null($this->input->POST('inputCantidad')) && trim($this->input->POST('inputCantidad')) != "")
+					$cantidad = trim($this->input->POST('inputCantidad'));
+
 				if(!is_null($this->input->POST('inputDiamTraccion')) && trim($this->input->POST('inputDiamTraccion')) != "")
 					$diamTraccion = trim($this->input->POST('inputDiamTraccion'));
 
@@ -375,7 +390,8 @@ class Inspeccion extends CI_Controller {
 					$accion = 'modificado';
 				}
 				
-				//var_dump($this->input->POST());
+				#var_dump($this->input->POST());
+				#var_dump($_FILES);
 
 				
 				/*var_dump($idInspeccion);
@@ -413,7 +429,7 @@ class Inspeccion extends CI_Controller {
 				$respuesta = 0;
 				$mensaje = '';
 
-				$resultado = $this->inspeccion_model->agregarInspeccion($idInspeccion, $tecnico, $nombreE, $direccionE, $rutE, $idE, $nombreA, $rutA, $emailA, $idEmpresaM, $nombreRM, $fechaUM, $marca, $idUso, $capacidad, $capacidadKG, $idSuspension, $salaMaquina, $velocidad, $recorrido, $paradas, $idTipoTraccion, $diamTraccion, $enclavamientoE, $enclavamientoM, $diamCableL, $idNorma, $usuario["id_usuario"]);
+				$resultado = $this->inspeccion_model->agregarInspeccion($idInspeccion, $tecnico, $nombreE, $direccionE, $rutE, $idE, $nombreA, $rutA, $emailA, $idEmpresaM, $nombreRM, $fechaUM, $marca, $idUso, $capacidad, $capacidadKG, $idSuspension, $salaMaquina, $velocidad, $recorrido, $paradas, $idTipoTraccion, $cantidad, $diamTraccion, $enclavamientoE, $enclavamientoM, $diamCableL, $idNorma, $usuario["id_usuario"]);
 
 				if($resultado && $resultado["resultado"] > 0)
 				{
@@ -430,24 +446,35 @@ class Inspeccion extends CI_Controller {
 							}
 
 							$orden_herramienta = 0;
-							foreach ($respuestas_herramientas as $herramienta) {
-								$orden_herramienta++;
-								$id_herramienta = $herramienta["id_herramienta"];
-								$respuesta = $herramienta["respuesta"];
-								$resultado_herramienta = $this->inspeccion_model->agregarHerramientaInspeccion($id_herramienta, $respuesta, $orden_herramienta, $idInspeccion);
+							if (sizeof($respuestas_herramientas) > 0) {
+								foreach ($respuestas_herramientas as $herramienta) {
+									$orden_herramienta++;
+									$id_herramienta = $herramienta["id_herramienta"];
+									$respuesta = $herramienta["respuesta"];
+									$resultado_herramienta = $this->inspeccion_model->agregarHerramientaInspeccion($id_herramienta, $respuesta, $orden_herramienta, $idInspeccion);
+								}
 							}
-
+							
 							$orden_norma = 0;
-							foreach ($respuestas_normas as $norma) {
-								$orden_norma++;
-								$id_norma = $norma["id_norma"];
-								$respuesta = $norma["respuesta"];
-								$resultado_norma = $this->inspeccion_model->agregarNormaInspeccion($id_norma, $respuesta, $orden_norma, $idInspeccion);
+							if (sizeof($respuestas_normas) > 0) {
+								foreach ($respuestas_normas as $norma) {
+									$orden_norma++;
+									$id_norma = $norma["id_norma"];
+									$respuesta = $norma["respuesta"];
+									$resultado_norma = $this->inspeccion_model->agregarNormaInspeccion($id_norma, $respuesta, $orden_norma, $idInspeccion);
+								}	
 							}
 
 							$respuestas_checklists_data = array();
 							$orden_checklist = 1;
-							$resultado_respuesta_checklist = $this->inspeccion_model->agregarInspeccionChecklist($id_norma, $orden_checklist, $idInspeccion);
+
+							$resultado_respuesta_checklist = null;
+							if (isset($idNorma) && !is_null($idNorma) && is_numeric($idNorma)) {
+								$resultado_respuesta_checklist = $this->inspeccion_model->agregarInspeccionChecklist($idNorma, $orden_checklist, $idInspeccion);
+							}
+							#var_dump($idNorma);
+							#var_dump($resultado_respuesta_checklist);
+							
 
 							if (isset($resultado_respuesta_checklist) && isset($resultado_respuesta_checklist["resultado"]) && $resultado_respuesta_checklist["resultado"] > 0) {
 								$id_inspeccion_checklist = null;
@@ -462,6 +489,7 @@ class Inspeccion extends CI_Controller {
 										$respuesta_check = $res_check["respuesta"];
 										$observacion = $res_check["observacion"];
 										$orden = $res_check["orden"];
+										$id_respuesta = $res_check["id_respuesta"];
 
 										/*var_dump($id_categoria);
 										var_dump($id_pregunta);
@@ -469,7 +497,7 @@ class Inspeccion extends CI_Controller {
 										var_dump($observacion);
 										var_dump($orden);*/
 
-										$resultado_resp_check = $this->inspeccion_model->agregarRespuestaCheck($id_categoria, $id_pregunta, $respuesta_check, $observacion, $orden, $id_inspeccion_checklist);
+										$resultado_resp_check = $this->inspeccion_model->agregarRespuestaCheck($id_categoria, $id_pregunta, $respuesta_check, $observacion, $orden, $id_respuesta, $id_inspeccion_checklist, $usuario["id_usuario"]);
 										if ($resultado_resp_check && isset($resultado_resp_check["resultado"]) && is_numeric($resultado_resp_check["resultado"]) && (int)$resultado_resp_check["resultado"] > 0) {
 											$id_inspeccion_checklist_resp = (int)$resultado_resp_check["id_inspeccion_checklist_resp"];
 											$respuestas_checklists_data[] = array("id_inspeccion_checklist" => $id_inspeccion_checklist, "id_inspeccion_checklist_resp" => $id_inspeccion_checklist_resp, "id_categoria" => $id_categoria, "id_pregunta" => $id_pregunta, "respuesta_check" => $respuesta_check, "observacion" => $observacion);
@@ -480,91 +508,189 @@ class Inspeccion extends CI_Controller {
 
 							$cant_archivos = 0;
 							if (sizeof($_FILES) > 0) {
+
+								$id_inspeccion_checklist = null;
+								if (isset($resultado_respuesta_checklist) && isset($resultado_respuesta_checklist["resultado"]) && $resultado_respuesta_checklist["resultado"] > 0) {
+									if (isset($resultado_respuesta_checklist["id_inspeccion_checklist"]) && is_numeric($resultado_respuesta_checklist["id_inspeccion_checklist"]) && (int)$resultado_respuesta_checklist["id_inspeccion_checklist"] > 0)
+										$id_inspeccion_checklist = (int)$resultado_respuesta_checklist["id_inspeccion_checklist"];
+								}
+
+								#var_dump($resultado_respuesta_checklist);
+
 								foreach ($_FILES as $archivo) {
-
 									$datos_archivo = explode("_", $archivo["name"]);
-									$id_categoria = $datos_archivo[1];
-									$id_pregunta = $datos_archivo[2];
-									$orden_archivo = $datos_archivo[3];
+									#var_dump($datos_archivo);
+									//var_dump($id_inspeccion_checklist);
+									if (sizeof($datos_archivo) == 3) {
+										
+										$id_categoria = $datos_archivo[1];
+										$orden = $datos_archivo[2];
 
-									$array_filtrado = array_filter($respuestas_checklists_data, function($val) use($id_categoria, $id_pregunta){
-							              return ($val['id_categoria']==$id_categoria and $val['id_pregunta']==$id_pregunta);
-							         });
+										$observacion = null;
+										if(!is_null($this->input->POST('input_obs_'.strval($id_categoria)."_".strval($orden))) && trim($this->input->POST('input_obs_'.strval($id_categoria)."_".strval($orden))) != "")
+											$observacion = trim($this->input->POST('input_obs_'.strval($id_categoria)."_".strval($orden)));
+										#var_dump($observacion);
+										$maxDim = 800;
+										$file_name = $archivo["tmp_name"];
+										list($width, $height, $type, $attr) = getimagesize($file_name);
+										if ( $width > $maxDim || $height > $maxDim ) {
+										    $target_filename = $file_name;
+										    $ratio = $width/$height;
+										    if( $ratio > 1) {
+										        $new_width = $maxDim;
+										        $new_height = $maxDim/$ratio;
+										    } else {
+										        $new_width = $maxDim*$ratio;
+										        $new_height = $maxDim;
+										    }
+										    $src = imagecreatefromstring( file_get_contents( $file_name ) );
+										    $dst = imagecreatetruecolor( $new_width, $new_height );
+										    imagecopyresampled( $dst, $src, 0, 0, 0, 0, $new_width, $new_height, $width, $height );
+										    imagedestroy( $src );
+										    imagepng( $dst, $target_filename ); // adjust format as needed
+										    imagedestroy( $dst );
+										}
 
-									$maxDim = 800;
-									$file_name = $archivo["tmp_name"];
-									list($width, $height, $type, $attr) = getimagesize($file_name);
-									if ( $width > $maxDim || $height > $maxDim ) {
-									    $target_filename = $file_name;
-									    $ratio = $width/$height;
-									    if( $ratio > 1) {
-									        $new_width = $maxDim;
-									        $new_height = $maxDim/$ratio;
-									    } else {
-									        $new_width = $maxDim*$ratio;
-									        $new_height = $maxDim;
-									    }
-									    $src = imagecreatefromstring( file_get_contents( $file_name ) );
-									    $dst = imagecreatetruecolor( $new_width, $new_height );
-									    imagecopyresampled( $dst, $src, 0, 0, 0, 0, $new_width, $new_height, $width, $height );
-									    imagedestroy( $src );
-									    imagepng( $dst, $target_filename ); // adjust format as needed
-									    imagedestroy( $dst );
-									}
+										list($width, $height, $type, $attr) = getimagesize($file_name);
+										
+										$nombre_original = $archivo["name"];
+										$id_inspeccion_checklist_obs = null;
 
-									list($width, $height, $type, $attr) = getimagesize($file_name);
-									
-									$nombre_original = $archivo["name"];
-									$id_inspeccion_checklist_resp = null;
+										$resultado_obs_check = $this->inspeccion_model->agregarObservacionCheck($id_categoria, $observacion, $orden, $id_inspeccion_checklist, $usuario["id_usuario"]);
+										#var_dump($resultado_obs_check);
 
-									if ($array_filtrado && isset($array_filtrado) && sizeof($array_filtrado) == 1) {
-										foreach ($array_filtrado as $key => $value) {
-											$id_inspeccion_checklist_resp = $array_filtrado[$key]["id_inspeccion_checklist_resp"];	
+										if ($resultado_obs_check && isset($resultado_obs_check["resultado"]) && is_numeric($resultado_obs_check["resultado"]) && (int)$resultado_obs_check["resultado"] > 0)
+											$id_inspeccion_checklist_obs = (int)$resultado_obs_check["id_inspeccion_checklist_obs"];
+										
+
+										$nuevoNombre = $id_inspeccion_checklist.'_'.$id_inspeccion_checklist_obs.'_'.$id_categoria.'_'.$orden.'.png';
+										
+										$config['upload_path'] = './assets/files/image';
+										$config['allowed_types'] = '*';
+										$config['remove_spaces'] = TRUE;
+										$config['max_size'] = '0';
+										$config['file_name'] = $nuevoNombre;
+
+										$this->load->library('upload', $config);
+										$this->upload->initialize($config);
+
+										$archivo_cargado = $this->upload->do_upload($nombre_original);
+										#var_dump($archivo_cargado);
+
+										
+										
+										if ($archivo_cargado) {
+											$data_archivo = $this->upload->data();
+											$client_name = $data_archivo['client_name'];
+											$file_ext = $data_archivo['file_ext'];
+											$file_name = $data_archivo['file_name'];
+											$file_path = $data_archivo['file_path'];
+											$file_size = $data_archivo['file_size'];
+											$file_type = $data_archivo['file_type'];
+											$full_path = $data_archivo['full_path'];
+											$image_height = $data_archivo['image_height'];
+											$image_size_str = $data_archivo['image_size_str'];
+											$image_type = $data_archivo['image_type'];
+											$image_width = $data_archivo['image_width'];
+											$is_image = $data_archivo['is_image'];
+											$orig_name = $data_archivo['orig_name'];
+											$raw_name = $data_archivo['raw_name'];
+
+											$respuesta_archivo = $this->inspeccion_model->agregarArchivo($file_name, $file_type, $file_path, $full_path, $raw_name, $orig_name, $client_name, $file_ext, $file_size, $is_image, $image_width, $image_height, $image_type, $image_size_str, null, $id_categoria, null, $orden, $usuario["id_usuario"], $id_inspeccion_checklist_obs);
+											if ($respuesta_archivo && isset($respuesta_archivo["resultado"]) && is_numeric($respuesta_archivo["resultado"]) && (int)$respuesta_archivo["resultado"] > 0) {
+												$cant_archivos++;
+											}
+										}else
+										{
+											$error = $this->upload->display_errors();
+										}
+
+									}else{
+										$datos_archivo = explode("_", $archivo["name"]);
+										$id_categoria = $datos_archivo[1];
+										$id_pregunta = $datos_archivo[2];
+										$orden_archivo = $datos_archivo[3];
+
+										$array_filtrado = array_filter($respuestas_checklists_data, function($val) use($id_categoria, $id_pregunta){
+								              return ($val['id_categoria']==$id_categoria and $val['id_pregunta']==$id_pregunta);
+								         });
+
+										$maxDim = 800;
+										$file_name = $archivo["tmp_name"];
+										list($width, $height, $type, $attr) = getimagesize($file_name);
+										if ( $width > $maxDim || $height > $maxDim ) {
+										    $target_filename = $file_name;
+										    $ratio = $width/$height;
+										    if( $ratio > 1) {
+										        $new_width = $maxDim;
+										        $new_height = $maxDim/$ratio;
+										    } else {
+										        $new_width = $maxDim*$ratio;
+										        $new_height = $maxDim;
+										    }
+										    $src = imagecreatefromstring( file_get_contents( $file_name ) );
+										    $dst = imagecreatetruecolor( $new_width, $new_height );
+										    imagecopyresampled( $dst, $src, 0, 0, 0, 0, $new_width, $new_height, $width, $height );
+										    imagedestroy( $src );
+										    imagepng( $dst, $target_filename ); // adjust format as needed
+										    imagedestroy( $dst );
+										}
+
+										list($width, $height, $type, $attr) = getimagesize($file_name);
+										
+										$nombre_original = $archivo["name"];
+										$id_inspeccion_checklist_resp = null;
+
+										if ($array_filtrado && isset($array_filtrado) && sizeof($array_filtrado) == 1) {
+											foreach ($array_filtrado as $key => $value) {
+												$id_inspeccion_checklist_resp = $array_filtrado[$key]["id_inspeccion_checklist_resp"];	
+											}
+										}
+
+										$nuevoNombre = $id_inspeccion_checklist.'_'.$id_inspeccion_checklist_resp.'_'.$id_categoria.'_'.$id_pregunta.'_'.$orden_archivo.'.png';
+										
+										$config['upload_path'] = './assets/files/image';
+										$config['allowed_types'] = '*';
+										$config['remove_spaces'] = TRUE;
+										$config['max_size'] = '0';
+										$config['file_name'] = $nuevoNombre;
+
+										$this->load->library('upload', $config);
+										$this->upload->initialize($config);
+
+
+										$archivo_cargado = $this->upload->do_upload($nombre_original);
+										#var_dump($archivo_cargado);
+
+										
+										
+										if ($archivo_cargado) {
+											$data_archivo = $this->upload->data();
+											$client_name = $data_archivo['client_name'];
+											$file_ext = $data_archivo['file_ext'];
+											$file_name = $data_archivo['file_name'];
+											$file_path = $data_archivo['file_path'];
+											$file_size = $data_archivo['file_size'];
+											$file_type = $data_archivo['file_type'];
+											$full_path = $data_archivo['full_path'];
+											$image_height = $data_archivo['image_height'];
+											$image_size_str = $data_archivo['image_size_str'];
+											$image_type = $data_archivo['image_type'];
+											$image_width = $data_archivo['image_width'];
+											$is_image = $data_archivo['is_image'];
+											$orig_name = $data_archivo['orig_name'];
+											$raw_name = $data_archivo['raw_name'];
+
+											$respuesta_archivo = $this->inspeccion_model->agregarArchivo($file_name, $file_type, $file_path, $full_path, $raw_name, $orig_name, $client_name, $file_ext, $file_size, $is_image, $image_width, $image_height, $image_type, $image_size_str, $id_inspeccion_checklist_resp, $id_categoria, $id_pregunta, $orden_archivo, $usuario["id_usuario"]);
+											if ($respuesta_archivo && isset($respuesta_archivo["resultado"]) && is_numeric($respuesta_archivo["resultado"]) && (int)$respuesta_archivo["resultado"] > 0) {
+												$cant_archivos++;
+											}
+										}else
+										{
+											$error = $this->upload->display_errors();
 										}
 									}
-
-									$nuevoNombre = $id_inspeccion_checklist.'_'.$id_inspeccion_checklist_resp.'_'.$id_categoria.'_'.$id_pregunta.'_'.$orden_archivo.'.png';
 									
-									$config['upload_path'] = './assets/files/image';
-									$config['allowed_types'] = '*';
-									$config['remove_spaces'] = TRUE;
-									$config['max_size'] = '0';
-									$config['file_name'] = $nuevoNombre;
-
-									$this->load->library('upload', $config);
-									$this->upload->initialize($config);
-
-
-									$archivo_cargado = $this->upload->do_upload($nombre_original);
-									#var_dump($archivo_cargado);
-
-									
-									
-									if ($archivo_cargado) {
-										$data_archivo = $this->upload->data();
-										$client_name = $data_archivo['client_name'];
-										$file_ext = $data_archivo['file_ext'];
-										$file_name = $data_archivo['file_name'];
-										$file_path = $data_archivo['file_path'];
-										$file_size = $data_archivo['file_size'];
-										$file_type = $data_archivo['file_type'];
-										$full_path = $data_archivo['full_path'];
-										$image_height = $data_archivo['image_height'];
-										$image_size_str = $data_archivo['image_size_str'];
-										$image_type = $data_archivo['image_type'];
-										$image_width = $data_archivo['image_width'];
-										$is_image = $data_archivo['is_image'];
-										$orig_name = $data_archivo['orig_name'];
-										$raw_name = $data_archivo['raw_name'];
-
-										$respuesta_archivo = $this->inspeccion_model->agregarArchivo($file_name, $file_type, $file_path, $full_path, $raw_name, $orig_name, $client_name, $file_ext, $file_size, $is_image, $image_width, $image_height, $image_type, $image_size_str, $id_inspeccion_checklist_resp, $id_categoria, $id_pregunta, $orden_archivo, $usuario["id_usuario"]);
-										if ($respuesta_archivo && isset($respuesta_archivo["resultado"]) && is_numeric($respuesta_archivo["resultado"]) && (int)$respuesta_archivo["resultado"] > 0) {
-											$cant_archivos++;
-										}
-									}else
-									{
-										$error = $this->upload->display_errors();
-									}
 								}
 							}
 
@@ -608,7 +734,6 @@ class Inspeccion extends CI_Controller {
 								$mensaje = 'Ha ocurrido un error al '.$accion.' la Inspeccion, Codigo: '.$resultado["mensaje"]["code"].', Mensaje: '.$resultado["mensaje"]["message"];
 							}
 						}
-						
 					}
 				}
 
@@ -637,6 +762,12 @@ class Inspeccion extends CI_Controller {
 
 				$carpetas =  $this->carpeta_model->listarCarpetas($usuario["id_usuario"]);
 				$usuario['carpetas'] = $carpetas;
+
+				$suspensiones =  $this->suspension_model->listarSuspensiones($usuario["id_usuario"]);
+				$usuario['suspensiones'] = $suspensiones;
+
+				$tipos_traccion =  $this->traccion_model->listarTipoTracciones($usuario["id_usuario"]);
+				$usuario['tipos_traccion'] = $tipos_traccion;
 
 				/*$categorias_preguntas_norma = $this->norma_model->listarCategoriasPreguntasNorma(1, $usuario['id_usuario']);
 				$dataCategoria = array();
@@ -745,7 +876,7 @@ class Inspeccion extends CI_Controller {
 
 				$respuesta_norma_respuesta =  $this->inspeccion_model->obtenerNormasRespuesta($id_inspeccion ,$usuario["id_usuario"]);
 				$usuario['respuesta_norma_respuesta'] = $respuesta_norma_respuesta;
-				#var_dump($respuesta_norma_respuesta);
+				var_dump($inspeccion);
 
 				/*$categorias_preguntas_norma = $this->norma_model->listarCategoriasPreguntasNorma(1, $usuario['id_usuario']);
 				$dataCategoria = array();

@@ -302,11 +302,11 @@
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputMarca">Marca</label>
-								<input type="text" class="form-control  form-control-sm" id="inputMarca" minlength="1" placeholder="Ingrese Marca del Ascensor" name="inputMarca" value="<?php if(isset($inspeccion['marca_ascensor'])): echo $inspeccion['marca_ascensor']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputMarca" minlength="1" placeholder="Ingrese Marca del Ascensor" name="inputMarca" value="<?php if(isset($inspeccion['marca_ascensor'])): echo $inspeccion['marca_ascensor']; endif; ?>" readonly>
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="selectUso">Uso</label>
-								<select id="selectUso" name="selectUso" class="custom-select custom-select-sm">
+								<select id="selectUso" name="selectUso" class="custom-select custom-select-sm" readonly>
 									<option selected>Seleccione un Uso</option>
 									<option value="1" <?php if(isset($inspeccion['id_uso']) && ($inspeccion['id_uso']) == 1): echo 'selected'; endif; ?>>Vivienda</option>
 									<option value="2" <?php if(isset($inspeccion['id_uso']) && ($inspeccion['id_uso']) == 2): echo 'selected'; endif; ?>>Infraestructura</option>
@@ -316,18 +316,18 @@
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputCapacidad">Capacidad de Personas</label>
-								<input type="number" class="form-control  form-control-sm" id="inputCapacidad" minlength="1" placeholder="Ingrese capacidad del Ascensor" name="inputCapacidad" value="<?php if(isset($inspeccion['capacidad_personas'])): echo $inspeccion['capacidad_personas']; endif; ?>">
+								<input type="number" class="form-control  form-control-sm" id="inputCapacidad" minlength="1" placeholder="Ingrese capacidad del Ascensor" name="inputCapacidad" value="<?php if(isset($inspeccion['capacidad_personas'])): echo $inspeccion['capacidad_personas']; endif; ?>" readonly>
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="inputCapacidadKG">Capacidad en KG</label>
-								<input type="number" class="form-control  form-control-sm" id="inputCapacidadKG" minlength="1" placeholder="Ingrese capacidad en KG" name="inputCapacidadKG" value="<?php if(isset($inspeccion['capacidad_kg'])): echo $inspeccion['capacidad_kg']; endif; ?>">
+								<input type="number" class="form-control  form-control-sm" id="inputCapacidadKG" minlength="1" placeholder="Ingrese capacidad en KG" name="inputCapacidadKG" value="<?php if(isset($inspeccion['capacidad_kg'])): echo $inspeccion['capacidad_kg']; endif; ?>" readonly>
 							</div>
 						</div>
 
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputSuspension">Suspension</label>
-								<select id="selectSuspension" name="selectSuspension" class="custom-select custom-select-sm">
+								<select id="selectSuspension" name="selectSuspension" class="custom-select custom-select-sm" readonly>
 									<option selected>Seleccione una Suspension</option>
 									<option value="3" <?php if(isset($inspeccion['id_suspension']) && ($inspeccion['id_suspension']) == 3): echo 'selected'; endif; ?>>Suspension Hidraulica</option>
 									<option value="4" <?php if(isset($inspeccion['id_suspension']) && ($inspeccion['id_suspension']) == 4): echo 'selected'; endif; ?>>Suspension Mecanica</option>
@@ -335,7 +335,7 @@
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="selectSalaMaquina">Sala de Maquinas</label>
-								<select id="selectSalaMaquina" name="selectSalaMaquina" class="custom-select custom-select-sm">
+								<select id="selectSalaMaquina" name="selectSalaMaquina" class="custom-select custom-select-sm" readonly>
 									<option value="1" <?php if(isset($inspeccion['sala_maquinas']) && ($inspeccion['sala_maquinas']) == 1): echo 'selected'; endif; ?>>Si</option>
 									<option value="2" <?php if(isset($inspeccion['sala_maquinas']) && ($inspeccion['sala_maquinas']) == 2): echo 'selected'; endif; ?>>No</option>
 								</select>
@@ -345,47 +345,52 @@
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputVelocidad">Velocidad</label>
-								<input type="text" class="form-control  form-control-sm" id="inputVelocidad" minlength="1" placeholder="Ingrese Velocidad" name="inputVelocidad" value="<?php if(isset($inspeccion['velocidad'])): echo $inspeccion['velocidad']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputVelocidad" minlength="1" placeholder="Ingrese Velocidad" name="inputVelocidad" value="<?php if(isset($inspeccion['velocidad'])): echo $inspeccion['velocidad']; endif; ?>" readonly>
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="inputRecorrido">Recorrido</label>
-								<input type="text" class="form-control  form-control-sm" id="inputRecorrido" minlength="1" placeholder="Ingrese Recorrido" name="inputRecorrido" value="<?php if(isset($inspeccion['recorrido'])): echo $inspeccion['recorrido']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputRecorrido" minlength="1" placeholder="Ingrese Recorrido" name="inputRecorrido" value="<?php if(isset($inspeccion['recorrido'])): echo $inspeccion['recorrido']; endif; ?>" readonly>
 							</div>
 						</div>
 
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputParadas">Paradas</label>
-								<input type="text" class="form-control  form-control-sm" id="inputParadas" minlength="1" placeholder="Ingrese Paradas" name="inputParadas" value="<?php if(isset($inspeccion['paradas'])): echo $inspeccion['paradas']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputParadas" minlength="1" placeholder="Ingrese Paradas" name="inputParadas" value="<?php if(isset($inspeccion['paradas'])): echo $inspeccion['paradas']; endif; ?>" readonly>
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="selectTipoTraccion">Tipo Tracción</label>
-								<select id="selectTipoTraccion" name="selectTipoTraccion" class="custom-select custom-select-sm">
+								<select id="selectTipoTraccion" name="selectTipoTraccion" class="custom-select custom-select-sm" readonly>
 									<option selected>Seleccione un Tipo Tracción</option>
 									<option value="1" <?php if(isset($inspeccion['id_tipo_traccion']) && ($inspeccion['id_tipo_traccion']) == 1): echo 'selected'; endif; ?>>Cable</option>
 									<option value="2" <?php if(isset($inspeccion['id_tipo_traccion']) && ($inspeccion['id_tipo_traccion']) == 2): echo 'selected'; endif; ?>>Cinta</option>
 								</select>
 							</div>
 						</div>
-
 						<div class="row">
 							<div class="form-group col-sm-6">
-								<label for="inputDiamCablesTraccion">Diametro de Traccion</label>
-								<input type="text" class="form-control  form-control-sm" id="inputDiamTraccion" minlength="1" placeholder="Ingrese Diametro de Traccion" name="inputDiamTraccion" value="<?php if(isset($inspeccion['diametro_traccion'])): echo $inspeccion['diametro_traccion']; endif; ?>">
+								<label for="inputCantidad">Cantidad</label>
+								<input type="text" class="form-control  form-control-sm" id="inputCantidad" minlength="1" placeholder="Ingrese Cantidad" name="inputCantidad" value="<?php if(isset($inspeccion['cantidad'])): echo $inspeccion['cantidad']; endif; ?>" readonly>
 							</div>
 							<div class="form-group col-sm-6">
-								<label for="inputEnclavamientoElectrico">Enclavamiento El&eacute;ctrico Limitador</label>
-								<input type="text" class="form-control  form-control-sm" id="inputEnclavamientoElectrico" minlength="1" placeholder="Ingrese Enclavamiento Electrico Limitador" name="inputEnclavamientoElectrico" value="<?php if(isset($inspeccion['enclavamiento_electrico'])): echo $inspeccion['enclavamiento_electrico']; endif; ?>">
+								<label for="inputDiamCablesTraccion">Diametro de Traccion</label>
+								<input type="text" class="form-control  form-control-sm" id="inputDiamTraccion" minlength="1" placeholder="Ingrese Diametro de Traccion" name="inputDiamTraccion" value="<?php if(isset($inspeccion['diametro_traccion'])): echo $inspeccion['diametro_traccion']; endif; ?>" readonly>
 							</div>
 						</div>
 						<div class="row">
 							<div class="form-group col-sm-6">
-								<label for="inputEnclavamientoMecanico">Enclavamiento Mec&aacute;nico Limitador</label>
-								<input type="text" class="form-control  form-control-sm" id="inputEnclavamientoMecanico" minlength="1" placeholder="Ingrese Enclavamiento Electrico Limitador" name="inputEnclavamientoMecanico" value="<?php if(isset($inspeccion['enclavamiento_mecanico'])): echo $inspeccion['enclavamiento_mecanico']; endif; ?>">
+								<label for="inputEnclavamientoElectrico">Enclavamiento El&eacute;ctrico Limitador</label>
+								<input type="text" class="form-control  form-control-sm" id="inputEnclavamientoElectrico" minlength="1" placeholder="Ingrese Enclavamiento Electrico Limitador" name="inputEnclavamientoElectrico" value="<?php if(isset($inspeccion['enclavamiento_electrico'])): echo $inspeccion['enclavamiento_electrico']; endif; ?>" readonly>
 							</div>
 							<div class="form-group col-sm-6">
+								<label for="inputEnclavamientoMecanico">Enclavamiento Mec&aacute;nico Limitador</label>
+								<input type="text" class="form-control  form-control-sm" id="inputEnclavamientoMecanico" minlength="1" placeholder="Ingrese Enclavamiento Electrico Limitador" name="inputEnclavamientoMecanico" value="<?php if(isset($inspeccion['enclavamiento_mecanico'])): echo $inspeccion['enclavamiento_mecanico']; endif; ?>" readonly>
+							</div>
+						</div>
+						<div class="row">
+							<div class="form-group col-sm-6">
 								<label for="inputDiamCableLimitador">Diametro Cable Limitador</label>
-								<input type="text" class="form-control  form-control-sm" id="inputDiamCableLimitador" minlength="1" placeholder="Ingrese Diametro Cable Limitador" name="inputDiamCableLimitador" value="<?php if(isset($inspeccion['diametro_cable'])): echo $inspeccion['diametro_cable']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputDiamCableLimitador" minlength="1" placeholder="Ingrese Diametro Cable Limitador" name="inputDiamCableLimitador" value="<?php if(isset($inspeccion['diametro_cable'])): echo $inspeccion['diametro_cable']; endif; ?>" readonly>
 							</div>
 						</div>
 

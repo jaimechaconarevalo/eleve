@@ -1,3 +1,37 @@
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  height: 100px;
+  width: 100px;
+  outline: black;
+  background-size: 100%, 100%;
+  border-radius: 50%;
+  /*border: 1px solid black;*/
+  background-image: none;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  border: 0px;
+  background-image: none;
+}
+
+.carousel-control-next-icon:after
+{
+  /*content: '>';*/
+  font-size: 55px;
+  color: black;
+}
+
+.carousel-control-prev-icon:after {
+  /*content: '<';*/
+  font-size: 55px;
+  color: black;
+}
+
+.carousel-indicators {
+    color: black;
+}
+
 .celdaAsignado{
     /*word-break: break-all !important;*/
     white-space: normal !important;

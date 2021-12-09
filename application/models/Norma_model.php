@@ -280,12 +280,14 @@ class Norma_model extends CI_Model
 	public function listarCategoriasPreguntasNorma($idNorma, $idUsuario)
 	{	
 		try{   
-		    $this->db->select('ncp.id, ncp.id_norma, ncp.id_categoria, ncp.id_pregunta, c.codigo as codigo_c, c.nombre as categoria, p.codigo as codigo_p, p.nombre as pregunta');
+		    $this->db->select('ncp.id, ncp.id_norma, ncp.id_categoria, ncp.id_pregunta, c.codigo as codigo_c, c.nombre as categoria, p.codigo as codigo_p, p.nombre as pregunta, r.id as respuesta_id, r.orden as orden_r, r.nombre as respuesta, r.observaciones as obs_respuesta');
 			$this->db->from('normas_categorias_preguntas ncp');
 			$this->db->join('categorias c','ncp.id_categoria = c.id');
 			$this->db->join('preguntas p', 'ncp.id_pregunta = p.id');
+			$this->db->join('respuestas r', 'p.id = r.id_pregunta and r.id_estado = 1', 'LEFT');
 			$this->db->where('c.estado', 1);
 			$this->db->where('p.estado', 1);
+#			$this->db->where('r.id_estado', 1);
 			$this->db->where('ncp.id_norma', $idNorma);
 			$resultado = $this->db->get();
 			return $resultado->result_array();

@@ -2,7 +2,111 @@
     $('[data-toggle="tooltip"]').tooltip();
     feather.replace();
 
+    function checkRut(rut) {
+        // Despejar Puntos
+        var valor = rut.value.replace('.','');
+        // Despejar Guión
+        valor = valor.replace('-','');
+        
+        // Aislar Cuerpo y Dígito Verificador
+        cuerpo = valor.slice(0,-1);
+        dv = valor.slice(-1).toUpperCase();
+        
+        // Formatear RUN
+        if (cuerpo.length > 0 || dv.length > 0) {
+            
+            if ((cuerpo.length + dv.length) == 1) {
+                rut.value = dv;
+            }else{
+                if (cuerpo.length > 3) {
+                    var largo_rut = cuerpo.length;
+                    var cant_puntos = Math.ceil(~~(cuerpo.length / 3));
+
+                    if (cant_puntos == 1) {
+                        cuerpo = cuerpo.slice(0, (cuerpo.replace('.', '').length-3)) + '.' + cuerpo.replace('.', '').slice((cuerpo.replace('.', '').length - 3), cuerpo.replace('.', '').length);
+                    }else{
+                        if (cuerpo.length > 6) {
+
+                            cuerpo = cuerpo.replace('.', '').slice(0, (cuerpo.replace('.', '').length-6)) + '.' + cuerpo.replace('.', '').slice((cuerpo.replace('.', '').length-6), ((cuerpo.replace('.', '').length-6)+3)) + '.' + cuerpo.replace('.', '').slice((cuerpo.replace('.', '').length - 3), cuerpo.replace('.', '').length);
+                        }else{
+                            cuerpo = cuerpo.replace('.', '').slice(0, (cuerpo.replace('.', '').length-3)) + '.' + cuerpo.replace('.', '').slice((cuerpo.length - 3), cuerpo.replace('.', '').length);
+                        }
+                    }
+                }
+
+                rut.value = cuerpo + '-'+ dv;
+            }
+        }else{
+            rut.value = "";
+        }
+        
+        // Calcular Dígito Verificador
+        suma = 0;
+        multiplo = 2;
+        
+        // Para cada dígito del Cuerpo
+        for(i=1;i<=cuerpo.length;i++) {
+        
+            // Obtener su Producto con el Múltiplo Correspondiente
+            index = multiplo * valor.charAt(cuerpo.length - i);
+            
+            // Sumar al Contador General
+            suma = suma + index;
+            
+            // Consolidar Múltiplo dentro del rango [2,7]
+            if(multiplo < 7) { multiplo = multiplo + 1; } else { multiplo = 2; }
+      
+        }
+        
+        // Calcular Dígito Verificador en base al Módulo 11
+        dvEsperado = 11 - (suma % 11);
+        
+        // Casos Especiales (0 y K)
+        dv = (dv == 'K')?10:dv;
+        dv = (dv == 0)?11:dv;
+        
+        // Validar que el Cuerpo coincide con su Dígito Verificador
+        
+        // Si todo sale bien, eliminar errores (decretar que es válido)
+        rut.setCustomValidity('');
+    }
+
+
+    $('#inputRutE').on('input', function(e) {
+      var resultado = checkRut(this);
+    });
+
+    $('#inputRutA').on('input', function(e) {
+      var resultado = checkRut(this);
+    });
+
     //$('.stepper').mdbStepper();
+    $('#selectSuspension').on('change',function(e){
+       var grupo = e.currentTarget.selectedOptions[0].dataset.grupo;
+       var tipo_traccion = document.getElementById("selectTipoTraccion");
+
+       if (e.currentTarget.selectedIndex > 0) {
+            $('#selectTipoTraccion option').eq(0).prop('selected',true);
+            $('#selectTipoTraccion > option').each(function() {
+
+                if (this.index > 0) {
+                    if (this.dataset.grupo != grupo && this.dataset.grupo != "") {
+                        this.setAttribute("hidden", "");
+                    }else{
+                        this.removeAttribute("hidden");
+                    }
+                }
+            });
+       }else{
+            $('#selectTipoTraccion option').eq(0).prop('selected',true);
+            $('#selectTipoTraccion > option').each(function() {
+                this.sele
+                this.removeAttribute("hidden");
+            });
+       }
+       
+       
+    });
 
     $('#btnSeleccionarE').on('click', function(e) {
         var tabla = $('#tListaEmpresas').DataTable();
@@ -19,8 +123,7 @@
             $('#inputEmpresaMantenedora').val('');
             $('#idEmpresaMantenedora').val('');
             $('#modalBuscarEmpresa').modal('hide');
-        }
-        
+        }       
     });
 
     $('#modalBuscarEmpresa').on('shown.bs.modal', function () {
@@ -238,8 +341,6 @@
             var loader = document.getElementById("loader");
             loader.setAttribute('hidden', '');
         }
-        loader.setAttribute('hidden', '');
-        feather.replace();
     });
 
     $("#agregarInspeccion").validate({
@@ -253,12 +354,12 @@
         },
         rules: {
           inputCodigo: {
-            //required: true,
+            required: false,
             minlength: 1,
             maxlength: 30
           },
-          inputNombre: {
-            //required: true,
+          inputNombreE: {
+            required: true,
             minlength: 1,
             maxlength: 100
           },
@@ -269,14 +370,13 @@
         },
         messages:{
           inputCodigo: {
-            required: "Ingrese un Codigo.",
             minlength: "Ingrese un Codigo",
             maxlength: "El Codigo no puede superar los {0} caracteres."
           },
-          inputNombre: {
-            required: "Ingrese un Nombre.",
-            minlength: "Ingrese un Nombre",
-            maxlength: "El Nombre no puede superar los {0} caracteres."
+          inputNombreE: {
+            required: "Ingrese un Nombre del Edificio.",
+            minlength: "Ingrese un Nombre del Edificio.",
+            maxlength: "El Nombre del Edificio no puede superar los {0} caracteres."
           },
           inputObservaciones: {
             maxlength: "La observacion tiene que ser menor o igual a {0} caracteres."
@@ -304,20 +404,47 @@
     $('#modalMensajeInspeccion').on('hidden.bs.modal', function(e) {
         location.reload();   
     });
+
+    $('#modalFoto').on('hidden.bs.modal', function(e) {
+        var dObsGenerales = document.getElementById("dObsGenerales");
+        dObsGenerales.setAttribute('hidden', '');
+        $('#seleccionarFoto').empty();
+        $("#seleccionarFoto").append('Seleccionar Foto');
+        $('#tituloMF').empty();
+        feather.replace();
+        $('[data-toggle="tooltip"]').tooltip();
+        document.getElementById('inputObservaciones').value = "";
+
+        $('#id_front').hide();
+        $('#video-stream').show();
+        $('#video-stream').addClass("rounded");
+
+    });
     
 
     $('#acordionCategorias').on('click', '.quitarImagen', function(e) {
         var id = e.currentTarget.dataset.id;
         var id_div = e.currentTarget.dataset.id_div;
         var div_image = document.getElementById('div_image_'.concat(id));
+        //var input_file = document.getElementById('picture_'.concat(id));
         div_image.remove();
+        //input_file.remove();
+        var id_div_r = 1;
 
-        for (var i = 1; i < document.getElementById('div_'.concat(id_div)).children.length; i++) {
+        for (var i = 0; i < document.getElementById('div_'.concat(id_div)).children.length; i++) {
             var div = document.getElementById('div_'.concat(id_div)).children[i];
-            div.id = 'div_image_'.concat(id_div, '_', i);
-            div.children[1].id = id_div.concat('_', i);
+            if (div.tagName == "DIV") {
+                div.firstElementChild.firstElementChild.id = 'close_'.concat(id_div, '_', id_div_r);
+                div.firstElementChild.firstElementChild.name = 'close_'.concat(id_div, '_', id_div_r);
+                div.firstElementChild.firstElementChild.dataset.id = id_div.concat('_', id_div_r);
+                div.id = 'div_image_'.concat(id_div, '_', id_div_r);
+                div.children[1].id = id_div.concat('_', id_div_r);
+                div.children[1].name = id_div.concat('_', id_div_r);
+                div.children[2].id = 'picture_'.concat(id_div, '_', id_div_r);
+                div.children[2].name = 'picture_'.concat(id_div, '_', id_div_r);
+                id_div_r++;
+            }
         }
-
     });
 
     $('#acordionCategorias').on('click', '.rbSI, .rbNA', function(e) {
@@ -377,6 +504,9 @@
                 boton_principal.classList.remove('btn-outline-success');
                 boton_principal.classList.remove('btn-outline-warning');
                 boton_principal.classList.add('btn-outline-success');
+                if (e.currentTarget.value.split('-')[0] != "no")
+                    $('#tbodyCategoria'.concat(id_categoria)).collapse('hide');
+                
             }else{
                 boton_principal.classList.remove('btn-outline-success');
                 boton_principal.classList.remove('btn-outline-warning');
@@ -563,84 +693,376 @@
         }
     });
 
+    $('#acordionCategorias').on('click', '.agregarObservacion', function (e) {
+        var id_categoria = e.currentTarget.dataset.id;
+        var codigo_categoria = e.currentTarget.dataset.codigo;
+        var categoria = e.currentTarget.dataset.nombre;
+        var cant_obs = (document.getElementById('observacionesGenerales').children.length + 1);
+
+        $('#dObsGenerales').removeAttr('hidden');
+        $('#seleccionarFoto').empty();
+        $("#seleccionarFoto").append('Agregar Observaci&oacute;n');
+        $('#tituloMF').empty();
+        $("#tituloMF").append('<i class="plusTitulo mb-2" data-feather="plus"></i> Agregar Observaci&oacute;n  a "'.concat(codigo_categoria, ' - ', categoria, '"'));
+        var boton_agregar = document.getElementById('seleccionarFoto');
+        boton_agregar.dataset.id = id_categoria;
+        boton_agregar.dataset.codigo = codigo_categoria;
+        boton_agregar.dataset.nombre = categoria;
+        boton_agregar.dataset.cant = cant_obs;
+        /*$("#parrafoME").append(data.mensaje);*/
+        document.getElementById('inputObservaciones').value = "";
+        feather.replace();
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    $('#observacionesGenerales').on('click', '.eliminarObservacion', function (e) {
+        var id_categoria = e.currentTarget.dataset.id;
+        var codigo_categoria = e.currentTarget.dataset.codigo;
+        var categoria = e.currentTarget.dataset.nombre;
+        var cantidad = e.currentTarget.dataset.cant;
+        var obs = document.getElementById('div_contenedor_'.concat(cantidad));
+        obs.remove();
+
+        var cant = 1;
+        var observaciones = document.getElementById('observacionesGenerales').children;
+        $.each(observaciones, function(index_obs, observacion) {
+            observacion.id = 'div_contenedor_'.concat(cant);
+            observacion.lastChild.id = 'picture_'.concat(id_categoria, '_', cant);
+            observacion.lastChild.name = 'picture_'.concat(id_categoria, '_', cant);
+            observacion.firstChild.firstChild.id = 'imagen_'.concat(cant);
+            observacion.firstElementChild.lastElementChild.firstElementChild.id = 'input_obs_'.concat(id_categoria, '_', cant);
+            observacion.firstElementChild.lastElementChild.firstElementChild.name = 'input_obs_'.concat(id_categoria, '_', cant);
+            observacion.firstElementChild.lastElementChild.children[1].textContent = String(cant).concat('.- "', codigo_categoria, '_', categoria, '"');
+            observacion.firstElementChild.lastElementChild.children[3].dataset.cant = cant;
+            cant++;
+        });
+    });
+
+    
+
     $('#seleccionarFoto').on('click',  function(e) {
-        var id = document.getElementById('seleccionarFoto').dataset.id;
-        var data_image = document.getElementById('id_front').src;
+        if($('#dObsGenerales').is(':visible')){
+            var data_image = document.getElementById('id_front').src;
+
+            var imagen_foto = document.createElement("IMG");
+            imagen_foto.alt = "Alt information for image";
+            //image.setAttribute('class', 'photo img-thumbnail');
+            imagen_foto.setAttribute('class', 'img-fluid rounded float-left');
+            imagen_foto.src = data_image;
+            imagen_foto.id = 'imagen_'.concat(e.currentTarget.dataset.cant);
+            
+            var obs = document.getElementById('inputObservaciones').value;
+
+            var div_1 = document.createElement("div");
+             div_1.setAttribute('class', 'float-sm-left m-3');
+            div_1.id = 'div_contenedor_'.concat(e.currentTarget.dataset.cant);
+
+            var div_2 = document.createElement("div");
+            div_2.setAttribute('class', 'card border-secondary');
+            div_2.setAttribute('style', 'width: 18rem;');
+
+            var div_3 = document.createElement("div");
+            div_3.setAttribute('class', 'card-body text-secondary');
+            
+            var titulo_h5 = document.createElement("h5");
+            titulo_h5.setAttribute('class', "card-title");
+            titulo_h5.append(e.currentTarget.dataset.cant.concat('.-  "',e.currentTarget.dataset.codigo,'_',e.currentTarget.dataset.nombre, '"'));
+
+            var parrafo_card_body = document.createElement("p");
+            parrafo_card_body.setAttribute('class', "card-text");
+            parrafo_card_body.append(obs);
+
+            var icono_eliminar = document.createElement("i");
+            icono_eliminar.setAttribute('class', "pb-1");
+            icono_eliminar.setAttribute('stop-cloro', "");
+            icono_eliminar.dataset.feather = "trash";
+
+            var boton_eliminar = document.createElement("a");
+            boton_eliminar.setAttribute('class', "btn btn-outline-danger eliminarObservacion");
+            boton_eliminar.dataset.id = e.currentTarget.dataset.id;
+            boton_eliminar.dataset.codigo = e.currentTarget.dataset.codigo;
+            boton_eliminar.dataset.nombre = e.currentTarget.dataset.nombre;
+            boton_eliminar.dataset.cant = e.currentTarget.dataset.cant;
+            
+            boton_eliminar.append(icono_eliminar);
+            boton_eliminar.append(' Eliminar Observacion');
+
+            //id="inputDiamCableLimitador" minlength="1" placeholder="Ingrese Diametro Cable Limitador" name="inputDiamCableLimitador" value="">
+
+            var input_obs = document.createElement("INPUT");
+            input_obs.setAttribute("type", "text");
+            input_obs.setAttribute("class", "form-control  form-control-sm");
+            input_obs.id = 'input_obs_'.concat(e.currentTarget.dataset.id, '_', e.currentTarget.dataset.cant);
+            input_obs.name = 'input_obs_'.concat(e.currentTarget.dataset.id, '_', e.currentTarget.dataset.cant);
+            input_obs.setAttribute("hidden", true);
+            input_obs.value = obs;
+            div_3.append(input_obs);
+
+            div_3.append(titulo_h5);
+            div_3.append(parrafo_card_body);
+            div_3.append(boton_eliminar);
+            div_2.append(imagen_foto);
+            div_2.append(div_3);
+            
+            $(document.getElementById('observacionesGenerales')).append(div_1);
+            const img2 = document.getElementById(imagen_foto.id)
+                        fetch(data_image)
+                        .then(res => res.blob())
+                        .then(blob => {
+                            
+                            const file = new File([blob], 'picture_'.concat(e.currentTarget.dataset.id, '_', e.currentTarget.dataset.cant), blob)
+                            input_file = file;
+
+                            let container = new DataTransfer();
+                            container.items.add(file);
+                            var x = document.createElement("INPUT");
+                            x.setAttribute("type", "file");
+                            x.files = container.files;
+                            x.id = 'picture_'.concat(e.currentTarget.dataset.id, '_', e.currentTarget.dataset.cant);
+                            x.name = 'picture_'.concat(e.currentTarget.dataset.id, '_', e.currentTarget.dataset.cant);
+                            x.setAttribute("hidden", true);
+                            //$('#div_'.concat(id)).append(x);
+                            div_1.append(x);
+                        });
 
 
-        //$(document.getElementById('pregunta_', id)).prepend($('<img>',{id:'foto_1_'.concat(id),src:data_image}));
-        var img = '';
-        img = img.concat('<img id="foto_1_',id,'" src="',data_image,'"/>');
-        $(document.getElementById('div_', id)).append(img);
-
-        //<button type="submit" class="close">
-        //<span>&times;</span>
-        //</button>
-        
-         
-        var div = document.createElement("div");
-        //div.setAttribute('class', 'img-responsive content_area');
-        div.setAttribute('class', 'col-sm-2');
-        //div.width = '170px !important';
-        //div.setAttribute('style', ' width: 170px!important;');
-        div.id = 'div_image_'.concat(id, '_', ($('#div_'.concat(id)).children('input').length+1));
-
-        var button = document.createElement("button");
-        button.type = "button";
-        button.setAttribute('class', 'close');
-        button.setAttribute('aria-label', 'Close');
-
-        var span = document.createElement("span");
-        span.setAttribute('class', 'close quitarImagen');
-        span.setAttribute('aria-hidden', 'true');
-        span.textContent = "×";
-        span.id = 'close_'.concat(id);
-        span.dataset.id = id.concat('_', ($('#div_'.concat(id)).children('input').length+1));
-        span.dataset.id_div = id;
-        button.append(span);
-        
-
-        var image = document.createElement("IMG");
-        image.alt = "Alt information for image";
-        image.setAttribute('class', 'photo img-thumbnail');
-        image.src = data_image;
-        image.width = '150';
-        image.id = id.concat('_', ($('#div_'.concat(id)).children('input').length+1));
 
 
-        div.append(button);
-        div.append(image);
+            /*var button = document.createElement("button");
+            button.type = "button";
+            button.setAttribute('class', 'close');
+            button.setAttribute('aria-label', 'Close');
 
-        const img2 = document.getElementById(image.id)
-                    fetch(data_image)
-                    .then(res => res.blob())
-                    .then(blob => {
-                        
-                        const file = new File([blob], 'picture_'.concat(id, '_',($('#div_'.concat(id)).children('input').length+1)), blob)
-                        input_file = file;
+            var span = document.createElement("span");
+            span.setAttribute('class', 'close quitarObservacion');
+            span.setAttribute('aria-hidden', 'true');
+            span.textContent = "×";
+            span.id = 'close_'.concat(e.currentTarget.dataset.id, '_', e.currentTarget.dataset.cant);
+            span.dataset.id = e.currentTarget.dataset.id.concat('_', e.currentTarget.dataset.cant);
+            span.dataset.id_div = 'div_contenedor_'.concat(e.currentTarget.dataset.cant);
+            button.append(span);
+            div_1.append(button);*/
 
-                        let container = new DataTransfer();
-                        container.items.add(file);
-                        var x = document.createElement("INPUT");
-                        x.setAttribute("type", "file");
-                        x.files = container.files;
-                        x.id = 'picture_'.concat(id, '_',($('#div_'.concat(id)).children('input').length+1));
-                        x.name = 'picture_'.concat(id, '_',($('#div_'.concat(id)).children('input').length+1));
-                        x.setAttribute("hidden", true);
-                        $('#div_'.concat(id)).append(x);
-
-                    });
+            div_1.append(div_2);
 
 
+            feather.replace();
+            $('[data-toggle="tooltip"]').tooltip();
+
+            /*var id = document.getElementById('seleccionarFoto').dataset.id;
+            var data_image = document.getElementById('id_front').src;
+            //$(document.getElementById('pregunta_', id)).prepend($('<img>',{id:'foto_1_'.concat(id),src:data_image}));
+            var img = '';
+            img = img.concat('<img id="foto_1_',id,'" src="',data_image,'"/>');
+            $(document.getElementById('div_', id)).append(img);
+
+            //<button type="submit" class="close">
+            //<span>&times;</span>
+            //</button>
+            
+            var id_concatenado = id.concat('_', (document.getElementById('div_'.concat(id)).children.length+1));
+
+
+            var div = document.createElement("div");
+            //div.setAttribute('class', 'img-responsive content_area');
+            div.setAttribute('class', 'col-xs-3 m-3');
+            //div.width = '170px !important';
+            //div.setAttribute('style', ' width: 170px!important;');
+            div.id = 'div_image_'.concat(id_concatenado);
+            //div.id = 'div_image_'.concat(id, '_', ($('#div_'.concat(id)).children('input').length+1));
+
+            var button = document.createElement("button");
+            button.type = "button";
+            button.setAttribute('class', 'close');
+            button.setAttribute('aria-label', 'Close');
+
+            var span = document.createElement("span");
+            span.setAttribute('class', 'close quitarImagen');
+            span.setAttribute('aria-hidden', 'true');
+            span.textContent = "×";
+            span.id = 'close_'.concat(id_concatenado);
+            span.dataset.id = id_concatenado;
+            span.dataset.id_div = id;
+            button.append(span);
+            
+
+            var image = document.createElement("IMG");
+            image.alt = "Alt information for image";
+            //image.setAttribute('class', 'photo img-thumbnail');
+            image.setAttribute('class', 'img-fluid rounded float-left');
+            image.src = data_image;
+            image.width = '150';
+            image.id = id_concatenado;
+
+
+            div.append(button);
+            div.append(image);
+
+            const img2 = document.getElementById(image.id)
+                        fetch(data_image)
+                        .then(res => res.blob())
+                        .then(blob => {
+                            
+                            const file = new File([blob], 'picture_'.concat(id_concatenado), blob)
+                            input_file = file;
+
+                            let container = new DataTransfer();
+                            container.items.add(file);
+                            var x = document.createElement("INPUT");
+                            x.setAttribute("type", "file");
+                            x.files = container.files;
+                            x.id = 'picture_'.concat(id_concatenado);
+                            x.name = 'picture_'.concat(id_concatenado);
+                            x.setAttribute("hidden", true);
+                            //$('#div_'.concat(id)).append(x);
+                            div.append(x);
+
+                        });
 
 
 
-        $('#div_'.concat(id)).append(div);
-        //$(document.getElementById('foto_1_'.concat(id))).attr('src', data_image);
-        //$(document.getElementById('foto_1_'.concat(id))).attr('width', '150px');
-        $('#id_front').hide();
-        $('#video-stream').show();
 
+
+            $('#div_'.concat(id)).append(div);
+            //$(document.getElementById('foto_1_'.concat(id))).attr('src', data_image);
+            //$(document.getElementById('foto_1_'.concat(id))).attr('width', '150px');
+            $('#id_front').hide();
+            $('#video-stream').show();*/
+
+
+
+            //var div = "";
+            //div = div.concat('<div class="float-sm-left m-3">');
+
+            //div = div.concat('<div class="card" style="width: 18rem;">');
+
+            //div = div.concat('<img src="',window.origin,'/assets/img/logo.png','" class="card-img-top" alt="...">');
+
+            /*div = div.concat('<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">');
+              div = div.concat('<ol class="carousel-indicators">');
+                div = div.concat('<li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>');
+                div = div.concat('<li data-target="#carouselExampleIndicators" data-slide-to="1"></li>');
+                div = div.concat('<li data-target="#carouselExampleIndicators" data-slide-to="2"></li>');
+              div = div.concat('</ol>');
+              div = div.concat('<div class="carousel-inner rounded">');
+                div = div.concat('<div class="carousel-item active">');
+                  div = div.concat('<img src="',window.origin,'/assets/files/image/62_536_6_3_1.png','"" class="d-block w-100" alt="FOTO_1">');
+                div = div.concat('</div>');
+                div = div.concat('<div class="carousel-item">');
+                  div = div.concat('<img src="',window.origin,'/assets/files/image/62_536_6_3_2.png','"" class="d-block w-100" alt="FOTO_2">');
+                div = div.concat('</div>');
+                div = div.concat('<div class="carousel-item">');
+                  div = div.concat('<img src="',window.origin,'/assets/files/image/61_528_6_2_3.png','"" class="d-block w-100" alt="FOTO_3">');
+                div = div.concat('</div>');
+              div = div.concat('</div>');
+              div = div.concat('<button class="carousel-control-prev" type="button" data-target="#carouselExampleIndicators" data-slide="prev">');
+                div = div.concat('<span class="carousel-control-prev-icon" aria-hidden="true"></span>');
+                div = div.concat('<span class="sr-only">Previous</span>');
+              div = div.concat('</button>');
+              div = div.concat('<button class="carousel-control-next" type="button" data-target="#carouselExampleIndicators" data-slide="next">');
+                div = div.concat('<span class="carousel-control-next-icon" aria-hidden="true"></span>');
+                div = div.concat('<span class="sr-only">Next</span>');
+              div = div.concat('</button>');
+            div = div.concat('</div>');*/
+
+            //div = div.concat('<div class="card-body">');
+             //div = div.concat('<h5 class="card-title">',e.currentTarget.dataset.cant, '.-  "',e.currentTarget.dataset.codigo,'_',e.currentTarget.dataset.nombre,'"</h5>');
+            //div = div.concat('<p class="card-text">'.concat(obs,'</p>'));
+            ////div = div.concat('<a href="#" class="btn btn-primary">Go somewhere</a>');
+            //div = div.concat('<a class="btn btn-outline-danger eliminarObservacion" data-id="',e.currentTarget.dataset.id,'" data-codigo="',e.currentTarget.dataset.codigo,'" data-nombre="',e.currentTarget.dataset.nombre,'"><i stop-color data-feather="trash" class="pb-1"></i> Eliminar Observaci&oacute;n</a>');
+            //div = div.concat('</div>');
+            //div = div.concat('</div>');
+
+
+            //div = div.concat('</div>');
+
+            
+
+
+
+
+        }else{
+            var id = document.getElementById('seleccionarFoto').dataset.id;
+            var data_image = document.getElementById('id_front').src;
+            //$(document.getElementById('pregunta_', id)).prepend($('<img>',{id:'foto_1_'.concat(id),src:data_image}));
+            var img = '';
+            img = img.concat('<img id="foto_1_',id,'" src="',data_image,'"/>');
+            $(document.getElementById('div_', id)).append(img);
+
+            //<button type="submit" class="close">
+            //<span>&times;</span>
+            //</button>
+            
+            var id_concatenado = id.concat('_', (document.getElementById('div_'.concat(id)).children.length+1));
+
+
+            var div = document.createElement("div");
+            //div.setAttribute('class', 'img-responsive content_area');
+            div.setAttribute('class', 'col-xs-3 m-3');
+            //div.width = '170px !important';
+            //div.setAttribute('style', ' width: 170px!important;');
+            div.id = 'div_image_'.concat(id_concatenado);
+            //div.id = 'div_image_'.concat(id, '_', ($('#div_'.concat(id)).children('input').length+1));
+
+            var button = document.createElement("button");
+            button.type = "button";
+            button.setAttribute('class', 'close');
+            button.setAttribute('aria-label', 'Close');
+
+            var span = document.createElement("span");
+            span.setAttribute('class', 'close quitarImagen');
+            span.setAttribute('aria-hidden', 'true');
+            span.textContent = "×";
+            span.id = 'close_'.concat(id_concatenado);
+            span.dataset.id = id_concatenado;
+            span.dataset.id_div = id;
+            button.append(span);
+            
+
+            var image = document.createElement("IMG");
+            image.alt = "Alt information for image";
+            //image.setAttribute('class', 'photo img-thumbnail');
+            image.setAttribute('class', 'img-fluid rounded float-left');
+            image.src = data_image;
+            image.width = '150';
+            image.id = id_concatenado;
+
+
+            div.append(button);
+            div.append(image);
+
+            const img2 = document.getElementById(image.id)
+                        fetch(data_image)
+                        .then(res => res.blob())
+                        .then(blob => {
+                            
+                            const file = new File([blob], 'picture_'.concat(id_concatenado), blob)
+                            input_file = file;
+
+                            let container = new DataTransfer();
+                            container.items.add(file);
+                            var x = document.createElement("INPUT");
+                            x.setAttribute("type", "file");
+                            x.files = container.files;
+                            x.id = 'picture_'.concat(id_concatenado);
+                            x.name = 'picture_'.concat(id_concatenado);
+                            x.setAttribute("hidden", true);
+                            //$('#div_'.concat(id)).append(x);
+                            div.append(x);
+
+                        });
+
+
+
+
+
+            $('#div_'.concat(id)).append(div);
+            //$(document.getElementById('foto_1_'.concat(id))).attr('src', data_image);
+            //$(document.getElementById('foto_1_'.concat(id))).attr('width', '150px');
+            $('#id_front').hide();
+            $('#video-stream').show();
+            $('#video-stream').addClass("rounded");
+        }
     });
 
     $('#acordionCategorias').on('click', '.tomarFoto', function (e) {
@@ -649,24 +1071,30 @@
     });
 
 
-    $('#acordeonCarpeta').on('hide.bs.collapse', function () {
+    //$('#acordeonCarpeta').on('hide.bs.collapse', function () {
+    $('#selectSalaMaquina').on('change',function(e){
         if (document.getElementsByClassName('sala_maquina').length == 1) {
-            var cat_sala_maquinas = document.getElementsByClassName('sala_maquina')[0];
-            cat_sala_maquinas.setAttribute('hidden', '');
-        }
+            if (this.value == "2") {
+                var cat_sala_maquinas = document.getElementsByClassName('sala_maquina')[0];
+                cat_sala_maquinas.setAttribute('hidden', '');
 
-        var pauta_carpeta = document.getElementsByClassName('pauta_carpeta');
-        for (var i = 0; i < pauta_carpeta.length; i++) {
-            pauta_carpeta[i].checked = false;
+                var pauta_carpeta = document.getElementsByClassName('pauta_carpeta');
+                for (var i = 0; i < pauta_carpeta.length; i++) {
+                    pauta_carpeta[i].checked = false;
+                }
+            }else{
+                var cat_sala_maquinas = document.getElementsByClassName('sala_maquina')[0];
+                cat_sala_maquinas.removeAttribute('hidden');
+            }
         }
     });
 
-    $('#acordeonCarpeta').on('show.bs.collapse', function () {
+    /*$('#acordeonCarpeta').on('show.bs.collapse', function () {
         if (document.getElementsByClassName('sala_maquina').length == 1) {
             var cat_sala_maquinas = document.getElementsByClassName('sala_maquina')[0];
             cat_sala_maquinas.removeAttribute('hidden');
         }
-    });
+    });*/
 
     $('#btnSeleccionarBN').on('click', function(e) {
         var tabla = $('#tListaNormas').DataTable();
@@ -690,7 +1118,7 @@
                     data: {idNorma: idNorma},
                     success: function(data) {
                         if (data) {
-                            if (data.data) {
+                            /*if (data.data) {
                                 var preguntas_seleccionadas = JSON.parse(localStorage.getItem("preguntas_seleccionadas"));
                                 if (preguntas_seleccionadas != null && preguntas_seleccionadas.length > 0) {
                                   localStorage.setItem("preguntas_seleccionadas", JSON.stringify(data.data));
@@ -699,7 +1127,7 @@
                                   localStorage.setItem("preguntas_seleccionadas", JSON.stringify(data.data));
 
                                 }
-                            }
+                            }*/
 
                             if (data.data_cp_n) {
                                 var id_categoria_i = null;
@@ -708,15 +1136,17 @@
                                 $("#acordionCategorias").empty();
 
                                 var inputTC = '';
-                                inputTC = inputTC.concat('<input type="text" class="form-control form-control-sm" id="inputTotalCategorias" name="inputTotalCategorias" value="',data.data_total.length,'" hidden>');
-                                for (var i = 0; i < data.data_total.length; i++) {
-                                    inputTC = inputTC.concat('<input type="text" class="form-control form-control-sm" id="inputTotalPreguntas_',(i+1),'" name="inputTotalPreguntas_',(i+1),'" value="',data.data_total[i].cantPreguntas,'" hidden>');
+                                inputTC = inputTC.concat('<input type="text" class="form-control form-control-sm" id="inputTotalCategorias" name="inputTotalCategorias" value="',data.data_cp_n.length/*data.data_total.length*/,'" hidden>');
+                                for (var i = 0; i < data.data_cp_n.length/*data.data_total.length*/; i++) {
+                                    inputTC = inputTC.concat('<input type="text" class="form-control form-control-sm" id="inputTotalPreguntas_',(i+1),'" name="inputTotalPreguntas_',(i+1),'" value="',data.data_cp_n.length/*data.data_total[i].cantPreguntas*/,'" hidden>');
                                 }
 
                                 var contador = 0;
 
-                                for (var i = 0; i < data.data_cp_n.length; i++) {
-                                    var id_categoria = data.data_cp_n[i][2];
+                                $.each(data.data_cp_n, function(index_c, categoria ) {
+
+
+/*                                    var id_categoria = data.data_cp_n[i][2];
                                     var id_pregunta = data.data_cp_n[i][3];
                                     var cod_categoria = data.data_cp_n[i][4];
                                     var categoria = data.data_cp_n[i][5];
@@ -724,149 +1154,173 @@
                                     var pregunta = data.data_cp_n[i][7];
                                     var cant_preguntas = 0;
 
-                                    contador++;
+                                    var id_respuesta = data.data_cp_n[i][3];
+                                    var cod_categoria = data.data_cp_n[i][4];
+                                    var categoria = data.data_cp_n[i][5];
+                                    var cod_pregunta = data.data_cp_n[i][6];
+                                    var pregunta = data.data_cp_n[i][7];
+                                    var cant_preguntas = 0;*/
 
-                                    if (id_categoria_i != id_categoria)
-                                    {
-                                        if (id_categoria_i) {
-                                            div = div.concat('</tbody>');
-                                            div = div.concat('</table>');
-                                            div = div.concat('</div>');
-                                            div = div.concat('</div>');
-                                        }
 
-                                        const cantPreguntas = data.data_total.find(categoria => categoria.id_categoria === id_categoria);
-                                        if (cantPreguntas) {
-                                            cant_preguntas = cantPreguntas.cantPreguntas;
+
+                                    var hidden = '';
+                                    var clase = '';
+                                    var clase_pauta = '';
+                                    if (categoria.categoria.trim().toLowerCase() == 'sala de maquinas') {
+                                        clase = 'sala_maquina';
+                                        clase_pauta = 'pauta_carpeta';
+
+                                        var selectSalaMaquina = document.getElementById("selectSalaMaquina");
+                                        var isVisible = selectSalaMaquina.options[selectSalaMaquina.selectedIndex].value == 1;
+                                        if (!isVisible) {
+                                            hidden = 'hidden';
                                         }else{
-                                            cant_preguntas = 0;
+                                            hidden = '';
                                         }
-
-                                        var hidden = '';
-                                        var clase = '';
-                                        var clase_pauta = '';
-                                        if (categoria.trim().toLowerCase() == 'sala de maquinas') {
-                                            clase = 'sala_maquina';
-                                            clase_pauta = 'pauta_carpeta';
-                                            var isVisible = $('#acordeonCarpeta').is( ":visible" );
-                                            if (!isVisible) {
-                                                hidden = 'hidden';
-                                            }else{
-                                                hidden = '';
-                                            }
-                                        }
-
-                                        div = div.concat('<div id="categoria',id_categoria,'" class="card card-body ',clase,'" ',hidden,'>');
-                                        div = div.concat('<div class="table-responsive">');
-                                        div = div.concat('<table id="tabla_',id_categoria,'" class="table table-sm">');
-                                        div = div.concat('<thead>');
-                                        div = div.concat('<tr class="border-1">');
-                                        div = div.concat('<td colspan="2" class="ml-3 text-left">');
-                                        div = div.concat('<h5 class="mb-0">');
-                                        div = div.concat('<button id="button_cat_',id_categoria,'" class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#tbodyCategoria',id_categoria,'" aria-expanded="true" aria-controls="tbodyCategoria',id_categoria,'">');
-                                        div = div.concat(cod_categoria, ' - ', categoria);
-                                        div = div.concat('</button>');
-
-                                        div = div.concat('</h5>');
-                                        div = div.concat('</td>');
-                                        div = div.concat('<td colspan="3" class="text-right celdaAsignado">');
-                                        div = div.concat('<span id="conteo_',id_categoria,'" class="badge badge-danger badge-pill">0</span>  /  <span id="total_conteo_',id_categoria,'" class="badge badge-primary badge-pill">',cant_preguntas,'</span>');
-                                        div = div.concat('<a class="btn btn-link agregarObservacion" data-id="',id_categoria,'" data-codigo="',cod_categoria,'" data-nombre="',categoria,'" data-toggle="modal" data-target="#modalAgregarObservacion"><i stop-color data-feather="plus" class="pb-1"></i>Agregar Observacion</a>');
-                                        div = div.concat('</td>');
-                                        div = div.concat('</tr>');
-                                        div = div.concat('</thead>');
-                                        //div = div.concat('<thead>');
-                                        
-                                        //div = div.concat('</thead>');
-                                        div = div.concat('<tbody id="tbodyCategoria',id_categoria,'" class="collapse show" aria-labelledby="categoria',id_categoria,'" data-parent="#categoria',id_categoria,'" >');
-
-                                        div = div.concat('<tr>');
-                                        div = div.concat('<!--<th scope="col" class="text-left align-middle">#</th>-->');
-                                        div = div.concat('<th scope="col" class="text-left align-middle">Codigo</th>');
-                                        div = div.concat('<th scope="col" class="text-left align-middle celdaAsignado">Pregunta</th>');
-                                        div = div.concat('<th scope="col" class="text-left align-middle">SI</th>');
-                                        div = div.concat('<th scope="col" class="text-left align-middle">NO</th>');
-                                        div = div.concat('<th scope="col" class="text-left align-middle">N/A</th>');
-                                        div = div.concat('</tr>');
-
-
-                                        div = div.concat('<tr class="pregunta',id_categoria,'_',id_pregunta,' preguntas">');
-                                        div = div.concat('<!--<th class="text-left align-middle"><p>',id_categoria,'_',id_pregunta,'</p></th>-->');
-                                        div = div.concat('<th class="text-left align-middle"><p class="texto-pequenio text-left align-middle registro">',cod_pregunta,'</p></th>');
-                                        div = div.concat('<td class="text-left align-middle celdaAsignado"><p class="texto-pequenio text-left align-middle registro">',pregunta,'</p></td>');
-                                        div = div.concat('<td class="text-left align-middle radio"><input type="radio" id="rbPregunta',contador,'_SI" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbSI ',clase_pauta,'" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="si-',id_categoria,'_',id_pregunta,'"></td>');
-                                        div = div.concat('<td class="text-left align-middle radio"><input type="radio" id="rbPregunta',contador,'_NO" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNO ',clase_pauta,'" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="no-',id_categoria,'_',id_pregunta,'"></td>');
-                                        div = div.concat('<td class="text-left align-middle radio"><input type="radio" id="rbPregunta',contador,'_NA" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNA ',clase_pauta,'" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="na-',id_categoria,'_',id_pregunta,'"></td>');
-                                        div = div.concat('</tr>');
-                                        
-                                        div = div.concat('<tr>');
-                                        div = div.concat('<td id="cat_pre_',id_categoria,'_',id_pregunta,'" class="collapse" colspan="5">');
-                                        div = div.concat('<div class="card card-body">');
-                                        div = div.concat('<div class="row">');
-                                        div = div.concat('<div class="col-sm-6">');
-                                        div = div.concat('<label for="inputObservaciones',id_categoria,'_',id_pregunta,'">Observaciones</label>');
-                                        div = div.concat('<textarea class="form-control form-control-sm block" placeholder="Ingrese una Obseravaci&oacute;n" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" rows="2"></textarea>');
-                                        div = div.concat('</div>');
-                                        div = div.concat('<div id="div_',id_categoria,'_',id_pregunta,'" class="col-sm-6 row">');
-
-                                        //div = div.concat('<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFoto">Tomar una Foto</button>');
-                                        
-                                        div = div.concat('<div class="col-sm-2">');
-                                        div = div.concat('<button type="button" class="btn btn-primary tomarFoto" data-toggle="modal" data-target="#modalFoto" data-id="',id_categoria,'_',id_pregunta,'">Tomar una Foto</button>');
-                                        div = div.concat('</div>');
-                                        /*div = div.concat('<img id="foto_1_',id_categoria,'_',id_pregunta,'" class="img-fluid" src="">');
-                                        div = div.concat('<img id="foto_2_',id_categoria,'_',id_pregunta,'" class="img-fluid" src="">');
-                                        div = div.concat('<img id="foto_3_',id_categoria,'_',id_pregunta,'" class="img-fluid" src="">');
-                                        div = div.concat('<img id="foto_4_',id_categoria,'_',id_pregunta,'" class="img-fluid" src="">');
-                                        div = div.concat('<img id="foto_5_',id_categoria,'_',id_pregunta,'" class="img-fluid" src="">');*/
-                                        //div = div.concat('<label for="doc-front" class="images captura-btn"><i class="fa fa-camera" aria-hidden="true"></i> <span data-localize="capture">Agregar Foto</span></label>');
-                                        //div = div.concat('<a href="#" class="btn btn-secondary take-photo"><i class="fa fa-camera" aria-hidden="true"></i> <span data-localize="capture">FOTO</span></a>');
-                                        div = div.concat('</div>');
-                                        div = div.concat('</div>');
-                                        div = div.concat('</div>');
-                                        div = div.concat('</td>');
-                                        div = div.concat('</tr>');
-
-                                        id_categoria_i = id_categoria;
-                                    }else{
-
-                                        div = div.concat('<tr class="pregunta',id_categoria,'_',id_pregunta,' preguntas">');
-                                        div = div.concat('<!--<th class="text-left align-middle"><p class="texto-pequenio text-left align-middle registro">',id_categoria,'_',id_pregunta,'</p></th>-->');
-                                        div = div.concat('<th class="text-left align-middle"><p class="texto-pequenio text-left align-middle registro">',cod_pregunta,'</p></th>');
-                                        div = div.concat('<td class="text-left align-middle celdaAsignado"><p class="texto-pequenio text-left align-middle registro">',pregunta,'</p></td>');
-                                        div = div.concat('<td class="text-left align-middle radio"><input type="radio" id="rbPregunta',contador,'_SI" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbSI ',clase_pauta,'" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="si-',id_categoria,'_',id_pregunta,'"></td>');
-                                        div = div.concat('<td class="text-left align-middle radio"><input type="radio" id="rbPregunta',contador,'_NO" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNO ',clase_pauta,'" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="no-',id_categoria,'_',id_pregunta,'"></td>');
-                                        div = div.concat('<td class="text-left align-middle radio"><input type="radio" id="rbPregunta',contador,'_NA" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNA ',clase_pauta,'" data-id_categoria="',id_categoria,'" data-id_pregunta="',id_pregunta,'" value="na-',id_categoria,'_',id_pregunta,'"></td>');
-                                        div = div.concat('</tr>');
-                                        
-                                        div = div.concat('<tr>');
-                                        div = div.concat('<td id="cat_pre_',id_categoria,'_',id_pregunta,'" class="collapse" colspan="5">');
-                                        div = div.concat('<div class="card card-body">');
-                                        div = div.concat('<div class="row">');
-                                        div = div.concat('<div class="col-sm-6">');
-                                        div = div.concat('<label for="inputObservaciones',id_categoria,'_',id_pregunta,'">Observaciones</label>');
-                                        div = div.concat('<textarea class="form-control form-control-sm block" placeholder="Ingrese una Obseravaci&oacute;n" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" rows="2"></textarea>');
-                                        div = div.concat('</div>');
-                                        div = div.concat('<div id="div_',id_categoria,'_',id_pregunta,'" class="col-sm-6 row">');
-                                        div = div.concat('<div class="col-sm-2">');
-                                        div = div.concat('<button type="button" class="btn btn-primary tomarFoto" data-toggle="modal" data-target="#modalFoto" data-id="',id_categoria,'_',id_pregunta,'">Tomar una Foto</button>');
-                                        div = div.concat('</div>');
-                                        /*div = div.concat('<img id="foto_1_',id_categoria,'_',id_pregunta,'" class="img-fluid" src="">');
-                                        div = div.concat('<img id="foto_2_',id_categoria,'_',id_pregunta,'" class="img-fluid" src="">');
-                                        div = div.concat('<img id="foto_3_',id_categoria,'_',id_pregunta,'" class="img-fluid" src="">');
-                                        div = div.concat('<img id="foto_4_',id_categoria,'_',id_pregunta,'" class="img-fluid" src="">');
-                                        div = div.concat('<img id="foto_5_',id_categoria,'_',id_pregunta,'" class="img-fluid" src="">');*/
-                                        //div = div.concat('<label for="doc-front" class="images captura-btn"><i class="fa fa-camera" aria-hidden="true"></i> <span data-localize="capture">Agregar Foto</span></label>');
-                                        //div = div.concat('<a href="#" class="btn btn-secondary take-photo"><i class="fa fa-camera" aria-hidden="true"></i> <span data-localize="capture">FOTO</span></a>');
-                                        div = div.concat('</div>');
-                                        div = div.concat('</div>');
-                                        div = div.concat('</div>');
-                                        div = div.concat('</td>');
-                                        div = div.concat('</tr>');
                                     }
-                                }
-                                div = div.concat('</div>');
-                                div = div.concat('</div>');
+
+
+                                    div = div.concat('<div id="categoria',categoria.id_categoria,'" class="card card-body ',clase,'" ',hidden,'>');
+                                    div = div.concat('<div class="table-responsive">');
+                                    div = div.concat('<table id="tabla_',categoria.id_categoria,'" class="table table-sm">');
+                                    div = div.concat('<thead>');
+                                    div = div.concat('<tr class="border-1">');
+                                    div = div.concat('<td colspan="2" class="ml-3 text-left">');
+                                    div = div.concat('<h5 class="mb-0">');
+                                    div = div.concat('<button id="button_cat_',categoria.id_categoria,'" class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#tbodyCategoria',categoria.id_categoria,'" aria-expanded="true" aria-controls="tbodyCategoria',categoria.id_categoria,'">');
+                                    div = div.concat(categoria.codigo, ' - ', categoria.categoria);
+                                    div = div.concat('</button>');
+
+                                    div = div.concat('</h5>');
+                                    div = div.concat('</td>');
+                                    div = div.concat('<td colspan="3" class="text-right celdaAsignado">');
+                                    div = div.concat('<span id="conteo_',categoria.id_categoria,'" class="badge badge-danger badge-pill">0</span>  /  <span id="total_conteo_',categoria.id_categoria,'" class="badge badge-primary badge-pill">',categoria.preguntas.length/*cant_preguntas*/,'</span>');
+                                    div = div.concat('<a class="btn btn-link agregarObservacion" data-id="',categoria.id_categoria,'" data-codigo="',categoria.codigo,'" data-nombre="',categoria.categoria,'" data-toggle="modal" data-target="#modalFoto"><i stop-color data-feather="plus" class="pb-1"></i>Agregar Observacion</a>');
+                                    div = div.concat('</td>');
+                                    div = div.concat('</tr>');
+                                    div = div.concat('</thead>');
+                                    //div = div.concat('<thead>');
+                                    
+                                    //div = div.concat('</thead>');
+                                    div = div.concat('<tbody id="tbodyCategoria',categoria.id_categoria,'" class="collapse" aria-labelledby="categoria',categoria.id_categoria,'" data-parent="#categoria',categoria.id_categoria,'" >');
+                                    div = div.concat('<tr>');
+                                    div = div.concat('<!--<th scope="col" class="text-left align-middle">#</th>-->');
+                                    div = div.concat('<th scope="col" class="text-left align-middle">Codigo</th>');
+                                    div = div.concat('<th scope="col" class="text-left align-middle celdaAsignado">Pregunta</th>');
+                                    div = div.concat('<th scope="col" class="text-left align-middle">SI</th>');
+                                    div = div.concat('<th scope="col" class="text-left align-middle">NO</th>');
+                                    div = div.concat('<th scope="col" class="text-left align-middle">N/A</th>');
+                                    div = div.concat('</tr>');
+
+                                    if (categoria.preguntas.length > 0) {
+
+                                        $.each(categoria.preguntas, function(index_p, pregunta) {
+                                            contador++;
+                                            div = div.concat('<tr class="pregunta',categoria.id_categoria,'_',pregunta.id_pregunta,' preguntas">');
+                                            div = div.concat('<!--<th class="text-left align-middle"><p>',categoria.id_categoria,'_',pregunta.id_pregunta,'</p></th>-->');
+                                            div = div.concat('<th class="text-left align-middle"><p class="texto-pequenio text-left align-middle registro">',pregunta.codigo,'</p></th>');
+                                            div = div.concat('<td class="text-left align-middle celdaAsignado"><p class="texto-pequenio text-left align-middle registro">',pregunta.pregunta,'</p></td>');
+                                            div = div.concat('<td class="text-left align-middle radio"><input type="radio" id="rbPregunta',contador,'_SI" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbSI ',clase_pauta,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" value="si-',categoria.id_categoria,'_',pregunta.id_pregunta,'"></td>');
+                                            div = div.concat('<td class="text-left align-middle radio"><input type="radio" id="rbPregunta',contador,'_NO" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNO ',clase_pauta,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" value="no-',categoria.id_categoria,'_',pregunta.id_pregunta,'"></td>');
+                                            div = div.concat('<td class="text-left align-middle radio"><input type="radio" id="rbPregunta',contador,'_NA" name="rbPregunta',contador,/*,id_categoria,'_',id_pregunta,*/'" class="pauta rbNA ',clase_pauta,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" value="na-',categoria.id_categoria,'_',pregunta.id_pregunta,'"></td>');
+                                            div = div.concat('</tr>');
+                                            
+                                            div = div.concat('<tr>');
+                                            div = div.concat('<td id="cat_pre_',categoria.id_categoria,'_',pregunta.id_pregunta,'" class="collapse" colspan="5">');
+                                            div = div.concat('<div class="card card-body">');
+                                            div = div.concat('<div class="row">');
+
+                                            //div = div.concat('<div class="col-sm-6">');
+                                            //div = div.concat('<label for="inputObservaciones',categoria.id_categoria,'_',pregunta.id_pregunta,'">Observaciones</label>');
+                                            //div = div.concat('<textarea class="form-control form-control-sm block" placeholder="Ingrese una Obseravaci&oacute;n" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" rows="2"></textarea>');
+                                            //div = div.concat('</div>');
+
+                                            if(pregunta.respuestas.length > 0){
+
+                                                div = div.concat('<div class="form-group col-sm-6">');
+                                                    div = div.concat('<ul class="nav nav-tabs" id="myTab" role="tablist">');
+                                                      div = div.concat('<li class="nav-item" role="presentation">');
+                                                        div = div.concat('<a class="nav-link active" id="respuesta_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'" data-toggle="tab" href="#respuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'" role="tab" aria-controls="respuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'" aria-selected="true">Respuestas</a>');
+                                                      div = div.concat('</li>');
+                                                      div = div.concat('<li class="nav-item" role="presentation">');
+                                                        div = div.concat('<a class="nav-link" id="respuesta_obs_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'" data-toggle="tab" href="#respuesta_obs',categoria.id_categoria,'_',pregunta.id_pregunta,'" role="tab" aria-controls="respuesta_obs',categoria.id_categoria,'_',pregunta.id_pregunta,'" aria-selected="false">Nueva Respuesta</a>');
+                                                      div = div.concat('</li>');
+                                                    div = div.concat('</ul>');
+                                                    div = div.concat('<div class="tab-content" id="myTabContent">');
+                                                        div = div.concat('<div class="tab-pane fade show active" id="respuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'" role="tabpanel" aria-labelledby="respuesta_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'">');
+                                                            div = div.concat('<div class="form-group col-sm-12">');
+                                                                div = div.concat('<div class="row justify-content-md-left">');
+                                                                    div = div.concat('<div class="form-group col-sm-12  mt-3">');
+                                                                        //div = div.concat('<label for="sRespuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'">Respuesta</label>');
+                                                                        div = div.concat('<select id="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" name="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" class="custom-select custom-select-sm">');
+                                                                            div = div.concat('<option value="-1" selected>Seleccione una Respuesta</option>');
+                                                                            
+                                                                            $.each(pregunta.respuestas, function(index_r, respuesta) {
+                                                                                div = div.concat('<option value="',respuesta['id_respuesta'],'">',respuesta['respuesta'],'</option>');
+                                                                            });
+
+                                                                        div = div.concat('</select>');
+                                                                    div = div.concat('</div>');
+                                                                div = div.concat('</div>');
+                                                            div = div.concat('</div>');
+                                                        div = div.concat('</div>');
+                                                        div = div.concat('<div class="tab-pane fade" id="respuesta_obs',categoria.id_categoria,'_',pregunta.id_pregunta,'" role="tabpanel" aria-labelledby="respuesta_obs_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'">');
+                                                            div = div.concat('<div class="justify-content-md-left p-3">');
+                                                            //div = div.concat('<label for="inputObservaciones">Nueva Respuesta</label>');
+                                                            //div = div.concat('<input type="text" class="form-control form-control-sm" id="inputObservaciones" minlength="1" placeholder="Ingrese una Respuesta" name="inputObservaciones" value="">');
+                                                                div = div.concat('<textarea class="form-control form-control-sm block" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" rows="2"></textarea>');
+                                                            div = div.concat('</div>');
+                                                        div = div.concat('</div>');
+                                                    div = div.concat('</div>');
+                                                div = div.concat('</div>');
+                                            }else{
+                                                div = div.concat('<div class="col-sm-6">');
+                                                div = div.concat('<label for="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'">Nueva Respuesta</label>');
+                                                div = div.concat('<textarea class="form-control form-control-sm block" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" rows="2"></textarea>');
+                                                div = div.concat('</div>');
+                                            }
+
+
+                                            div = div.concat('<div class="col-6 row">');
+
+                                            //div = div.concat('<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFoto">Tomar una Foto</button>');
+                                            
+                                            div = div.concat('<div class="col-sm-12 col-md-6 mt-4">');
+                                            div = div.concat('<button type="button" class="btn btn-primary align-middle tomarFoto" data-toggle="modal" data-target="#modalFoto" data-id="',categoria.id_categoria,'_',pregunta.id_pregunta,'">Tomar una Foto</button>');
+                                            div = div.concat('</div>');
+
+                                            
+                                            /*div = div.concat('<img id="foto_1_',id_categoria,'_',id_pregunta,'" class="img-fluid" src="">');
+                                            div = div.concat('<img id="foto_2_',id_categoria,'_',id_pregunta,'" class="img-fluid" src="">');
+                                            div = div.concat('<img id="foto_3_',id_categoria,'_',id_pregunta,'" class="img-fluid" src="">');
+                                            div = div.concat('<img id="foto_4_',id_categoria,'_',id_pregunta,'" class="img-fluid" src="">');
+                                            div = div.concat('<img id="foto_5_',id_categoria,'_',id_pregunta,'" class="img-fluid" src="">');*/
+                                            //div = div.concat('<label for="doc-front" class="images captura-btn"><i class="fa fa-camera" aria-hidden="true"></i> <span data-localize="capture">Agregar Foto</span></label>');
+                                            //div = div.concat('<a href="#" class="btn btn-secondary take-photo"><i class="fa fa-camera" aria-hidden="true"></i> <span data-localize="capture">FOTO</span></a>');
+                                            div = div.concat('</div>');
+
+                                            div = div.concat('<div id="div_',categoria.id_categoria,'_',pregunta.id_pregunta,'" class="col-12 row">');
+                                            div = div.concat('</div>');
+
+                                            div = div.concat('</div>');
+                                            div = div.concat('</div>');
+                                            div = div.concat('</td>');
+                                            div = div.concat('</tr>');
+                                        });
+                                    }
+
+
+
+                                    div = div.concat('</tbody>');
+                                    div = div.concat('</table>');
+                                    div = div.concat('</div>');
+                                    div = div.concat('</div>');
+
+
+                                });
+
+                                //div = div.concat('</div>');
+                                //div = div.concat('</div>');
                                 $("#acordionCategorias").append(inputTC);
                                 $("#acordionCategorias").append(div);
                                 feather.replace();

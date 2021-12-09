@@ -84,6 +84,7 @@ $(document).ready(function() {
         $('.cameras').detach();
         $('a.take-photo.btn.btn-secondary').detach();
     }
+    document.getElementById('video').classList.add("rounded");
 });
 
 $('body').on('click', '.api-call', function(event) {

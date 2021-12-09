@@ -292,6 +292,7 @@ class Norma extends CI_Controller {
 			$cantCategoria = 0;
 			$cantCategoriaPregunta = 0;
 			$idCategoria = null;
+			$idPregunta = null;
 
 			if(!is_null($this->input->post('idNorma')) && $this->input->post('idNorma') != "-1"  && $this->input->post('idNorma') != "")
 				$idNorma = $this->input->post('idNorma');
@@ -300,26 +301,150 @@ class Norma extends CI_Controller {
 				$categorias_preguntas_norma = $this->norma_model->listarCategoriasPreguntasNorma($idNorma, $usuario['id_usuario']);
 				if (sizeof($categorias_preguntas_norma) > 0) {
 
+					#var_dump(sizeof($categorias_preguntas_norma));
+					$categorias = array();
+					$preguntas = array();
+					$respuestas = array();
 
 					foreach ($categorias_preguntas_norma as $pregunta) {
+						$id_categoria = null;
+						$id_pregunta = null;
+						$codigo_c = null;
+						$categoria = null;
+						$codigo_p = null;
+						$pregunta_p = null;
+						$id_respuesta = null;
+						$orden_r = null;
+						$respuesta = null;
+						$obs_respuesta = null;
+
+						#var_dump($idCategoria);
+						#var_dump($pregunta['id_categoria']);
+
+						
+                     	/*var_dump("idCategoria:  ");var_dump($pregunta["id_categoria"]);var_dump("</br>");
+                     	var_dump("id_pregunta:  ");var_dump($pregunta['id_pregunta']);var_dump("</br>");
+                     	var_dump("codigo_c:  ");var_dump($pregunta['codigo_c']);var_dump("</br>");
+                     	var_dump("categoria:  ");var_dump($pregunta['categoria']);var_dump("</br>");
+                     	var_dump("codigo_p:  ");var_dump($pregunta['codigo_p']);var_dump("</br>");
+                     	var_dump("pregunta_r:  ");var_dump($pregunta['pregunta']);var_dump("</br>");
+                     	var_dump("orden_r:  ");var_dump($pregunta['orden_r']);var_dump("</br>");
+                     	var_dump("respuesta:  ");var_dump($pregunta['respuesta']);var_dump("</br>");
+                     	var_dump("obs_respuesta:  ");var_dump($pregunta['obs_respuesta']);var_dump("</br></br></br>");*/
+
 						if ($idCategoria != $pregunta['id_categoria'])
 	                    {
-	                    	if ($idCategoria)
-	                    		$dataCategoria[] = array('id_categoria' => $idCategoria, 'cantPreguntas' => $cantCategoriaPregunta);
-	                    	$cantCategoriaPregunta = 0;
-	                     	$cantCategoria++;
-	                     	$cantCategoriaPregunta++;
-	                     	$idCategoria = $pregunta['id_categoria'];
+	                    	#if ($idCategoria)
+	                    	#	$dataCategoria[] = array('id_categoria' => $idCategoria, 'cantPreguntas' => $cantCategoriaPregunta);
+
+	                    	#$cantCategoriaPregunta = 0;
+	                     	#$cantCategoria++;
+	                     	#$cantCategoriaPregunta++;
+
+	                     	$id_pregunta = $pregunta['id_pregunta'];
+	                     	$codigo_c = $pregunta['codigo_c'];
+	                     	$categoria = $pregunta['categoria'];
+	                     	$codigo_p = $pregunta['codigo_p'];
+	                     	$pregunta_r = $pregunta['pregunta'];
+	                     	$id_respuesta = $pregunta['respuesta_id'];
+	                     	$orden_r = $pregunta['orden_r'];
+	                     	$respuesta = $pregunta['respuesta'];
+	                     	$obs_respuesta = $pregunta['obs_respuesta'];
+
+	                     	if (is_null($idCategoria)) {
+	                     		$idCategoria = $pregunta['id_categoria'];
+	                     		$idPregunta = $id_pregunta;
+	                     		$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
+	                     		$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuestas" => []);
+
+		                     	if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
+		                     		$respuestas[] = array("id_respuesta" => $id_respuesta, "orden_r" => $orden_r, "respuesta" => $respuesta, "obs_respuesta" => $obs_respuesta);
+		                     	}
+	                     	}else{
+	                     			$idCategoria = $pregunta['id_categoria'];
+	                     		#if (sizeof($respuestas) > 0) {
+	                     			$preguntas[(sizeof($preguntas)-1)]["respuestas"] = $respuestas;
+	                     			$respuestas = array();
+	                     			$idPregunta = $pregunta['id_pregunta'];
+	                     			$categorias[(sizeof($categorias)-1)]["preguntas"] = $preguntas;
+	                     			$preguntas = array();
+	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuestas" => []);
+
+	                     			if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
+			                     		$respuestas[] = array("id_respuesta" => $id_respuesta, "orden_r" => $orden_r, "respuesta" => $respuesta, "obs_respuesta" => $obs_respuesta);
+			                     	}
+
+			                     	$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
+	                     		#}else{
+	                     		#	$preguntas[(sizeof($preguntas)-1)]["respuestas"] = $respuestas;
+	                     		#	$respuestas = array();
+	                     		#	$idPregunta = $pregunta['id_pregunta'];
+	                     		#	$categorias[(sizeof($categorias)-1)]["preguntas"] = $preguntas;
+	                     		#	$preguntas = array();
+	                     		#	$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuestas" => []);
+	                     		#}
+
+
+	                     	}
+
+
 	                    }else{
-	                    	$cantCategoriaPregunta++;
+
+	                    	if ($idPregunta != $pregunta['id_pregunta'])
+		                    {
+		                    	$id_pregunta = $pregunta['id_pregunta'];
+		                     	$codigo_c = $pregunta['codigo_c'];
+		                     	$categoria = $pregunta['categoria'];
+		                     	$codigo_p = $pregunta['codigo_p'];
+		                     	$pregunta_r = $pregunta['pregunta'];
+		                     	$id_respuesta = $pregunta['respuesta_id'];
+		                     	$orden_r = $pregunta['orden_r'];
+		                     	$respuesta = $pregunta['respuesta'];
+		                     	$obs_respuesta = $pregunta['obs_respuesta'];
+
+		                    	$preguntas[(sizeof($preguntas)-1)]["respuestas"] = $respuestas;
+		                    	$respuestas = array();
+		                    	$idPregunta = $pregunta['id_pregunta'];
+		                    	$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuestas" => []);
+
+		                    	if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
+		                     		$respuestas[] = array("id_respuesta" => $id_respuesta, "orden_r" => $orden_r, "respuesta" => $respuesta, "obs_respuesta" => $obs_respuesta);
+		                     	}
+
+		                     	#var_dump($preguntas);
+
+		                    }else{
+
+		                    	$id_pregunta = $pregunta['id_pregunta'];
+		                     	$codigo_c = $pregunta['codigo_c'];
+		                     	$categoria = $pregunta['categoria'];
+		                     	$codigo_p = $pregunta['codigo_p'];
+		                     	$pregunta_r = $pregunta['pregunta'];
+		                     	$id_respuesta = $pregunta['respuesta_id'];
+		                     	$orden_r = $pregunta['orden_r'];
+		                     	$respuesta = $pregunta['respuesta'];
+		                     	$obs_respuesta = $pregunta['obs_respuesta'];
+		                    	
+		                    	if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
+		                     		$respuestas[] = array("id_respuesta" => $id_respuesta, "orden_r" => $orden_r, "respuesta" => $respuesta, "obs_respuesta" => $obs_respuesta);
+		                     	}
+
+		                    }
+	                    	#$cantCategoriaPregunta++;
+	                    	#var_dump($pregunta);
+
 	                    }
+
 	                }
-	                $dataCategoria[] = array('id_categoria' => $idCategoria, 'cantPreguntas' => $cantCategoriaPregunta);
+
+	                $preguntas[(sizeof($preguntas)-1)]["respuestas"] = $respuestas;
+         			$categorias[(sizeof($categorias)-1)]["preguntas"] = $preguntas;
+	                #var_dump($categorias);
+	                #$dataCategoria[] = array('id_categoria' => $idCategoria, 'cantPreguntas' => $cantCategoriaPregunta);
 	                	
 
-					foreach ($categorias_preguntas_norma as $pregunta) {
+					/*foreach ($categorias_preguntas_norma as $pregunta) {
 						
-
 						$row_cp_n = array();
 						$row_cp_n[] = $pregunta['id'];
 						$row_cp_n[] = $pregunta['id_norma'];
@@ -337,14 +462,14 @@ class Norma extends CI_Controller {
 						$row[] = $pregunta['codigo_p'];
 						$row[] = $pregunta['pregunta'];
 						$data[] = $row;
-					}
+					}*/
 				}
 			}
 			
 			$output = array(
-				'data' => $data,
-				'data_cp_n' => $categorias_preguntas,
-				'data_total' => $dataCategoria
+				'data_cp_n' => $categorias,
+				#'data_cp_n' => $categorias_preguntas,
+				#'data_total' => $dataCategoria
 			);
 			echo json_encode($output);
 		}else

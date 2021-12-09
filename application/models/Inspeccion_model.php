@@ -67,7 +67,7 @@ class Inspeccion_model extends CI_Model
 
 	public function obtenerInspeccion($idInspeccion, $id_usuario)
 	{
-	$this->db->select('i.id, i.id_edificio, i.nombre_tecnico, i.rut_admin, i.nombre_admin, i.email_admin, i.fecha_contrato_mant, i.contrato_vigente, i.id_empresa_mantenedora, i.nombre_mant_2, i.fecha_ultima_mant, i.marca_ascensor, i.id_uso, i.capacidad_personas, i.capacidad_kg, i.id_suspension, i.sala_maquinas, i.velocidad, i.recorrido, i.paradas, i.id_tipo_traccion, i.diametro_traccion, i.enclavamiento_electrico, i.enclavamiento_mecanico, i.diametro_cable, i.id_estado, i.id_usuario, i.created_at, i.updated_at, e.rol, e.nombre as edificio, e.rut as rut_e, e.domicilio, em.cod_empresa, em.razon_social, em.num_registro, em.direccion as direccion_em, em.rut as rut_em, em.email as email_em, em.observaciones as observaciones_em');
+	$this->db->select('i.id, i.id_edificio, i.nombre_tecnico, i.rut_admin, i.nombre_admin, i.email_admin, i.fecha_contrato_mant, i.contrato_vigente, i.id_empresa_mantenedora, i.nombre_mant_2, i.fecha_ultima_mant, i.marca_ascensor, i.id_uso, i.capacidad_personas, i.capacidad_kg, i.id_suspension, i.sala_maquinas, i.velocidad, i.recorrido, i.paradas, i.id_tipo_traccion, i.cantidad, i.diametro_traccion, i.enclavamiento_electrico, i.enclavamiento_mecanico, i.diametro_cable, i.id_estado, i.id_usuario, i.created_at, i.updated_at, e.rol, e.nombre as edificio, e.rut as rut_e, e.domicilio, em.cod_empresa, em.razon_social, em.num_registro, em.direccion as direccion_em, em.rut as rut_em, em.email as email_em, em.observaciones as observaciones_em');
 		$this->db->from('inspecciones i');
 		$this->db->join('edificios e', 'i.id_edificio = e.id', 'LEFT');
 		$this->db->join('empresas_mantenedoras em', 'i.id_empresa_mantenedora = em.id_empresa', 'LEFT');
@@ -125,7 +125,7 @@ class Inspeccion_model extends CI_Model
 
 	public function listarInspecciones($id_usuario)
 	{
-		$this->db->select('i.id, i.id_edificio, i.nombre_tecnico, i.rut_admin, i.nombre_admin, i.email_admin, i.fecha_contrato_mant, i.contrato_vigente, i.id_empresa_mantenedora, i.nombre_mant_2, i.fecha_ultima_mant, i.marca_ascensor, i.id_uso, i.capacidad_personas, i.capacidad_kg, i.id_suspension, i.sala_maquinas, i.velocidad, i.recorrido, i.paradas, i.id_tipo_traccion, i.diametro_traccion, i.enclavamiento_electrico, i.enclavamiento_mecanico, i.diametro_cable, i.id_estado, i.id_usuario, i.created_at, i.updated_at`');
+		$this->db->select('i.id, i.id_edificio, i.nombre_tecnico, i.rut_admin, i.nombre_admin, i.email_admin, i.fecha_contrato_mant, i.contrato_vigente, i.id_empresa_mantenedora, i.nombre_mant_2, i.fecha_ultima_mant, i.marca_ascensor, i.id_uso, i.capacidad_personas, i.capacidad_kg, i.id_suspension, i.sala_maquinas, i.velocidad, i.recorrido, i.paradas, i.id_tipo_traccion, i.cantidad, i.diametro_traccion, i.enclavamiento_electrico, i.enclavamiento_mecanico, i.diametro_cable, i.id_estado, i.id_usuario, i.created_at, i.updated_at`');
 		$this->db->from('inspecciones i');
 		$this->db->where('i.id_estado', 1);
 		$inspeccion = $this->db->get();
@@ -229,7 +229,7 @@ class Inspeccion_model extends CI_Model
 	    return $resultado;
 	}
 
-	public function agregarInspeccion($idInspeccion, $tecnico, $nombreE, $direccionE, $rutE, $idE, $nombreA, $rutA, $emailA, $idEmpresaM, $nombreRM, $fechaUM, $marca, $idUso, $capacidad, $capacidadKG, $idSuspension, $salaMaquina, $velocidad, $recorrido, $paradas, $idTipoTraccion, $diamTraccion, $enclavamientoE, $enclavamientoM, $diamCableL, $idNorma, $id_usuario){
+	public function agregarInspeccion($idInspeccion, $tecnico, $nombreE, $direccionE, $rutE, $idE, $nombreA, $rutA, $emailA, $idEmpresaM, $nombreRM, $fechaUM, $marca, $idUso, $capacidad, $capacidadKG, $idSuspension, $salaMaquina, $velocidad, $recorrido, $paradas, $idTipoTraccion, $cantidad, $diamTraccion, $enclavamientoE, $enclavamientoM, $diamCableL, $idNorma, $id_usuario){
 		try{
 			$this->db->db_debug = FALSE;
 			$id_edificio = null;
@@ -238,13 +238,15 @@ class Inspeccion_model extends CI_Model
 				'mensaje' => null,
 				'id_inspeccion' => null);
 			
-
+			var_dump($rutE);
 			if ($idE > 0 && !is_null($idE)) {
 				$edificios = $this->db->get_where('edificios', array('rol' => $idE))->result();
-
 				if (sizeof($edificios) > 0) {
 					$id_edificio = $edificios[0]->id;
-				}else{
+				}
+			}else{
+				var_dump("entro aca");
+				if (!is_null($nombreE) || !is_null($direccionE) || !is_null($rutE)) {
 					$dataE = array(
 						'nombre' => $nombreE,
 						'domicilio' => $direccionE,
@@ -255,8 +257,14 @@ class Inspeccion_model extends CI_Model
 					
 					try{
 					    $this->db->insert('edificios', $dataE);
-						if ($this->db->affected_rows() >= 1)
+						if ($this->db->affected_rows() >= 1){
 							$id_edificio = $this->db->insert_id();
+						}else{
+							$respuesta['id_inspeccion'] = -1;
+							$respuesta['resultado'] = $this->db->affected_rows();
+							$respuesta['mensaje'] = $this->db->error();
+						}	
+						var_dump($respuesta);
 					}
 					catch(Exception $e){
 						$respuesta['id_inspeccion'] = -1;
@@ -264,6 +272,7 @@ class Inspeccion_model extends CI_Model
 					    $respuesta['data'] = $dataE;
 					}
 				}
+				
 			}
 			
 
@@ -286,6 +295,7 @@ class Inspeccion_model extends CI_Model
 				'recorrido' => $recorrido,
 				'paradas' => $paradas,
 				'id_tipo_traccion' => $idTipoTraccion,
+				'cantidad' => $cantidad,
 				'diametro_traccion' => $diamTraccion,
 				'enclavamiento_electrico' => $enclavamientoE,
 				'enclavamiento_mecanico' => $enclavamientoM,
@@ -474,21 +484,61 @@ class Inspeccion_model extends CI_Model
 		return $respuesta;
 	}
 
-	public function agregarRespuestaCheck($id_categoria, $id_pregunta, $respuesta_check, $observacion, $orden, $id_inspecciones_checklists){
+	public function agregarRespuestaCheck($id_categoria, $id_pregunta, $respuesta_check, $observacion, $orden, $id_respuesta, $id_inspecciones_checklists, $id_usuario){
 		try{
-			$this->db->db_debug = FALSE; 
+			$this->db->db_debug = FALSE;
+			$idRespuesta = null;
 			$respuesta = array('resultado' => null, 
 				'mensaje' => null,
 				'id_inspeccion_checklist_resp' => null);
 
 			$id_inspeccion_checklist_resp = null;
 
+			if ($respuesta_check === 2) {
+				if (isset($id_respuesta) && !is_null($id_respuesta) && strlen(trim($id_respuesta)) > 0) {
+					$respuestas = $this->db->get_where('respuestas', array('id' => $id_respuesta, 'id_estado' => 1))->result();
+					if (sizeof($respuestas) > 0) {
+						$idRespuesta = $id_respuesta;
+					}else{
+						$respuesta['resultado'] = -1;
+					    $respuesta['mensaje'] = 'La respuesta que intenta ingresar no se encuentra registrada.';
+					    $respuesta['id_inspeccion_checklist_resp'] = -1;
+					    exit;
+					}
+				}else{
+					if (isset($observacion) && !is_null($observacion) && strlen(trim($observacion)) > 0) {
+
+						$respuestas = $this->db->get_where('respuestas', array('id_pregunta' => $id_pregunta, 'id_estado' => 1))->result();
+						$orden_respuesta = (sizeof($respuestas) + 1);
+
+						$data_respuesta = array(
+							'orden' => $orden_respuesta,
+							'nombre' => trim($observacion),
+							'observaciones' => ($observacion),
+							'id_pregunta' => $id_pregunta,
+							'id_usuario' => $id_usuario
+						);
+
+						$this->db->insert('respuestas', $data_respuesta);
+						if ($this->db->affected_rows() >= 1) {
+							$idRespuesta = $this->db->insert_id();
+						}else{
+							$respuesta['resultado'] = -1;
+							$respuesta['resultado'] = $this->db->affected_rows();
+						    $respuesta['mensaje'] = $this->db->error();
+						    $respuesta['id_inspeccion_checklist_resp'] = -1;
+						    exit;
+						}
+					}
+				}
+			}
+
 			$data = array(
 		        'id_inspecciones_checklists' => $id_inspecciones_checklists,
 				'id_categoria' => $id_categoria,
 				'id_pregunta' => $id_pregunta,
 				'respuesta' => $respuesta_check,
-				'observaciones' => $observacion,
+				'id_respuesta' => $idRespuesta,
 				'orden' => $orden
 			);
 			
@@ -511,8 +561,43 @@ class Inspeccion_model extends CI_Model
 		return $respuesta;
 	}
 
+	public function agregarObservacionCheck($id_categoria, $observacion, $orden, $id_inspecciones_checklists, $id_usuario){
+		try{
+			$this->db->db_debug = FALSE;
+			$respuesta = array('resultado' => null, 
+				'mensaje' => null,
+				'id_inspeccion_checklist_obs' => null);
 
-	public function agregarArchivo($file_name, $file_type, $file_path, $full_path, $raw_name, $orig_name, $client_name, $file_ext, $file_size, $is_image, $image_width, $image_height, $image_type, $image_size_str, $id_inspeccion_checklist_resp, $id_categoria, $id_pregunta, $orden, $id_usuario){
+			$id_inspeccion_checklist_obs = null;
+
+			$data = array(
+		        'id_inspecciones_checklists' => $id_inspecciones_checklists,
+				'id_categoria' => $id_categoria,
+				'observaciones' => $observacion,
+				'orden' => $orden
+			);
+			
+			$this->db->insert('inspecciones_checklists_obs', $data);
+			if ($this->db->affected_rows() >= 1) {
+				$id_inspeccion_checklist_obs = $this->db->insert_id();
+				$respuesta['id_inspeccion_checklist_obs'] = $id_inspeccion_checklist_obs;
+				$respuesta['resultado'] = $this->db->affected_rows();
+				$respuesta['mensaje'] = "Se ha insertado correctamente la Observacion del CheckList a la Inspeccion.";
+			}else{
+				$respuesta['id_inspeccion_checklist_obs'] = -1;
+				$respuesta['resultado'] = $this->db->affected_rows();
+				$respuesta['mensaje'] = $this->db->error();
+			}
+		}catch(Exception $e){
+			$respuesta['resultado'] = -1;
+		    $respuesta['mensaje'] = $e["code"].", Mensaje: ".$e["message"];
+		    $respuesta['id_inspeccion_checklist_obs'] = -1;
+		}
+		return $respuesta;
+	}
+
+
+	public function agregarArchivo($file_name, $file_type, $file_path, $full_path, $raw_name, $orig_name, $client_name, $file_ext, $file_size, $is_image, $image_width, $image_height, $image_type, $image_size_str, $id_inspeccion_checklist_resp, $id_categoria, $id_pregunta, $orden, $id_usuario, $id_inspeccion_checklist_obs = null){
 		$respuesta = array('resultado' => null, 
 			'mensaje' => null,
 			'id_archivo' => null);
@@ -535,6 +620,7 @@ class Inspeccion_model extends CI_Model
 			'inspeccion_checklist_resp_id' => $id_inspeccion_checklist_resp,
 			'id_categoria' => $id_categoria,
 			'id_pregunta' => $id_pregunta,
+			'inspeccion_checklist_obs_id' => $id_inspeccion_checklist_obs,
 			'orden' => $orden
 		);
 		$this->db->insert('archivos', $data);

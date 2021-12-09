@@ -35,7 +35,7 @@
 				<div class="row">
 					<div class="col-sm-12 mb-5">
 						<hr class="my-3">
-						<h5><i class="mb-2" data-feather="check-square" ></i> PARTICIPANTES EN LA REVISION</h5>
+						<h5><i class="mb-2" data-feather="user-check" ></i> PARTICIPANTES EN LA REVISION</h5>
 					</div>
 					<div class="form-group col-sm-6">
 						<label for="inputTecnico">Nombre del Tecnico</label>
@@ -46,28 +46,28 @@
 				<div class="row">
 					<div class="col-sm-12 mb-5">
 						<hr class="my-3">
-						<h5><i class="mb-2" data-feather="check-square" ></i> ANTECEDENTES DEL EDIFICIO</h5>
+						<h5><i class="mb-2" data-feather="edit" ></i> ANTECEDENTES DEL EDIFICIO</h5>
 
 						<div class="row">
 							<div class="form-group col-sm-6">
-								<label for="inputNombre">Nombre del Edificio</label>
+								<label for="inputNombreE">Nombre del Edificio</label>
 								<input type="text" class="form-control  form-control-sm" id="inputNombreE" minlength="1" placeholder="Ingrese Nombre del Edificio" name="inputNombreE" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
 							<div class="form-group col-sm-6">
-								<label for="inputNombre">Direccion del Edificio</label>
+								<label for="inputDireccionE">Direccion del Edificio</label>
 								<input type="text" class="form-control  form-control-sm" id="inputDireccionE" minlength="1" placeholder="Ingrese Direccion del Edificio" name="inputDireccionE" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
 						</div>
 						<div class="row">
 							<div class="form-group col-sm-6">
-								<label for="inputNombre">Rut del Edificio</label>
+								<label for="inputRutE">Rut del Edificio</label>
 								<input type="text" class="form-control  form-control-sm" id="inputRutE" minlength="1" placeholder="Ingrese un Rut del Edificio" name="inputRutE" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
 							<div class="form-group col-sm-6">
-								<label for="inputNombre">Id de Ascensor</label>
+								<label for="inputIdE">Id de Ascensor</label>
 								<input type="text" class="form-control  form-control-sm" id="inputIdE" minlength="1" placeholder="Ingrese un Id de Ascensor" name="inputIdE" value="<?php if(isset($checklist['id_ascensor'])): echo $checklist['id_ascensor']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
@@ -75,12 +75,12 @@
 
 						<div class="row">
 							<div class="form-group col-sm-6">
-								<label for="inputNombre">Nombre administrador</label>
+								<label for="inputNombreA">Nombre administrador</label>
 								<input type="text" class="form-control  form-control-sm" id="inputNombreA" minlength="1" placeholder="Ingrese un Nombre administrador" name="inputNombreA" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
 							<div class="form-group col-sm-6">
-								<label for="inputNombre">RUT administrador</label>
+								<label for="inputRutA">RUT administrador</label>
 								<input type="text" class="form-control  form-control-sm" id="inputRutA" minlength="1" placeholder="Ingrese un RUT administrador" name="inputRutA" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
@@ -88,7 +88,7 @@
 
 						<div class="row">
 							<div class="form-group col-sm-6">
-								<label for="inputNombre">Email administrador</label>
+								<label for="inputEmailA">Email administrador</label>
 								<input type="email" class="form-control  form-control-sm" id="inputEmailA" minlength="1" placeholder="Ingrese un Email administrador" name="inputEmailA" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
@@ -108,9 +108,9 @@
 							</div>-->
 
 							<div class="form-group col-10 col-sm-4">
-								<label for="inputNombre">Empresa Mantenedora</label>
+								<label for="inputEmpresaMantenedora">Empresa Mantenedora</label>
 								<input type="text" class="form-control" id="idEmpresaMantenedora" minlength="1" name="idEmpresaMantenedora" value="" hidden>
-								<input type="text" class="form-control  form-control-sm" id="inputEmpresaMantenedora" minlength="1" placeholder="Seleccione una Empresa Mantenedora" name="inputNombre" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>" readonly>
+								<input type="text" class="form-control  form-control-sm" id="inputEmpresaMantenedora" minlength="1" placeholder="Seleccione una Empresa Mantenedora" name="inputEmpresaMantenedora" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>" readonly>
 							</div>
 							<div class="form-group col-2 col-sm-2 pt-1">
 								<div class="align-middle pt-2">
@@ -123,12 +123,12 @@
 
 						<div class="row">
 							<div class="form-group col-sm-6">
-								<label for="inputNombre">Nombre de quien realiza la mantención</label>
+								<label for="inputNombreRM">Nombre de quien realiza la mantención</label>
 								<input type="text" class="form-control  form-control-sm" id="inputNombreRM" minlength="1" placeholder="Ingrese un Nombre de quien realiza la mantención" name="inputNombreRM" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
 							<div class="form-group col-sm-6">
-								<label for="inputNombre">Fecha de la última mantención</label>
+								<label for="inputFechaUM">Fecha de la última mantención</label>
 								<input type="date" class="form-control  form-control-sm" id="inputFechaUM" minlength="1" placeholder="Ingrese un Fecha de la última mantención" name="inputFechaUM" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
@@ -139,7 +139,7 @@
 				<div class="row">
 					<div class="col-lg-12 mb-5">
 						<hr class="my-3">
-						<h5 class="mb-3"><i class="mb-2" data-feather="check-square" ></i> CARPETA T&Eacute;CNICA</h5>
+						<h5 class="mb-3"><i class="mb-2" data-feather="folder" ></i> CARPETA T&Eacute;CNICA</h5>
 
 						<div class="form-group col-sm-12">
 							<label for="inputNombre">Contiene Carpeta T&eacute;cnica ?</label>
@@ -228,7 +228,7 @@
 				
 					<div class="col-lg-12 mb-3">
 						<hr class="my-3">
-						<h5 class="mb-3"><i class="mb-2" data-feather="check-square" ></i> EQUIPOS Y HERRAMIENTAS y EPP UTILIZADOS UTILIZADAS PARA LA REVISION</h5>
+						<h5 class="mb-3"><i class="mb-2" data-feather="tool" ></i> EQUIPOS Y HERRAMIENTAS y EPP UTILIZADOS UTILIZADAS PARA LA REVISION</h5>
 
 						<div class="row">
 							<div class="form-group col-sm-12">
@@ -273,7 +273,7 @@
 				<div class="row">
 					<div class="col-sm-12 mb-5">
 						<hr class="my-3">
-						<h5><i class="mb-3" data-feather="check-square" ></i> ANTECEDENTES DEL ASCENSOR</h5>
+						<h5><i class="mb-2" data-feather="edit" ></i> ANTECEDENTES DEL ASCENSOR</h5>
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputMarca">Marca</label>
@@ -304,17 +304,17 @@
 								<label for="inputSuspension">Suspension</label>
 								<select id="selectSuspension" name="selectSuspension" class="custom-select custom-select-sm">
 									<option selected>Seleccione una Suspension</option>
-									<option value="3">1:1</option>
-									<option value="4">2:1</option>
-									<option value="5">3:1</option>
-									<option value="6">4:1</option>
-									<option value="7">Hidraulico</option>
+									<?php if(isset($suspensiones)) {
+					        					foreach ($suspensiones as $suspension): ?>
+													<option value="<?php if(isset($suspension['id'])): echo $suspension['id']; endif; ?>" data-grupo="<?php if(isset($suspension['grupo_suspension'])): echo $suspension['grupo_suspension']; endif; ?>"><?php if(isset($suspension['nombre'])): echo $suspension['nombre']; endif; ?></option>
+									<?php endforeach;
+										} ?>
 								</select>
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="selectSalaMaquina">Sala de Maquinas</label>
 								<select id="selectSalaMaquina" name="selectSalaMaquina" class="custom-select custom-select-sm">
-									<option value="1">Si</option>
+									<option value="1" selected>Si</option>
 									<option value="2">No</option>
 								</select>
 							</div>
@@ -340,30 +340,36 @@
 								<label for="selectTipoTraccion">Tipo Tracción</label>
 								<select id="selectTipoTraccion" name="selectTipoTraccion" class="custom-select custom-select-sm">
 									<option selected>Seleccione un Tipo Tracción</option>
-									<option value="1">Cable</option>
-									<option value="2">Cinta</option>
-									<option value="3">Directa</option>
-									<option value="4">Indirecta</option>
-									<option value="5">Cadena</option>
+									<?php if(isset($tipos_traccion)) {
+					        					foreach ($tipos_traccion as $traccion): ?>
+													<option value="<?php if(isset($traccion['id'])): echo $traccion['id']; endif; ?>" data-grupo="<?php if(isset($traccion['grupo_suspension'])): echo $traccion['grupo_suspension']; endif; ?>"><?php if(isset($traccion['nombre'])): echo $traccion['nombre']; endif; ?></option>
+									<?php endforeach;
+										} ?>
 								</select>
 							</div>
 						</div>
 
 						<div class="row">
 							<div class="form-group col-sm-6">
-								<label for="inputDiamCablesTraccion">Diametro de Traccion</label>
-								<input type="text" class="form-control  form-control-sm" id="inputDiamTraccion" minlength="1" placeholder="Ingrese Diametro de Traccion" name="inputDiamTraccion" value="<?php if(isset($checklist['diamTraccion'])): echo $checklist['diamTraccion']; endif; ?>">
+								<label for="inputCantidad">Cantidad</label>
+								<input type="text" class="form-control  form-control-sm" id="inputCantidad" minlength="1" placeholder="Ingrese Cantidad" name="inputCantidad" value="<?php if(isset($checklist['cantidad'])): echo $checklist['cantidad']; endif; ?>">
 							</div>
 							<div class="form-group col-sm-6">
-								<label for="inputEnclavamientoElectrico">Enclavamiento El&eacute;ctrico Limitador</label>
-								<input type="text" class="form-control  form-control-sm" id="inputEnclavamientoElectrico" minlength="1" placeholder="Ingrese Enclavamiento Electrico Limitador" name="inputEnclavamientoElectrico" value="<?php if(isset($checklist['enclavamientoElectrico'])): echo $checklist['enclavamientoElectrico']; endif; ?>">
+								<label for="inputDiamCablesTraccion">Diametro de Traccion</label>
+								<input type="text" class="form-control  form-control-sm" id="inputDiamTraccion" minlength="1" placeholder="Ingrese Diametro de Traccion" name="inputDiamTraccion" value="<?php if(isset($checklist['diamTraccion'])): echo $checklist['diamTraccion']; endif; ?>">
 							</div>
 						</div>
 						<div class="row">
 							<div class="form-group col-sm-6">
+								<label for="inputEnclavamientoElectrico">Enclavamiento El&eacute;ctrico Limitador</label>
+								<input type="text" class="form-control  form-control-sm" id="inputEnclavamientoElectrico" minlength="1" placeholder="Ingrese Enclavamiento Electrico Limitador" name="inputEnclavamientoElectrico" value="<?php if(isset($checklist['enclavamientoElectrico'])): echo $checklist['enclavamientoElectrico']; endif; ?>">
+							</div>
+							<div class="form-group col-sm-6">
 								<label for="inputEnclavamientoMecanico">Enclavamiento Mec&aacute;nico Limitador</label>
 								<input type="text" class="form-control  form-control-sm" id="inputEnclavamientoMecanico" minlength="1" placeholder="Ingrese Enclavamiento Electrico Limitador" name="inputEnclavamientoMecanico" value="<?php if(isset($checklist['enclavamientoMecanico'])): echo $checklist['enclavamientoMecanico']; endif; ?>">
 							</div>
+						</div>
+						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputDiamCableLimitador">Diametro Cable Limitador</label>
 								<input type="text" class="form-control  form-control-sm" id="inputDiamCableLimitador" minlength="1" placeholder="Ingrese Diametro Cable Limitador" name="inputDiamCableLimitador" value="<?php if(isset($checklist['diamCableLimitador'])): echo $checklist['diamCableLimitador']; endif; ?>">
@@ -380,7 +386,7 @@
 					</div>
 					<input type="text" class="form-control" id="inputTotalChecklist" minlength="1" name="inputTotalChecklist" value="" hidden>
 					<div class="col-sm-12">
-						<h5><i class="mb-2" data-feather="check-square" ></i> CHECKLIST # 1</h5>
+						<h5><i class="mb-2" data-feather="clipboard" ></i> CHECKLIST # 1</h5>
 					</div>
 
 					<div class="col-10 col-sm-4">
@@ -399,6 +405,13 @@
 				</div>
 
 				<div class="accordion mt-3" id="acordionCategorias"></div>
+				<div class="row">
+					<div class="col-sm-12">
+						<hr class="my-3">
+						<h5><i class="mb-2" data-feather="eye" ></i> Observaciones Generales</h5>
+					</div>
+				</div>
+				<div class="row mt-3 row" id="observacionesGenerales"></div>
 
 				<div id="botones" class="row mt-5">
 					<div class="col-6 text-left">
@@ -515,11 +528,18 @@
                 </div>
             </div>
         </div>
+
+        <div id="dObsGenerales" class="row justify-content-md-center" hidden>
+			<div class="form-group col-sm-10">
+				<label for="inputObservaciones">Observaciones Generales</label>
+				<textarea class="form-control form-control-sm block" placeholder="Ingrese una Obseravaci&oacute;n" id="inputObservaciones" name="inputObservaciones" rows="4"></textarea>
+			</div>
+		</div>
 		
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
-        <button id="seleccionarFoto" type="button" class="btn btn-info" data-dismiss="modal" data-id="">Seleccionar Foto</button>
+        <button id="seleccionarFoto" type="button" class="btn btn-info" data-dismiss="modal" data-id="" data-codigo="" data-nombre="" data-cant="">Seleccionar Foto</button>
       </div>
     </div>
   </div>
@@ -704,6 +724,70 @@
         </button>
       </div>
       <div class="modal-body">
+
+
+      	<!--<div class="api">
+            <canvas id="photo" class="hide" style="display:none;" height="720" width="1280"></canvas>
+            <canvas id="rotated" class="hide" style="display:none;" height="720" width="1280"></canvas>
+            <img id="camera" src="" alt="" style="display:none">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                  
+                    <div id="rootwizard">
+                    	<div class="row">
+                            <div class="col">
+                                <div class="form-inline cameras" style="margin-bottom: 1%;">
+                                    <label for="videoSource" style="margin-right: 10px; " data-localize="select-camera">Seleccionar Cámara:</label>
+                                    <select id="videoSource" class="custom-select col-6"></select>
+                                </div>
+                            </div>
+                        </div>
+                    	<div class="row">
+                        	<div class="col">
+                        		<div class="tab-content">
+									<div class="" role="tabpanel" id="front">
+									    <fieldset id="front">        
+									            <div class="row">
+									            	<div class="col-1">
+                                                        <a href="javascript:void(0);" data-dir="left" class="btn btn-info rotate float-left">
+                                                            <i data-feather="arrow-left" aria-hidden="true"></i></a>
+                                                    </div>
+									                <div class="col-10">
+									                    <input type="text" name="id_front" value="" hidden>
+									                    <img id="id_front" class="img-fluid" src="">
+									                    <div id="front-video">
+									                        <div id="video-stream">
+									                            <video id="video" style="max-width:100%;"></video>
+									                        </div>
+									                    </div>
+									                </div>
+									                <div class="col-1">
+									                    <a href="javascript:void(0);" data-dir="right" class="btn btn-info rotate float-right">
+									                        <i data-feather="arrow-right" aria-hidden="true"></i></a>
+									                </div>
+									            </div>
+									            <div class="row">
+									            	<div class="col-sm-12 text-center mt-3">
+									            		<input type="file" id="doc-front" name="doc-front" class="inputfile" accept="image/*" capture="camera">
+												        <label for="doc-front" class="images captura-btn"><i class="fa fa-camera" aria-hidden="true"></i> <span id="span_foto" data-localize="capture">FOTO</span></label>
+												        <a href="#" class="btn btn-success take-photo">
+												        	<i data-feather="camera"></i>
+												        </a>
+												        <a href="#" class="btn btn-warning refrescar">
+												        	<i data-feather="refresh-ccw"></i>
+												    	</a>
+									            	</div>
+									            </div>
+									    </fieldset>
+									</div>
+								</div>
+	                        </div>
+	                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>-->
+
       	<div class="row">
 			<div class="form-group col-sm-12">
 				<label for="inputObservaciones">Observaciones Generales</label>
