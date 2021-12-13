@@ -1087,6 +1087,10 @@ class Inspeccion extends CI_Controller {
 			$idPregunta = null;
 			$respuestas_inspeccion = null;
 
+			$categorias = array();
+			$preguntas = array();
+			$respuestas = array();
+
 			if(!is_null($this->input->post('idNorma')) && $this->input->post('idNorma') != "-1"  && $this->input->post('idNorma') != "")
 				$idNorma = $this->input->post('idNorma');
 
@@ -1107,9 +1111,7 @@ class Inspeccion extends CI_Controller {
 					#}
 
 					#var_dump(sizeof($categorias_preguntas_norma));
-					$categorias = array();
-					$preguntas = array();
-					$respuestas = array();
+					
 
 					foreach ($categorias_preguntas_norma as $pregunta) {
 						$id_categoria = null;
