@@ -419,73 +419,40 @@ class Carpeta_model extends CI_Model
 		return $resultado->result_array();
 	}
 
-	public function eliminarCentroCostoCarpeta($idCarpeta, $id_usuario){
+	public function eliminarCarpetaInspeccion($idInspeccion, $id_usuario){
 		try{
-			$centro_costos_carpeta = $this->db->get_where('carpetas_centro_costos', array('carpetas_id' => $idCarpeta))->result();
+			$carpetas_inspeccion = $this->db->get_where('inspecciones_carpetas', array('id_inspeccion' => $idInspeccion, 'id_estado' => 1))->result();
 			$respuesta = array('resultado' => null,
 						'mensaje' => null,
-						'id_carpeta' => null
+						'id_inspeccion' => null
 					  );
 
-			if (sizeof($centro_costos_carpeta) > 0) {
-			    $this->db->where('carpetas_id', $idCarpeta);
-				$this->db->delete('carpetas_centro_costos');
+			if (sizeof($carpetas_inspeccion) > 0) {
+			    
+				$this->db->set('updated_at', 'NOW()', FALSE);
+				$this->db->where('id_inspeccion', $idInspeccion);
+			    $this->db->where('id_estado', 1);
+				$this->db->update('inspecciones_carpetas', array('id_estado' => -1));
 
 			    if ($this->db->affected_rows() >= 1) {
-					$respuesta['id_carpeta'] = $idCarpeta;
+					$respuesta['id_inspeccion'] = $idInspeccion;
 					$respuesta['resultado'] = $this->db->affected_rows();
-					$respuesta['mensaje'] = "Se ha eliminado correctamente los Centros de Costos dla Carpeta.";
+					$respuesta['mensaje'] = "Se han eliminado correctamente las respuestas de Carpetas a la Inspeccion.";
 				}else{
-					$respuesta['id_carpeta'] = -1;
+					$respuesta['id_inspeccion'] = -1;
 					$respuesta['resultado'] = $this->db->affected_rows();
 					$respuesta['mensaje'] = $this->db->error();
 				}
 			}else{
-				$respuesta['id_carpeta'] = $idCarpeta;
+				$respuesta['id_carpeta'] = $idInspeccion;
 				$respuesta['resultado'] = 1;
-				$respuesta['mensaje'] = "El carpeta no posee Centro de Costos Asociados.";
+				$respuesta['mensaje'] = "La Inspeccion no posee respuestas de Carpetas Asociados.";
 			}
 		}catch(Exception $e){
 			$respuesta['resultado'] = -1;
 		    $respuesta['mensaje'] = $e;
-		    $respuesta['id_carpeta'] = -1;
+		    $respuesta['id_inspeccion'] = -1;
 		}
-
-		return $respuesta;
-	}
-
-	public function eliminarItemCostoCarpeta($idCarpeta, $id_usuario){
-		try{
-			$item_costos_carpeta = $this->db->get_where('carpetas_suministros', array('carpetas_id' => $idCarpeta))->result();
-			$respuesta = array('resultado' => null,
-						'mensaje' => null,
-						'id_carpeta' => null
-					  );
-
-			if (sizeof($item_costos_carpeta) > 0) {
-			    $this->db->where('carpetas_id', $idCarpeta);
-				$this->db->delete('carpetas_suministros');
-
-			    if ($this->db->affected_rows() >= 1) {
-					$respuesta['id_carpeta'] = $idCarpeta;
-					$respuesta['resultado'] = $this->db->affected_rows();
-					$respuesta['mensaje'] = "Se ha eliminado correctamente los Item de Costos dla Carpeta.";
-				}else{
-					$respuesta['id_carpeta'] = -1;
-					$respuesta['resultado'] = $this->db->affected_rows();
-					$respuesta['mensaje'] = $this->db->error();
-				}
-			}else{
-				$respuesta['id_carpeta'] = $idCarpeta;
-				$respuesta['resultado'] = 1;
-				$respuesta['mensaje'] = "El carpeta no posee Item de Costos Asociados.";
-			}
-		}catch(Exception $e){
-			$respuesta['resultado'] = -1;
-		    $respuesta['mensaje'] = $e;
-		    $respuesta['id_carpeta'] = -1;
-		}
-
 		return $respuesta;
 	}
 }

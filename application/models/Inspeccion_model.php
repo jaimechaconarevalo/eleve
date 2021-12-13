@@ -121,7 +121,41 @@ class Inspeccion_model extends CI_Model
 		$this->db->where('ic.id_inspeccion', $idInspeccion);
 		$inspeccion = $this->db->get();
 		return $inspeccion->result_array();
-	}	
+	}
+
+	public function obtenerRespuestasInspeccion($idInspeccion, $id_usuario)
+	{
+		$this->db->select('icr.id, icr.id_inspecciones_checklists, icr.id_categoria, icr.id_pregunta, icr.id_pregunta, icr.respuesta, icr.observaciones, icr.orden, icr.id_respuesta, icr.id_estado, icr.created_at, icr.updated_at, a.id as archivo_id, a.file_name, a.file_type, a.file_path, a.full_path, a.raw_name, a.orig_name, a.client_name, a.file_ext, a.file_size, a.is_image, a.image_width, a.image_height, a.image_type, a.image_size_str, a.id_estado as id_estado_a, a.inspeccion_checklist_resp_id, a.inspeccion_checklist_obs_id, a.id_categoria as id_categoria_a, a.id_pregunta as id_pregunta_a, a.orden as orden_a, a.id_usuario as id_usuario_a, a.create_at as create_at_a, a.updated_at as updated_at_a');
+		$this->db->from('inspecciones i');
+		$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion', 'LEFT');
+		$this->db->join('inspecciones_checklists_respuestas icr', 'ic.id = icr.id_inspecciones_checklists', 'LEFT');
+		$this->db->join('archivos a', 'icr.id = a.inspeccion_checklist_resp_id', 'LEFT');
+		$this->db->where('i.id', $idInspeccion);
+		$this->db->where('i.id_estado', 1);
+		$this->db->where('ic.id_estado', 1);
+		$this->db->where('icr.id_estado', 1);
+		$inspeccion = $this->db->get();
+		return $inspeccion->result_array();
+	}
+
+	public function obtenerObservacionesInspeccion($idInspeccion, $id_usuario)
+	{
+		$this->db->select('ico.id, ico.id_inspecciones_checklists, ico.id_categoria, ico.observaciones, ico.orden, ico.id_estado, ico.created_at, ico.updated_at, c.id as id_categoria, c.codigo as codigo_categoria, c.nombre as categoria, c.observaciones as obs_categorias,
+							a.id as archivo_id, a.file_name, a.file_type, a.file_path, a.full_path, a.raw_name, a.orig_name, a.client_name, a.file_ext, a.file_size, a.is_image, a.image_width, a.image_height, a.image_type, a.image_size_str, 
+							a.id_estado, a.inspeccion_checklist_resp_id, a.inspeccion_checklist_obs_id, a.id_categoria, a.id_pregunta, a.orden, a.id_usuario, a.create_at, a.updated_at');
+		$this->db->from('inspecciones i');
+		$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion', 'LEFT');
+		$this->db->join('inspecciones_checklists_obs ico', 'ic.id = ico.id_inspecciones_checklists', 'LEFT');
+		$this->db->join('categorias c', 'ico.id_categoria = c.id', 'LEFT');
+		$this->db->join('archivos a', 'ico.id = a.inspeccion_checklist_obs_id', 'LEFT');
+		$this->db->where('i.id', $idInspeccion);
+		$this->db->where('i.id_estado', 1);
+		$this->db->where('ic.id_estado', 1);
+		$this->db->where('ico.id_estado', 1);
+		$this->db->order_by('a.orden');
+		$inspeccion = $this->db->get();
+		return $inspeccion->result_array();
+	}
 
 	public function listarInspecciones($id_usuario)
 	{

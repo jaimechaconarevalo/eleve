@@ -39,6 +39,7 @@
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 					</tr>
 				</thead>
 				<tbody id="tbodyInspecciones">
@@ -61,6 +62,11 @@
 					        	<td class="text-center align-middle registro botonTabla">
 						        	<a id="edit_<?php echo $inspeccion['id']; ?>" class="view_convenio" href="visualizarInspeccion/?idInspeccion=<?php echo $inspeccion['id']; ?>">
 						        		<i data-feather="search" data-toggle="tooltip" data-placement="top" title="Visualizar"></i>
+					        		</a>
+					        	</td>
+					        	<td class="text-center align-middle registro botonTabla">
+						        	<a id="edit_<?php echo $inspeccion['id']; ?>" class="view_convenio" href="modificarInspeccion/?idInspeccion=<?php echo $inspeccion['id']; ?>">
+						        		<i data-feather="edit-3" data-toggle="tooltip" data-placement="top" title="Modificar"></i>
 					        		</a>
 					        	</td>
 					        	<td class="text-center align-middle registro botonTabla">

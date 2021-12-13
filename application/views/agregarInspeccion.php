@@ -39,7 +39,7 @@
 					</div>
 					<div class="form-group col-sm-6">
 						<label for="inputTecnico">Nombre del Tecnico</label>
-						<input type="text" class="form-control  form-control-sm" id="inputTecnico" minlength="1" placeholder="Ingrese Nombre del Tecnico" name="inputTecnico" value="<?php if(isset($checklist['tecnico'])): echo $checklist['tecnico']; endif; ?>">
+						<input type="text" class="form-control  form-control-sm" id="inputTecnico" minlength="1" placeholder="Ingrese Nombre del Tecnico" name="inputTecnico" value="<?php if(isset($inspeccion['nombre_tecnico'])): echo $inspeccion['nombre_tecnico']; endif; ?>">
 					</div>
 				</div>
 
@@ -51,24 +51,24 @@
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputNombreE">Nombre del Edificio</label>
-								<input type="text" class="form-control  form-control-sm" id="inputNombreE" minlength="1" placeholder="Ingrese Nombre del Edificio" name="inputNombreE" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputNombreE" minlength="1" placeholder="Ingrese Nombre del Edificio" name="inputNombreE" value="<?php if(isset($inspeccion['edificio'])): echo $inspeccion['edificio']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="inputDireccionE">Direccion del Edificio</label>
-								<input type="text" class="form-control  form-control-sm" id="inputDireccionE" minlength="1" placeholder="Ingrese Direccion del Edificio" name="inputDireccionE" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputDireccionE" minlength="1" placeholder="Ingrese Direccion del Edificio" name="inputDireccionE" value="<?php if(isset($inspeccion['domicilio'])): echo $inspeccion['domicilio']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
 						</div>
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputRutE">Rut del Edificio</label>
-								<input type="text" class="form-control  form-control-sm" id="inputRutE" minlength="1" placeholder="Ingrese un Rut del Edificio" name="inputRutE" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputRutE" minlength="1" placeholder="Ingrese un Rut del Edificio" name="inputRutE" value="<?php if(isset($inspeccion['rut_e'])): echo $inspeccion['rut_e']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="inputIdE">Id de Ascensor</label>
-								<input type="text" class="form-control  form-control-sm" id="inputIdE" minlength="1" placeholder="Ingrese un Id de Ascensor" name="inputIdE" value="<?php if(isset($checklist['id_ascensor'])): echo $checklist['id_ascensor']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputIdE" minlength="1" placeholder="Ingrese un Id de Ascensor" name="inputIdE" value="<?php if(isset($inspeccion['rol'])): echo $inspeccion['rol']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
 						</div>
@@ -76,12 +76,12 @@
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputNombreA">Nombre administrador</label>
-								<input type="text" class="form-control  form-control-sm" id="inputNombreA" minlength="1" placeholder="Ingrese un Nombre administrador" name="inputNombreA" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputNombreA" minlength="1" placeholder="Ingrese un Nombre administrador" name="inputNombreA" value="<?php if(isset($inspeccion['nombre_admin'])): echo $inspeccion['nombre_admin']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="inputRutA">RUT administrador</label>
-								<input type="text" class="form-control  form-control-sm" id="inputRutA" minlength="1" placeholder="Ingrese un RUT administrador" name="inputRutA" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputRutA" minlength="1" placeholder="Ingrese un RUT administrador" name="inputRutA" value="<?php if(isset($inspeccion['rut_admin'])): echo $inspeccion['rut_admin']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
 						</div>
@@ -89,12 +89,12 @@
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputEmailA">Email administrador</label>
-								<input type="email" class="form-control  form-control-sm" id="inputEmailA" minlength="1" placeholder="Ingrese un Email administrador" name="inputEmailA" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
+								<input type="email" class="form-control  form-control-sm" id="inputEmailA" minlength="1" placeholder="Ingrese un Email administrador" name="inputEmailA" value="<?php if(isset($inspeccion['email_admin'])): echo $inspeccion['email_admin']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
 							<!--<div class="form-group col-sm-6">
 								<label for="inputNombre">Fecha contrato de mantención</label>
-								<input type="date" class="form-control  form-control-sm" id="inputFechaContrato" minlength="1" placeholder="Ingrese un Fecha contrato de mantención" name="inputFechaContrato" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
+								<input type="date" class="form-control  form-control-sm" id="inputFechaContrato" minlength="1" placeholder="Ingrese un Fecha contrato de mantención" name="inputFechaContrato" value="<?php if(isset($inspeccion['nombre'])): echo $inspeccion['nombre']; endif; ?>">
 							</div>
 						</div>
 
@@ -109,8 +109,8 @@
 
 							<div class="form-group col-10 col-sm-4">
 								<label for="inputEmpresaMantenedora">Empresa Mantenedora</label>
-								<input type="text" class="form-control" id="idEmpresaMantenedora" minlength="1" name="idEmpresaMantenedora" value="" hidden>
-								<input type="text" class="form-control  form-control-sm" id="inputEmpresaMantenedora" minlength="1" placeholder="Seleccione una Empresa Mantenedora" name="inputEmpresaMantenedora" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>" readonly>
+								<input type="text" class="form-control" id="idEmpresaMantenedora" minlength="1" name="idEmpresaMantenedora" value="<?php if(isset($inspeccion['id_empresa_mantenedora'])): echo $inspeccion['id_empresa_mantenedora']; endif; ?>" hidden>
+								<input type="text" class="form-control  form-control-sm" id="inputEmpresaMantenedora" minlength="1" placeholder="Seleccione una Empresa Mantenedora" name="inputEmpresaMantenedora" value="<?php if(isset($inspeccion['rut_em'])): echo $inspeccion['rut_em'].' - '; endif; if(isset($inspeccion['razon_social'])): echo $inspeccion['razon_social']; endif;?>" readonly>
 							</div>
 							<div class="form-group col-2 col-sm-2 pt-1">
 								<div class="align-middle pt-2">
@@ -124,12 +124,12 @@
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputNombreRM">Nombre de quien realiza la mantención</label>
-								<input type="text" class="form-control  form-control-sm" id="inputNombreRM" minlength="1" placeholder="Ingrese un Nombre de quien realiza la mantención" name="inputNombreRM" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputNombreRM" minlength="1" placeholder="Ingrese un Nombre de quien realiza la mantención" name="inputNombreRM" value="<?php if(isset($inspeccion['nombre_mant_2'])): echo $inspeccion['nombre_mant_2']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="inputFechaUM">Fecha de la última mantención</label>
-								<input type="date" class="form-control  form-control-sm" id="inputFechaUM" minlength="1" placeholder="Ingrese un Fecha de la última mantención" name="inputFechaUM" value="<?php if(isset($checklist['nombre'])): echo $checklist['nombre']; endif; ?>">
+								<input type="date" class="form-control  form-control-sm" id="inputFechaUM" minlength="1" placeholder="Ingrese un Fecha de la última mantención" name="inputFechaUM" value="<?php if(isset($inspeccion['fecha_ultima_mant'])): echo $inspeccion['fecha_ultima_mant']; endif; ?>">
 								<!--<span>Se requiere un Nombre de Equipo.</span>-->
 							</div>
 						</div>
@@ -150,7 +150,7 @@
 						</div>
 
 
-						<div id="acordeonCarpeta" class="collapse col-sm-12">
+						<div id="acordeonCarpeta" class="collapse <?php echo (isset($respuesta_carpetas) && sizeof($respuesta_carpetas) > 0 ? 'show' : ''); ?> col-sm-12">
 							<table class="table">
 							  <thead>
 							    <tr>
@@ -166,14 +166,22 @@
 						        if(isset($carpetas))
 						        {
 						        	$contador = 0;
-							        foreach ($carpetas as $carpeta): 
-							        	$contador++;
-							        ?>
+								        foreach ($carpetas as $carpeta):
+								        	$contador++;
+								        	if (isset($respuesta_carpetas) && sizeof($respuesta_carpetas) > 0) {
+								        		$respuesta_carpeta_rb = false;
+								        		$key = array_search($carpeta['id'], array_column($respuesta_carpetas, 'id_carpeta'));
+								        		if (is_numeric($key) && $key >= 0 && $key !== false) {
+								        			$respuesta_carpeta_rb = ((int)$respuesta_carpetas[$key]["respuesta"]);
+								        		}
+								        	}
+								        	
+								        ?>
 							  			<tr>
 									        <!--<th class="text-left align-middle"><p><?php echo $carpeta['codigo']; ?></p></th>-->
 									        <td class="text-left align-middle"><p><?php echo $carpeta['nombre']; ?></p></td>
-									        <td class="text-left align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_si" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta pauta_carpeta" value="si-<?php echo $carpeta['id']; ?>"></td>
-							      			<td class="text-left align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_no" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta pauta_carpeta" value="no-<?php echo $carpeta['id']; ?>"></td>
+									        <td class="text-left align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_si" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta pauta_carpeta" value="si-<?php echo $carpeta['id']; ?>"  <?php echo (isset($respuesta_carpeta_rb) && $respuesta_carpeta_rb === 1 ? 'checked' : ''); ?>></td>
+							      			<td class="text-left align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_no" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta pauta_carpeta" value="no-<?php echo $carpeta['id']; ?>" <?php echo (isset($respuesta_carpeta_rb) && $respuesta_carpeta_rb === 0 ? 'checked' : ''); ?>></td>
 								    	</tr>
 								  		<?php 
 								  		endforeach;
@@ -208,12 +216,19 @@
 							        	$contador = 0;
 								        foreach ($normas as $norma): 
 								        	$contador++;
+								        	if (isset($respuesta_normas) && sizeof($respuesta_normas) > 0) {
+								        		$respuesta_norma_rb = false;
+								        		$key = array_search($norma['id'], array_column($respuesta_normas, 'id_norma'));
+								        		if (is_numeric($key) && $key >= 0 && $key !== false) {
+								        			$respuesta_norma_rb = ((int)$respuesta_normas[$key]["respuesta"]);
+								        		}
+								        	}
 							        	?>
 								  			<tr>
 										        <th class="text-left align-middle"><p><?php echo $norma['codigo']; ?></p></th>
 										        <td class="text-left align-middle"><p><?php echo $norma['nombre']; ?></p></td>
-										        <td class="text-left align-middle"><input type="radio" id="rbNorma<?php echo $contador;#$norma['id']; ?>_si" name="rbNorma<?php echo $contador;#$norma['id']; ?>" class="pauta" value="si-<?php echo $norma['id']; ?>"></td>
-								      			<td class="text-left align-middle"><input type="radio" id="rbNorma<?php echo $contador;#$norma['id']; ?>_no" name="rbNorma<?php echo $contador;#$norma['id']; ?>" class="pauta" value="no-<?php echo $norma['id']; ?>"></td>
+										        <td class="text-left align-middle"><input type="radio" id="rbNorma<?php echo $contador;#$norma['id']; ?>_si" name="rbNorma<?php echo $contador;#$norma['id']; ?>" class="pauta" value="si-<?php echo $norma['id']; ?>" <?php echo (isset($respuesta_norma_rb) && !is_null($respuesta_norma_rb) && $respuesta_norma_rb === 1 ? 'checked' : ''); ?>></td>
+								      			<td class="text-left align-middle"><input type="radio" id="rbNorma<?php echo $contador;#$norma['id']; ?>_no" name="rbNorma<?php echo $contador;#$norma['id']; ?>" class="pauta" value="no-<?php echo $norma['id']; ?>" <?php echo (isset($respuesta_norma_rb) && !is_null($respuesta_norma_rb) && $respuesta_norma_rb === 0 ? 'checked' : ''); ?>></td>
 									    	</tr>
 									  		<?php endforeach;
 									  		echo '<input type="text" class="form-control" id="inputTotalNormas" minlength="1" name="inputTotalNormas" value="'.$contador.'" hidden>';
@@ -249,12 +264,20 @@
 							        	$contador = 0;
 								        foreach ($herramientas as $herramienta):
 								        	$contador++;
+
+								        	if (isset($respuesta_herramientas) && sizeof($respuesta_herramientas) > 0) {
+								        		$respuesta_herramienta_rb = false;
+								        		$key = array_search($herramienta['id'], array_column($respuesta_herramientas, 'id_herramienta'));
+								        		if (is_numeric($key) && $key >= 0 && $key !== false) {
+								        			$respuesta_herramienta_rb = ((int)$respuesta_herramientas[$key]["respuesta"]);
+								        		}
+								        	}
 								        ?>
 								  			<tr>
 										        <th class="text-left align-middle"><p><?php echo $herramienta['codigo']; ?></p></th>
 										        <td class="text-left align-middle"><p><?php echo $herramienta['nombre']; ?></p></td>
-										        <td class="text-left align-middle"><input type="radio" id="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>_si" name="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>" class="pauta" value="si-<?php echo $herramienta['id']; ?>" checked></td>
-								      			<td class="text-left align-middle"><input type="radio" id="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>_no" name="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>" class="pauta" value="no-<?php echo $herramienta['id']; ?>"></td>
+										        <td class="text-left align-middle"><input type="radio" id="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>_si" name="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>" class="pauta" value="si-<?php echo $herramienta['id']; ?>" <?php echo (isset($respuesta_herramienta_rb) && !is_null($respuesta_herramienta_rb) && $respuesta_herramienta_rb === 1 ? 'checked' : ''); ?>></td>
+								      			<td class="text-left align-middle"><input type="radio" id="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>_no" name="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>" class="pauta" value="no-<?php echo $herramienta['id']; ?>" <?php echo (isset($respuesta_herramienta_rb) && !is_null($respuesta_herramienta_rb) && $respuesta_herramienta_rb === 0 ? 'checked' : ''); ?>></td>
 									    	</tr>
 									  		<?php endforeach;
 									  		echo '<input type="text" class="form-control" id="inputTotalHerramientas" minlength="1" name="inputTotalHerramientas" value="'.$contador.'" hidden>';
@@ -264,7 +287,7 @@
 							</div>
 							<!--<div class="form-group col-sm-6">
 								<label for="inputObservaciones">Observaciones</label>
-								<textarea class="form-control form-control-sm block" placeholder="Ingrese una Obseravaci&oacute;n" id="inputObservaciones" name="inputObservaciones" rows="2"><?php if(isset($checklist['observaciones'])): echo $checklist['observaciones']; endif; ?></textarea>
+								<textarea class="form-control form-control-sm block" placeholder="Ingrese una Obseravaci&oacute;n" id="inputObservaciones" name="inputObservaciones" rows="2"><?php if(isset($inspeccion['observaciones'])): echo $inspeccion['observaciones']; endif; ?></textarea>
 							</div>-->
 						</div>
 					</div>
@@ -277,25 +300,42 @@
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputMarca">Marca</label>
-								<input type="text" class="form-control  form-control-sm" id="inputMarca" minlength="1" placeholder="Ingrese Marca del Ascensor" name="inputMarca" value="<?php if(isset($checklist['marca'])): echo $checklist['marca']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputMarca" minlength="1" placeholder="Ingrese Marca del Ascensor" name="inputMarca" value="<?php if(isset($inspeccion['marca_ascensor'])): echo $inspeccion['marca_ascensor']; endif; ?>">
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="selectUso">Uso</label>
 								<select id="selectUso" name="selectUso" class="custom-select custom-select-sm">
-									<option selected>Seleccione un Uso</option>
-									<option value="1">Vivienda</option>
-									<option value="2">Infraestructura</option>
+									<?php 
+								 		if(isset($usos))
+								 		{
+								 			
+								 			$opciones = '';
+								 			foreach ($usos as $uso) {
+								 				$selected = ''; 
+								 				if (isset($inspeccion['id_uso']) && $inspeccion['id_uso'] == $uso['id']) {
+								 					$selected = 'selected';
+								 				}
+								 				$opciones.= '<option value="'.$uso['id'].'" '.$selected.'>'.$uso['nombre'].'</option>';
+								 			}
+								 			if (strlen($selected) > 0 ) {
+								 				$opciones = '<option>Seleccione un Uso</option>'.$opciones;
+								 			}else{
+								 				$opciones = '<option value="-1" selected>Seleccione un Uso</option>'.$opciones;
+								 			}
+								 			echo $opciones;
+								 		}
+								 	?>
 								</select>
 							</div>
 						</div>
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputCapacidad">Capacidad de Personas</label>
-								<input type="number" class="form-control  form-control-sm" id="inputCapacidad" minlength="1" placeholder="Ingrese capacidad del Ascensor" name="inputCapacidad" value="<?php if(isset($checklist['capacidad'])): echo $checklist['capacidad']; endif; ?>">
+								<input type="number" class="form-control  form-control-sm" id="inputCapacidad" minlength="1" placeholder="Ingrese capacidad del Ascensor" name="inputCapacidad" value="<?php if(isset($inspeccion['capacidad_personas'])): echo $inspeccion['capacidad_personas']; endif; ?>">
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="inputCapacidadKG">Capacidad en KG</label>
-								<input type="number" class="form-control  form-control-sm" id="inputCapacidadKG" minlength="1" placeholder="Ingrese capacidad en KG" name="inputCapacidadKG" value="<?php if(isset($checklist['capacidadKG'])): echo $checklist['capacidadKG']; endif; ?>">
+								<input type="number" class="form-control  form-control-sm" id="inputCapacidadKG" minlength="1" placeholder="Ingrese capacidad en KG" name="inputCapacidadKG" value="<?php if(isset($inspeccion['capacidad_kg'])): echo $inspeccion['capacidad_kg']; endif; ?>">
 							</div>
 						</div>
 
@@ -305,17 +345,22 @@
 								<select id="selectSuspension" name="selectSuspension" class="custom-select custom-select-sm">
 									<option selected>Seleccione una Suspension</option>
 									<?php if(isset($suspensiones)) {
-					        					foreach ($suspensiones as $suspension): ?>
-													<option value="<?php if(isset($suspension['id'])): echo $suspension['id']; endif; ?>" data-grupo="<?php if(isset($suspension['grupo_suspension'])): echo $suspension['grupo_suspension']; endif; ?>"><?php if(isset($suspension['nombre'])): echo $suspension['nombre']; endif; ?></option>
+				        					foreach ($suspensiones as $suspension): 
+				        						$selected = ''; 
+								 				if (isset($inspeccion['id_suspension']) && $inspeccion['id_suspension'] == $suspension['id']) {
+								 					$selected = 'selected';
+								 				}
+				        						?>
+												<option value="<?php if(isset($suspension['id'])): echo $suspension['id']; endif; ?>" data-grupo="<?php if(isset($suspension['grupo_suspension'])): echo $suspension['grupo_suspension']; endif; ?>" <?php echo $selected;?>><?php if(isset($suspension['nombre'])): echo $suspension['nombre']; endif; ?></option>
 									<?php endforeach;
 										} ?>
 								</select>
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="selectSalaMaquina">Sala de Maquinas</label>
-								<select id="selectSalaMaquina" name="selectSalaMaquina" class="custom-select custom-select-sm">
-									<option value="1" selected>Si</option>
-									<option value="2">No</option>
+								  <select id="selectSalaMaquina" name="selectSalaMaquina" class="custom-select custom-select-sm">
+									<option value="1" <?php if(isset($inspeccion['sala_maquinas']) && $inspeccion['sala_maquinas'] == 1): echo "selected"; endif; ?>>Si</option>
+									<option value="2" <?php if(isset($inspeccion['sala_maquinas']) && $inspeccion['sala_maquinas'] == 2): echo "selected"; endif; ?>>No</option>
 								</select>
 							</div>
 						</div>
@@ -323,26 +368,46 @@
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputVelocidad">Velocidad</label>
-								<input type="text" class="form-control  form-control-sm" id="inputVelocidad" minlength="1" placeholder="Ingrese Velocidad" name="inputVelocidad" value="<?php if(isset($checklist['velocidad'])): echo $checklist['velocidad']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputVelocidad" minlength="1" placeholder="Ingrese Velocidad" name="inputVelocidad" value="<?php if(isset($inspeccion['velocidad'])): echo $inspeccion['velocidad']; endif; ?>">
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="inputRecorrido">Recorrido</label>
-								<input type="text" class="form-control  form-control-sm" id="inputRecorrido" minlength="1" placeholder="Ingrese Recorrido" name="inputRecorrido" value="<?php if(isset($checklist['recorrido'])): echo $checklist['recorrido']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputRecorrido" minlength="1" placeholder="Ingrese Recorrido" name="inputRecorrido" value="<?php if(isset($inspeccion['recorrido'])): echo $inspeccion['recorrido']; endif; ?>">
 							</div>
 						</div>
 
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputParadas">Paradas</label>
-								<input type="text" class="form-control  form-control-sm" id="inputParadas" minlength="1" placeholder="Ingrese Paradas" name="inputParadas" value="<?php if(isset($checklist['paradas'])): echo $checklist['paradas']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputParadas" minlength="1" placeholder="Ingrese Paradas" name="inputParadas" value="<?php if(isset($inspeccion['paradas'])): echo $inspeccion['paradas']; endif; ?>">
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="selectTipoTraccion">Tipo Tracción</label>
 								<select id="selectTipoTraccion" name="selectTipoTraccion" class="custom-select custom-select-sm">
 									<option selected>Seleccione un Tipo Tracción</option>
+
 									<?php if(isset($tipos_traccion)) {
-					        					foreach ($tipos_traccion as $traccion): ?>
-													<option value="<?php if(isset($traccion['id'])): echo $traccion['id']; endif; ?>" data-grupo="<?php if(isset($traccion['grupo_suspension'])): echo $traccion['grupo_suspension']; endif; ?>"><?php if(isset($traccion['nombre'])): echo $traccion['nombre']; endif; ?></option>
+
+											$id_grupo_suspension = null;
+											if (isset($inspeccion['id_suspension'])) {
+												$id_suspension = $inspeccion['id_suspension'];
+												$grupo_seleccionado = array_filter($suspensiones, function($val) use($id_suspension){
+								              		return ($val['id']== $id_suspension);
+								         		});
+
+								         		if (sizeof($grupo_seleccionado) > 0) {
+								         			$id_grupo_suspension = $grupo_seleccionado[0]["grupo_suspension"];
+								         		}
+											}
+
+				        					foreach ($tipos_traccion as $traccion): 
+				        						$selected = ''; 
+								 				if (isset($inspeccion['id_suspension']) && $inspeccion['id_suspension'] == $traccion['id']) {
+								 					$selected = 'selected';
+								 				}
+				        						?>
+			        						?>
+												<option value="<?php if(isset($traccion['id'])): echo $traccion['id']; endif; ?>" data-grupo="<?php if(isset($traccion['grupo_suspension'])): echo $traccion['grupo_suspension']; endif; ?>" <?php if(isset($id_grupo_suspension) && !is_null($id_grupo_suspension) && isset($traccion['grupo_suspension']) && !is_null($traccion['grupo_suspension']) && $id_grupo_suspension != $traccion['grupo_suspension']): echo 'hidden'; endif; echo $selected; ?>><?php if(isset($traccion['nombre'])): echo $traccion['nombre']; endif; ?></option>
 									<?php endforeach;
 										} ?>
 								</select>
@@ -352,27 +417,27 @@
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputCantidad">Cantidad</label>
-								<input type="text" class="form-control  form-control-sm" id="inputCantidad" minlength="1" placeholder="Ingrese Cantidad" name="inputCantidad" value="<?php if(isset($checklist['cantidad'])): echo $checklist['cantidad']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputCantidad" minlength="1" placeholder="Ingrese Cantidad" name="inputCantidad" value="<?php if(isset($inspeccion['cantidad'])): echo $inspeccion['cantidad']; endif; ?>">
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="inputDiamCablesTraccion">Diametro de Traccion</label>
-								<input type="text" class="form-control  form-control-sm" id="inputDiamTraccion" minlength="1" placeholder="Ingrese Diametro de Traccion" name="inputDiamTraccion" value="<?php if(isset($checklist['diamTraccion'])): echo $checklist['diamTraccion']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputDiamTraccion" minlength="1" placeholder="Ingrese Diametro de Traccion" name="inputDiamTraccion" value="<?php if(isset($inspeccion['diametro_traccion'])): echo $inspeccion['diametro_traccion']; endif; ?>">
 							</div>
 						</div>
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputEnclavamientoElectrico">Enclavamiento El&eacute;ctrico Limitador</label>
-								<input type="text" class="form-control  form-control-sm" id="inputEnclavamientoElectrico" minlength="1" placeholder="Ingrese Enclavamiento Electrico Limitador" name="inputEnclavamientoElectrico" value="<?php if(isset($checklist['enclavamientoElectrico'])): echo $checklist['enclavamientoElectrico']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputEnclavamientoElectrico" minlength="1" placeholder="Ingrese Enclavamiento Electrico Limitador" name="inputEnclavamientoElectrico" value="<?php if(isset($inspeccion['enclavamiento_electrico'])): echo $inspeccion['enclavamiento_electrico']; endif; ?>">
 							</div>
 							<div class="form-group col-sm-6">
 								<label for="inputEnclavamientoMecanico">Enclavamiento Mec&aacute;nico Limitador</label>
-								<input type="text" class="form-control  form-control-sm" id="inputEnclavamientoMecanico" minlength="1" placeholder="Ingrese Enclavamiento Electrico Limitador" name="inputEnclavamientoMecanico" value="<?php if(isset($checklist['enclavamientoMecanico'])): echo $checklist['enclavamientoMecanico']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputEnclavamientoMecanico" minlength="1" placeholder="Ingrese Enclavamiento Electrico Limitador" name="inputEnclavamientoMecanico" value="<?php if(isset($inspeccion['enclavamiento_mecanico'])): echo $inspeccion['enclavamiento_mecanico']; endif; ?>">
 							</div>
 						</div>
 						<div class="row">
 							<div class="form-group col-sm-6">
 								<label for="inputDiamCableLimitador">Diametro Cable Limitador</label>
-								<input type="text" class="form-control  form-control-sm" id="inputDiamCableLimitador" minlength="1" placeholder="Ingrese Diametro Cable Limitador" name="inputDiamCableLimitador" value="<?php if(isset($checklist['diamCableLimitador'])): echo $checklist['diamCableLimitador']; endif; ?>">
+								<input type="text" class="form-control  form-control-sm" id="inputDiamCableLimitador" minlength="1" placeholder="Ingrese Diametro Cable Limitador" name="inputDiamCableLimitador" value="<?php if(isset($inspeccion['diametro_cable'])): echo $inspeccion['diametro_cable']; endif; ?>">
 							</div>
 						</div>
 
@@ -391,8 +456,8 @@
 
 					<div class="col-10 col-sm-4">
 						<label for="inputNorma">Norma</label>
-						<input type="text" class="form-control" id="idNorma" minlength="1" placeholder="Seleccione una Norma" name="idNorma" value="" hidden>
-						<input type="text" class="form-control" id="inputNorma" minlength="1" placeholder="Seleccione una Norma" name="inputNorma" readonly>
+						<input type="text" class="form-control" id="idNorma" minlength="1" placeholder="Seleccione una Norma" name="idNorma" value="<?php if(isset($respuesta_norma_respuesta[0]['id_norma'])): echo $respuesta_norma_respuesta[0]['id_norma']; endif; ?>" hidden>
+						<input type="text" class="form-control" id="inputNorma" minlength="1" placeholder="Seleccione una Norma" name="inputNorma" value="<?php if(isset($respuesta_norma_respuesta[0]['nombre'])): echo $respuesta_norma_respuesta[0]['nombre']; endif; ?>" readonly>
 					</div>
 					<div class="col-2 col-sm-2 pt-1">
 						<div class="align-middle pt-2">
@@ -411,7 +476,29 @@
 						<h5><i class="mb-2" data-feather="eye" ></i> Observaciones Generales</h5>
 					</div>
 				</div>
-				<div class="row mt-3 row" id="observacionesGenerales"></div>
+				<div class="row mt-3 row" id="observacionesGenerales">
+					<?php if(isset($observaciones_generales) && sizeof($observaciones_generales) > 0)
+				        {
+
+				        	$contador = 0;
+					        foreach ($observaciones_generales as $observacion_general): ?>
+					        	<div class="float-sm-left m-3" id="div_contenedor_<?php echo $observacion_general["orden"]; ?>">
+									<div class="card border-secondary" style="width: 18rem;">
+										<img alt="Alt information for image" class="img-fluid rounded float-left" src="<?php echo base_url().'assets/files/image/'.$observacion_general["file_name"]; ?>" id="imagen_<?php echo $observacion_general["orden"]; ?>">
+										<div class="card-body text-secondary">
+											<input type="text" class="form-control  form-control-sm" id="input_obs_<?php echo $observacion_general["id_categoria"].'_'.$observacion_general["orden"]; ?>" name="input_obs_<?php echo $observacion_general["id_categoria"].'_'.$observacion_general["orden"]; ?>" hidden="true">
+											<h5 class="card-title"><?php echo $observacion_general["orden"].'.- "'.$observacion_general["codigo_categoria"]."_".$observacion_general["categoria"]; ?>"</h5>
+											<p class="card-text"><?php echo $observacion_general["observaciones"]; ?></p>
+											<a class="btn btn-outline-danger eliminarObservacion" data-id="<?php echo $observacion_general["id_categoria"]; ?>" data-codigo="<?php echo $observacion_general["codigo_categoria"]; ?>" data-nombre="<?php echo $observacion_general["categoria"]; ?>" data-cant="<?php echo $observacion_general["orden"]; ?>">
+												<i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="Eliminar"></i> Eliminar Observacion
+											</a>
+										</div>
+									</div>
+									<input type="file" id="picture_<?php echo $observacion_general["id_categoria"].'_'.$observacion_general["orden"]; ?>" name="picture_<?php echo $observacion_general["id_categoria"].'_'.$observacion_general["orden"]; ?>" hidden="true">
+								</div>
+					<?php   endforeach;
+					} ?>
+				</div>
 
 				<div id="botones" class="row mt-5">
 					<div class="col-6 text-left">
