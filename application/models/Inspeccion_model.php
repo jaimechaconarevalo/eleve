@@ -272,13 +272,13 @@ class Inspeccion_model extends CI_Model
 				'mensaje' => null,
 				'id_inspeccion' => null);
 			
-			if ($idE > 0 && !is_null($idE)) {
+			/*if ($idE > 0 && !is_null($idE)) {
 				$edificios = $this->db->get_where('edificios', array('rol' => $idE))->result();
 				if (sizeof($edificios) > 0) {
 					$id_edificio = $edificios[0]->id;
 				}
-			}else{
-				if (!is_null($nombreE) || !is_null($direccionE) || !is_null($rutE)) {
+			}else{*/
+				if (!is_null($nombreE) || !is_null($direccionE) || !is_null($rutE) || !is_null($idE)) {
 					$dataE = array(
 						'nombre' => $nombreE,
 						'domicilio' => $direccionE,
@@ -304,7 +304,7 @@ class Inspeccion_model extends CI_Model
 					}
 				}
 				
-			}
+			#}
 			
 
 			$data = array(

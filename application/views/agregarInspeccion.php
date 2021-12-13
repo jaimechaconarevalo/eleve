@@ -387,7 +387,7 @@
 									<option selected>Seleccione un Tipo Tracción</option>
 
 									<?php if(isset($tipos_traccion)) {
-
+										
 											$id_grupo_suspension = null;
 											if (isset($inspeccion['id_suspension'])) {
 												$id_suspension = $inspeccion['id_suspension'];
@@ -395,18 +395,21 @@
 								              		return ($val['id']== $id_suspension);
 								         		});
 
+												reset($grupo_seleccionado);
+												$first_key = key($grupo_seleccionado);
+
+
 								         		if (sizeof($grupo_seleccionado) > 0) {
-								         			$id_grupo_suspension = $grupo_seleccionado[0]["grupo_suspension"];
+								         			$id_grupo_suspension = $grupo_seleccionado[$first_key]["grupo_suspension"];
 								         		}
 											}
 
 				        					foreach ($tipos_traccion as $traccion): 
 				        						$selected = ''; 
-								 				if (isset($inspeccion['id_suspension']) && $inspeccion['id_suspension'] == $traccion['id']) {
+								 				if (isset($inspeccion['id_tipo_traccion']) && $inspeccion['id_tipo_traccion'] == $traccion['id']) {
 								 					$selected = 'selected';
 								 				}
 				        						?>
-			        						?>
 												<option value="<?php if(isset($traccion['id'])): echo $traccion['id']; endif; ?>" data-grupo="<?php if(isset($traccion['grupo_suspension'])): echo $traccion['grupo_suspension']; endif; ?>" <?php if(isset($id_grupo_suspension) && !is_null($id_grupo_suspension) && isset($traccion['grupo_suspension']) && !is_null($traccion['grupo_suspension']) && $id_grupo_suspension != $traccion['grupo_suspension']): echo 'hidden'; endif; echo $selected; ?>><?php if(isset($traccion['nombre'])): echo $traccion['nombre']; endif; ?></option>
 									<?php endforeach;
 										} ?>
