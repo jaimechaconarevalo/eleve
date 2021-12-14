@@ -96,6 +96,7 @@ class Inspeccion extends CI_Controller {
 				$enclavamientoM = null;
 				$diamCableL = null;
 				$idNorma = null;
+				$cant_respuestas_agregadas = null;
 
 				if(!is_null($this->input->POST('inputTecnico')) && trim($this->input->POST('inputTecnico')) != "")
 					$tecnico = trim($this->input->POST('inputTecnico'));
@@ -488,7 +489,6 @@ class Inspeccion extends CI_Controller {
 
 								#var_dump($respuestas_checklists);
 
-								$cant_respuestas_agregadas = 0;
 								if (sizeof($respuestas_checklists) > 0) {
 									foreach ($respuestas_checklists as $res_check) {
 										$id_categoria = $res_check["id_categoria"];
@@ -721,7 +721,7 @@ class Inspeccion extends CI_Controller {
 								$mensaje .= ' Se han agregado '.$cant_archivos.' Archivos de Imagen a la Inspeccion.</br></br>';
 							}
 
-							if ($cant_respuestas_agregadas > 0) {
+							if (isset($cant_respuestas_agregadas) && !is_null($cant_respuestas_agregadas) && $cant_respuestas_agregadas > 0) {
 								$mensaje .= ' Se han agregado '.$cant_respuestas_agregadas.' Respuestas a la Inspeccion.</br></br>';
 							}
 							
