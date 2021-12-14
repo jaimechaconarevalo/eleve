@@ -788,7 +788,7 @@
             boton_eliminar.dataset.cant = e.currentTarget.dataset.cant;
             
             boton_eliminar.append(icono_eliminar);
-            boton_eliminar.append(' Eliminar Observacion');
+            boton_eliminar.append(' Eliminar Observaci&oacute;n');
 
             //id="inputDiamCableLimitador" minlength="1" placeholder="Ingrese Diametro Cable Limitador" name="inputDiamCableLimitador" value="">
 
