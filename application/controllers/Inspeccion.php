@@ -854,7 +854,9 @@ class Inspeccion extends CI_Controller {
 				$usuario['usos'] = $usos;
 
 				$inspeccion =  $this->inspeccion_model->obtenerInspeccion($id_inspeccion ,$usuario["id_usuario"]);
-				$usuario['inspeccion'] = $inspeccion[0];
+				if (sizeof($inspeccion) > 0) {
+					$usuario['inspeccion'] = $inspeccion[0];
+				}
 				
 				$respuesta_carpetas =  $this->inspeccion_model->obtenerCarpetas($id_inspeccion ,$usuario["id_usuario"]);
 				$usuario['respuesta_carpetas'] = $respuesta_carpetas;

@@ -482,7 +482,6 @@
 				<div class="row mt-3 row" id="observacionesGenerales">
 					<?php if(isset($observaciones_generales) && sizeof($observaciones_generales) > 0)
 				        {
-
 				        	$contador = 0;
 					        foreach ($observaciones_generales as $observacion_general): ?>
 					        	<div class="float-sm-left m-3" id="div_contenedor_<?php echo $observacion_general["orden"]; ?>">
