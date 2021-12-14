@@ -387,7 +387,7 @@
 									<option selected>Seleccione un Tipo Tracción</option>
 
 									<?php if(isset($tipos_traccion)) {
-										
+
 											$id_grupo_suspension = null;
 											if (isset($inspeccion['id_suspension'])) {
 												$id_suspension = $inspeccion['id_suspension'];
@@ -493,7 +493,7 @@
 											<h5 class="card-title"><?php echo $observacion_general["orden"].'.- "'.$observacion_general["codigo_categoria"]."_".$observacion_general["categoria"]; ?>"</h5>
 											<p class="card-text"><?php echo $observacion_general["observaciones"]; ?></p>
 											<a class="btn btn-outline-danger eliminarObservacion" data-id="<?php echo $observacion_general["id_categoria"]; ?>" data-codigo="<?php echo $observacion_general["codigo_categoria"]; ?>" data-nombre="<?php echo $observacion_general["categoria"]; ?>" data-cant="<?php echo $observacion_general["orden"]; ?>">
-												<i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="Eliminar"></i> Eliminar Observacion
+												<i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="Eliminar"></i> Eliminar Observaci&oacute;n
 											</a>
 										</div>
 									</div>
