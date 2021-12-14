@@ -286,11 +286,14 @@ class Inspeccion_model extends CI_Model
 						'rol' => $idE,
 						'id_usuario' => $id_usuario
 					);
+
+					var_dump($dataE);
 					
 					try{
 					    $this->db->insert('edificios', $dataE);
 						if ($this->db->affected_rows() >= 1){
 							$id_edificio = $this->db->insert_id();
+							var_dump($id_edificio);
 						}else{
 							$respuesta['id_inspeccion'] = -1;
 							$respuesta['resultado'] = $this->db->affected_rows();
