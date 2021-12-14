@@ -333,7 +333,7 @@ class Inspeccion extends CI_Controller {
 
 
 
-				var_dump($this->input->POST());
+				#var_dump($this->input->POST());
 				#var_dump($_FILES);
 				#var_dump($respuestas_checklists);
 
