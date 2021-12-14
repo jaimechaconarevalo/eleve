@@ -487,6 +487,8 @@ class Inspeccion extends CI_Controller {
 									$id_inspeccion_checklist = (int)$resultado_respuesta_checklist["id_inspeccion_checklist"];
 
 								#var_dump($respuestas_checklists);
+
+								$cant_respuestas_agregadas = 0;
 								if (sizeof($respuestas_checklists) > 0) {
 									foreach ($respuestas_checklists as $res_check) {
 										$id_categoria = $res_check["id_categoria"];
@@ -506,6 +508,7 @@ class Inspeccion extends CI_Controller {
 										if ($resultado_resp_check && isset($resultado_resp_check["resultado"]) && is_numeric($resultado_resp_check["resultado"]) && (int)$resultado_resp_check["resultado"] > 0) {
 											$id_inspeccion_checklist_resp = (int)$resultado_resp_check["id_inspeccion_checklist_resp"];
 											$respuestas_checklists_data[] = array("id_inspeccion_checklist" => $id_inspeccion_checklist, "id_inspeccion_checklist_resp" => $id_inspeccion_checklist_resp, "id_categoria" => $id_categoria, "id_pregunta" => $id_pregunta, "respuesta_check" => $respuesta_check, "observacion" => $observacion);
+											$cant_respuestas_agregadas++;
 										}
 									}
 								}
@@ -716,6 +719,10 @@ class Inspeccion extends CI_Controller {
 
 							if ($cant_archivos > 0) {
 								$mensaje .= ' Se han agregado '.$cant_archivos.' Archivos de Imagen a la Inspeccion.</br></br>';
+							}
+
+							if ($cant_respuestas_agregadas > 0) {
+								$mensaje .= ' Se han agregado '.$cant_respuestas_agregadas.' Respuestas a la Inspeccion.</br></br>';
 							}
 							
 
