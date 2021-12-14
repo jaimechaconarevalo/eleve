@@ -429,7 +429,7 @@ class Inspeccion extends CI_Controller {
 
 				$respuesta = 0;
 				$mensaje = '';
-				var_dump($nombreE.'__'.$direccionE.'__'.$rutE.'__'.$idE);
+
 				$resultado = $this->inspeccion_model->agregarInspeccion($idInspeccion, $tecnico, $nombreE, $direccionE, $rutE, $idE, $nombreA, $rutA, $emailA, $idEmpresaM, $nombreRM, $fechaUM, $marca, $idUso, $capacidad, $capacidadKG, $idSuspension, $salaMaquina, $velocidad, $recorrido, $paradas, $idTipoTraccion, $cantidad, $diamTraccion, $enclavamientoE, $enclavamientoM, $diamCableL, $idNorma, $usuario["id_usuario"]);
 
 				if($resultado && $resultado["resultado"] > 0)
