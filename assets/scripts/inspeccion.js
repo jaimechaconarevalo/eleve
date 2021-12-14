@@ -1141,7 +1141,7 @@
                                 var inputTC = '';
                                 inputTC = inputTC.concat('<input type="text" class="form-control form-control-sm" id="inputTotalCategorias" name="inputTotalCategorias" value="',data.data_cp_n.length/*data.data_total.length*/,'" hidden>');
                                 for (var i = 0; i < data.data_cp_n.length/*data.data_total.length*/; i++) {
-                                    inputTC = inputTC.concat('<input type="text" class="form-control form-control-sm" id="inputTotalPreguntas_',(i+1),'" name="inputTotalPreguntas_',(i+1),'" value="',data.data_cp_n.length/*data.data_total[i].cantPreguntas*/,'" hidden>');
+                                    inputTC = inputTC.concat('<input type="text" class="form-control form-control-sm" id="inputTotalPreguntas_',(i+1),'" name="inputTotalPreguntas_',(i+1),'" value="',data.data_cp_n[i].preguntas.length/*data.data_total[i].cantPreguntas*/,'" hidden>');
                                 }
 
                                 var contador = 0;
