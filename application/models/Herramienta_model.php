@@ -419,73 +419,40 @@ class Herramienta_model extends CI_Model
 		return $resultado->result_array();
 	}
 
-	public function eliminarCentroCostoHerramienta($idHerramienta, $id_usuario){
+	public function eliminarHerramientasInspeccion($idInspeccion, $id_usuario){
 		try{
-			$centro_costos_herramienta = $this->db->get_where('herramientas_centro_costos', array('herramientas_id' => $idHerramienta))->result();
+			$herramientas_inspeccion = $this->db->get_where('inspecciones_herramientas', array('id_inspeccion' => $idInspeccion, 'id_estado' => 1))->result();
 			$respuesta = array('resultado' => null,
 						'mensaje' => null,
-						'id_herramienta' => null
+						'id_inspeccion' => null
 					  );
 
-			if (sizeof($centro_costos_herramienta) > 0) {
-			    $this->db->where('herramientas_id', $idHerramienta);
-				$this->db->delete('herramientas_centro_costos');
+			if (sizeof($herramientas_inspeccion) > 0) {
+			    
+				$this->db->set('updated_at', 'NOW()', FALSE);
+				$this->db->where('id_inspeccion', $idInspeccion);
+			    $this->db->where('id_estado', 1);
+				$this->db->update('inspecciones_herramientas', array('id_estado' => -1));
 
 			    if ($this->db->affected_rows() >= 1) {
-					$respuesta['id_herramienta'] = $idHerramienta;
+					$respuesta['id_inspeccion'] = $idInspeccion;
 					$respuesta['resultado'] = $this->db->affected_rows();
-					$respuesta['mensaje'] = "Se ha eliminado correctamente los Centros de Costos dla Herramienta.";
+					$respuesta['mensaje'] = "Se han eliminado correctamente las respuestas de Herramientas a la Inspeccion.";
 				}else{
-					$respuesta['id_herramienta'] = -1;
+					$respuesta['id_inspeccion'] = -1;
 					$respuesta['resultado'] = $this->db->affected_rows();
 					$respuesta['mensaje'] = $this->db->error();
 				}
 			}else{
-				$respuesta['id_herramienta'] = $idHerramienta;
+				$respuesta['id_inspeccion'] = $idInspeccion;
 				$respuesta['resultado'] = 1;
-				$respuesta['mensaje'] = "El herramienta no posee Centro de Costos Asociados.";
+				$respuesta['mensaje'] = "La Inspeccion no posee respuestas de Herramientas Asociados.";
 			}
 		}catch(Exception $e){
 			$respuesta['resultado'] = -1;
 		    $respuesta['mensaje'] = $e;
-		    $respuesta['id_herramienta'] = -1;
+		    $respuesta['id_inspeccion'] = -1;
 		}
-
-		return $respuesta;
-	}
-
-	public function eliminarItemCostoHerramienta($idHerramienta, $id_usuario){
-		try{
-			$item_costos_herramienta = $this->db->get_where('herramientas_suministros', array('herramientas_id' => $idHerramienta))->result();
-			$respuesta = array('resultado' => null,
-						'mensaje' => null,
-						'id_herramienta' => null
-					  );
-
-			if (sizeof($item_costos_herramienta) > 0) {
-			    $this->db->where('herramientas_id', $idHerramienta);
-				$this->db->delete('herramientas_suministros');
-
-			    if ($this->db->affected_rows() >= 1) {
-					$respuesta['id_herramienta'] = $idHerramienta;
-					$respuesta['resultado'] = $this->db->affected_rows();
-					$respuesta['mensaje'] = "Se ha eliminado correctamente los Item de Costos dla Herramienta.";
-				}else{
-					$respuesta['id_herramienta'] = -1;
-					$respuesta['resultado'] = $this->db->affected_rows();
-					$respuesta['mensaje'] = $this->db->error();
-				}
-			}else{
-				$respuesta['id_herramienta'] = $idHerramienta;
-				$respuesta['resultado'] = 1;
-				$respuesta['mensaje'] = "El herramienta no posee Item de Costos Asociados.";
-			}
-		}catch(Exception $e){
-			$respuesta['resultado'] = -1;
-		    $respuesta['mensaje'] = $e;
-		    $respuesta['id_herramienta'] = -1;
-		}
-
 		return $respuesta;
 	}
 }

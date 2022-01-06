@@ -30,6 +30,7 @@
 			<form id="agregarInspeccion" action="agregarInspeccion" method="POST" enctype="multipart/form-data">
 				<div class="row">
 					<input type="text" class="form-control form-control-sm" id="inputIdInspeccion" name="inputIdInspeccion" value="<?php if(isset($inspeccion['id'])): echo $inspeccion['id']; endif; ?>" hidden>
+					<input type="text" class="form-control form-control-sm" id="inputEsTemporal" name="inputEsTemporal" value="<?php if(isset($inspeccion['es_temporal'])): echo $inspeccion['es_temporal']; endif; ?>" hidden>
 				</div>
 
 				<div class="row">
@@ -480,15 +481,15 @@
 					</div>
 				</div>
 				<div class="row mt-3 row" id="observacionesGenerales">
-					<?php if(isset($observaciones_generales) && sizeof($observaciones_generales) > 0)
+					<!--<?php /*if(isset($observaciones_generales) && sizeof($observaciones_generales) > 0)
 				        {
 				        	$contador = 0;
-					        foreach ($observaciones_generales as $observacion_general): ?>
+					        foreach ($observaciones_generales as $observacion_general): var_dump($observacion_general); ?>
 					        	<div class="float-sm-left m-3" id="div_contenedor_<?php echo $observacion_general["orden"]; ?>">
 									<div class="card border-secondary" style="width: 18rem;">
 										<img alt="Alt information for image" class="img-fluid rounded float-left" src="<?php echo base_url().'assets/files/image/'.$observacion_general["file_name"]; ?>" id="imagen_<?php echo $observacion_general["orden"]; ?>">
 										<div class="card-body text-secondary">
-											<input type="text" class="form-control  form-control-sm" id="input_obs_<?php echo $observacion_general["id_categoria"].'_'.$observacion_general["orden"]; ?>" name="input_obs_<?php echo $observacion_general["id_categoria"].'_'.$observacion_general["orden"]; ?>" hidden="true">
+											<input type="text" class="form-control  form-control-sm" id="input_obs_<?php echo $observacion_general["id_categoria"].'-'.$observacion_general["archivo_id"].'_'.$observacion_general["orden"]; ?>" name="input_obs_<?php echo $observacion_general["id_categoria"].'-'.$observacion_general["archivo_id"].'_'.$observacion_general["orden"]; ?>" hidden="true">
 											<h5 class="card-title"><?php echo $observacion_general["orden"].'.- "'.$observacion_general["codigo_categoria"]."_".$observacion_general["categoria"]; ?>"</h5>
 											<p class="card-text"><?php echo $observacion_general["observaciones"]; ?></p>
 											<a class="btn btn-outline-danger eliminarObservacion" data-id="<?php echo $observacion_general["id_categoria"]; ?>" data-codigo="<?php echo $observacion_general["codigo_categoria"]; ?>" data-nombre="<?php echo $observacion_general["categoria"]; ?>" data-cant="<?php echo $observacion_general["orden"]; ?>">
@@ -499,10 +500,10 @@
 									<input type="file" id="picture_<?php echo $observacion_general["id_categoria"].'_'.$observacion_general["orden"]; ?>" name="picture_<?php echo $observacion_general["id_categoria"].'_'.$observacion_general["orden"]; ?>" hidden="true">
 								</div>
 					<?php   endforeach;
-					} ?>
+					} */ ?>-->
 				</div>
 
-				<div id="botones" class="row mt-5">
+				<div id="botones" class="row mt-5 mb-5">
 					<div class="col-6 text-left">
 						<a class="btn btn-link"  href="<?php echo base_url();?>Inspeccion/listarInspecciones">Volver</a>
 					</div>

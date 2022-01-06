@@ -444,7 +444,7 @@ class Carpeta_model extends CI_Model
 					$respuesta['mensaje'] = $this->db->error();
 				}
 			}else{
-				$respuesta['id_carpeta'] = $idInspeccion;
+				$respuesta['id_inspeccion'] = $idInspeccion;
 				$respuesta['resultado'] = 1;
 				$respuesta['mensaje'] = "La Inspeccion no posee respuestas de Carpetas Asociados.";
 			}

@@ -20,6 +20,28 @@
 	<div id="agregarInspeccion" class="col-sm-12 text-right">
 		<a href="agregarInspeccion" class="btn btn-link"><i stop-color data-feather="plus" class="pb-1"></i>Agregar Inspeccion</a>
 	</div>
+
+	
+		<div class="col-sm-12 mt-3">	
+			<div class="row ml-2">
+				<div class="col-sm-6">
+					<div class="row">
+						<div class="col-sm-3">
+							<span class="">Estado</span>
+						</div>
+						<div class="col-sm-9">
+							<select id="inspeccionesTemporales" class="custom-select custom-select-sm">
+								<option value="-1" selected>Activo</option>
+								<option value="1">Temporales</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+
+
 </div>
 <div class="row p-3">
 	<div id="tDatos" class="col-sm-12 p-3">
@@ -28,6 +50,11 @@
 				<thead class="thead-dark">
 					<tr>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"># ID</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Edificio</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Direcci&oacute;n</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">cant. Ascensores</th>
+
+
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Tecnico</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Rut Admin</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre Admin</th>
@@ -48,7 +75,12 @@
 			        {
 				        foreach ($inspecciones as $inspeccion): ?>
 				  			<tr>
-						        <th scope="row" class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['id']; ?></th>
+						      	<th scope="row" class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['id']; ?></th>
+						      	<td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['edificio']; ?></p></td>
+						      	<td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['domicilio']; ?></p></td>
+						      	<td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['cantidad']; ?></p></td>
+
+
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['nombre_tecnico']; ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['rut_admin']; ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['nombre_admin']; ?></p></td>

@@ -2,6 +2,107 @@
     $('[data-toggle="tooltip"]').tooltip();
     feather.replace();
 
+    function listarInspecciones() {
+        var temporal = document.getElementById('inspeccionesTemporales').value;
+        var baseurl = window.origin + '/Inspeccion/listarInspecciones';
+        jQuery.ajax({
+        type: "POST",
+        url: baseurl,
+        dataType: 'json',
+        data: {temporal: temporal},
+        success: function(data) {
+        if (data)
+        {
+            var myJSON= JSON.stringify(data);
+            myJSON = JSON.parse(myJSON);
+            $('#tablaListaInspecciones').html(myJSON.table_inspecciones);
+            feather.replace()
+            $('#tListaInspecciones').dataTable({
+                searching: true,
+                paging:         true,
+                ordering:       true,
+                info:           true,
+                 "scrollX": false,
+                columnDefs: [
+                  { targets: 'no-sort', orderable: false }
+                ],
+                "drawCallback": function( settings ) {
+                    feather.replace();
+                    $('[data-toggle="tooltip"]').tooltip();
+                },
+                "oLanguage": {
+                    "sLengthMenu": "_MENU_ Registros por p&aacute;gina",
+                    "sZeroRecords": "No se encontraron registros",
+                    "sInfo": "Mostrando del _START_ al _END_ de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 de 0 registros",
+                    "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "sSearch":        "Buscar:",
+                    "sProcessing" : '<img src="<?php echo base_url(); ?>images/gif/spin2.svg" height="42" width="42" >',
+                    "oPaginate": {
+                        "sFirst":    "Primero",
+                        "sLast":    "Último",
+                        "sNext":    "Siguiente",
+                        "sPrevious": "Anterior"
+                    }
+                },
+                lengthMenu: [[10, 20], [10, 20]]
+            });
+            feather.replace()
+            $('[data-toggle="tooltip"]').tooltip();
+
+              //loader.setAttribute('hidden', '');
+          }
+        }
+        });
+    }
+
+    function guardar_datos() {
+
+        var loader = document.getElementById("loader");
+        loader.removeAttribute('hidden');
+        var es_temporal = document.getElementById('inputEsTemporal').value;
+            
+        var form = document.getElementById("agregarInspeccion");
+        //form.preventDefault();
+        var formData = new FormData(form);
+        formData.append("es_temporal", es_temporal);
+        var baseurl = (window.origin + '/Inspeccion/agregarInspeccion');
+        jQuery.ajax({
+        type: form.getAttribute('method'),
+        url: baseurl,
+        dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: formData,
+        success: function(data) {
+            if (data) {
+
+                if(data['resultado'] == '1')
+                {
+                    feather.replace();
+                    $('[data-toggle="tooltip"]').tooltip();
+                    id_inspeccion_form = document.getElementById('inputIdInspeccion').value;
+                    if (id_inspeccion_form.trim() == "") {
+                        document.getElementById('inputIdInspeccion').value = data.id_inspeccion;
+                    }
+                }else{
+                    location.reload();
+                }
+                feather.replace();
+                $('[data-toggle="tooltip"]').tooltip();
+            }
+        }
+        });
+
+        feather.replace();
+        loader.setAttribute('hidden', '');
+        $('[data-toggle="tooltip"]').tooltip();
+        //}else{
+        loader.setAttribute('hidden', '');
+        //}
+    }
+
     function checkRut(rut) {
         // Despejar Puntos
         var valor = rut.value.replace('.','');
@@ -72,6 +173,8 @@
     }
 
 
+
+
     $('#inputRutE').on('input', function(e) {
       var resultado = checkRut(this);
     });
@@ -79,6 +182,16 @@
     $('#inputRutA').on('input', function(e) {
       var resultado = checkRut(this);
     });
+
+    $("#inputRutA, #inputTecnico, #inputNombreE, #inputDireccionE, #inputRutE, #inputIdE, #inputNombreA, #inputEmailA, #idEmpresaMantenedora, #inputNombreRM, #inputFechaUM, #rbSiCarpeta, #rbNoCarpeta, .pauta_carpeta, .pauta, #inputMarca, #selectUso, #inputCapacidad, #inputCapacidadKG, #selectSalaMaquina, #inputVelocidad, #inputRecorrido, #inputParadas, #selectTipoTraccion, #inputCantidad, #inputDiamTraccion, #inputEnclavamientoElectrico, #inputEnclavamientoMecanico, #inputDiamCableLimitador, #idNorma").change(function() {
+        guardar_datos();
+    });
+
+    $('#acordionCategorias').on('change', '.respuestas_checklist', function(e) {
+    //$("#acordionCategorias").change('.respuestas_checklist', function() {
+        guardar_datos();
+    });
+
 
     //$('.stepper').mdbStepper();
     $('#selectSuspension').on('change',function(e){
@@ -104,8 +217,11 @@
                 this.removeAttribute("hidden");
             });
        }
-       
-       
+       guardar_datos();
+    });
+
+    $('#inspeccionesTemporales').on('change',function(e){
+       listarInspecciones();
     });
 
     $('#btnSeleccionarE').on('click', function(e) {
@@ -123,7 +239,8 @@
             $('#inputEmpresaMantenedora').val('');
             $('#idEmpresaMantenedora').val('');
             $('#modalBuscarEmpresa').modal('hide');
-        }       
+        }
+        guardar_datos();   
     });
 
     $('#modalBuscarEmpresa').on('shown.bs.modal', function () {
@@ -418,7 +535,7 @@
         $('#id_front').hide();
         $('#video-stream').show();
         $('#video-stream').addClass("rounded");
-
+        guardar_datos();
     });
     
 
@@ -440,11 +557,18 @@
                 div.id = 'div_image_'.concat(id_div, '_', id_div_r);
                 div.children[1].id = id_div.concat('_', id_div_r);
                 div.children[1].name = id_div.concat('_', id_div_r);
-                div.children[2].id = 'picture_'.concat(id_div, '_', id_div_r);
-                div.children[2].name = 'picture_'.concat(id_div, '_', id_div_r);
+                if(isNaN(div.children[2].dataset.archivo_id)){
+                    div.children[2].id = 'picture_'.concat(id_div, '_', id_div_r);
+                    div.children[2].name = 'picture_'.concat(id_div, '_', id_div_r);
+                }else{
+                    div.children[2].id = 'picture_'.concat(div.children[2].dataset.archivo_id, '_', id_div, '_', id_div_r);
+                    div.children[2].name = 'picture_'.concat(div.children[2].dataset.archivo_id, '_', id_div, '_', id_div_r);
+                }
+                
                 id_div_r++;
             }
         }
+        guardar_datos();
     });
 
     $('#acordionCategorias').on('click', '.rbSI, .rbNA', function(e) {
@@ -526,6 +650,8 @@
 
 
         }
+
+        guardar_datos();
 
     });
 
@@ -739,6 +865,7 @@
             observacion.firstElementChild.lastElementChild.children[3].dataset.cant = cant;
             cant++;
         });
+        guardar_datos();
     });
 
     
@@ -1090,6 +1217,7 @@
                 cat_sala_maquinas.removeAttribute('hidden');
             }
         }
+        guardar_datos();
     });
 
     /*$('#acordeonCarpeta').on('show.bs.collapse', function () {
@@ -1255,7 +1383,7 @@
                                                                 div = div.concat('<div class="row justify-content-md-left">');
                                                                     div = div.concat('<div class="form-group col-sm-12  mt-3">');
                                                                         //div = div.concat('<label for="sRespuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'">Respuesta</label>');
-                                                                        div = div.concat('<select id="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" name="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" class="custom-select custom-select-sm">');
+                                                                        div = div.concat('<select id="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" name="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" class="custom-select custom-select-sm respuestas_checklist">');
                                                                             div = div.concat('<option value="-1" selected>Seleccione una Respuesta</option>');
                                                                             
                                                                             $.each(pregunta.respuestas, function(index_r, respuesta) {
@@ -1337,6 +1465,8 @@
         }else{
 
         }
+
+        guardar_datos();
     });
 
 });
@@ -1402,7 +1532,7 @@ window.onload = function () {
                                 var inputTC = '';
                                 inputTC = inputTC.concat('<input type="text" class="form-control form-control-sm" id="inputTotalCategorias" name="inputTotalCategorias" value="',data.data_cp_n.length/*data.data_total.length*/,'" hidden>');
                                 for (var i = 0; i < data.data_cp_n.length/*data.data_total.length*/; i++) {
-                                    inputTC = inputTC.concat('<input type="text" class="form-control form-control-sm" id="inputTotalPreguntas_',(i+1),'" name="inputTotalPreguntas_',(i+1),'" value="',data.data_cp_n.length/*data.data_total[i].cantPreguntas*/,'" hidden>');
+                                    inputTC = inputTC.concat('<input type="text" class="form-control form-control-sm" id="inputTotalPreguntas_',(i+1),'" name="inputTotalPreguntas_',(i+1),'" value="',data.data_cp_n[i].preguntas.length/*data.data_total[i].cantPreguntas*/,'" hidden>');
                                 }
 
                                 var contador = 0;
@@ -1526,7 +1656,7 @@ window.onload = function () {
                                                                 div = div.concat('<div class="row justify-content-md-left">');
                                                                     div = div.concat('<div class="form-group col-sm-12  mt-3">');
                                                                         //div = div.concat('<label for="sRespuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'">Respuesta</label>');
-                                                                        div = div.concat('<select id="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" name="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" class="custom-select custom-select-sm">');
+                                                                        div = div.concat('<select id="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" name="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" class="custom-select custom-select-sm respuestas_checklist">');
                                                                             div = div.concat('<option value="-1" selected>Seleccione una Respuesta</option>');
                                                                             
                                                                             $.each(pregunta.respuestas, function(index_r, respuesta) {
@@ -1582,7 +1712,7 @@ window.onload = function () {
                                                     div = div.concat('<span class="close quitarImagen" aria-hidden="true" id="close_',imagen.id_imagen,'" data-id="',imagen.id_imagen,'" data-id_div="',categoria.id_categoria,'_',pregunta.id_pregunta,'">×</span>');
                                                     div = div.concat('</button>');
                                                     div = div.concat('<img alt="Alt information for image" class="img-fluid rounded float-left" src="',window.origin + '/assets/files/image/',imagen.file_name,'" width="150" id="',imagen.id_imagen,'">');
-                                                    div = div.concat('<input type="file" id="picture_',imagen.id_imagen,'" name="picture_',imagen.id_imagen,'" hidden="true">');
+                                                    div = div.concat('<input type="file" id="picture_',imagen.archivo_id,'_',imagen.id_imagen,'" name="picture_',imagen.archivo_id,'_',imagen.id_imagen,'" data-origen="1" data-archivo_id="',imagen.archivo_id,'" hidden="true">');
                                                     div = div.concat('</div>');
                                                 });
                                             }
@@ -1616,6 +1746,49 @@ window.onload = function () {
                     }
                 }
             });
+
+
+
+            var baseurl =  window.origin + '/Inspeccion/json_listarObservacionesInspeccion';
+            jQuery.ajax({
+                type: "POST",
+                url: baseurl,
+                dataType: 'json',
+                data: {idInspeccion: idInspeccion},
+                success: function(data) {
+                    if (data) {
+                        if (data.data_obs_generales) {
+                            var id_categoria_i = null;
+                            var div = '';
+                            var contador = 0;
+
+                            if(data.data_obs_generales.length > 0){
+                                $.each(data.data_obs_generales, function(index_i, imagen) {
+                                    div = div.concat('<div class="float-sm-left m-3" id="div_contenedor_',imagen.orden_r,'">');
+                                    div = div.concat('<div class="card border-secondary" style="width: 18rem;">');
+                                    div = div.concat('<img alt="Alt information for image" class="img-fluid rounded float-left" src="',window.origin + '/assets/files/image/',imagen.file_name,'" id="imagen_',imagen.orden_r,'">');
+                                    div = div.concat('<div class="card-body text-secondary">');
+                                    div = div.concat('<input type="text" class="form-control  form-control-sm" id="input_obs_',imagen.id_categoria,'-',imagen.archivo_id,'_',imagen.orden_r,'" name="input_obs_',imagen.id_categoria,'-',imagen.archivo_id,'_',imagen.orden_r,'" value="',imagen.observacion_item,'" hidden="true">');
+                                    div = div.concat('<h5 class="card-title">',imagen.orden_r,'.- "',imagen.codigo_c,'_',imagen.categoria,'"</h5>');
+                                    div = div.concat('<p class="card-text">',imagen.observacion_item,'</p>');
+                                    div = div.concat('<a class="btn btn-outline-danger eliminarObservacion" data-id="',imagen.id_categoria,'" data-codigo="',imagen.codigo_c,'" data-nombre="',imagen.categoria,'" data-cant="',imagen.orden_r,'">');
+                                    div = div.concat('<i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="Eliminar"></i> Eliminar Observación');
+                                    div = div.concat('</a>');
+                                    div = div.concat('</div>');
+                                    div = div.concat('</div>');
+                                    div = div.concat('<input type="file" id="picture_',imagen.id_categoria,'-',imagen.archivo_id,'_',imagen.orden_r,'" name="picture_',imagen.id_categoria,'-',imagen.archivo_id,'_',imagen.orden_r,'" hidden="true">');
+                                    div = div.concat('</div>');
+                                });
+                            }
+
+                            $("#observacionesGenerales").append(div);
+                        }    
+
+                    }
+                }
+            });
+
+
         }
 
         $('#tListaCategorias').dataTable({

@@ -332,4 +332,81 @@ class Norma_model extends CI_Model
 
 		return $respuesta;
 	}
+
+	public function eliminarNormasInspeccion($idInspeccion, $id_usuario){
+		try{
+			$herramientas_inspeccion = $this->db->get_where('inspecciones_normas', array('id_inspeccion' => $idInspeccion, 'id_estado' => 1))->result();
+			$respuesta = array('resultado' => null,
+						'mensaje' => null,
+						'id_inspeccion' => null
+					  );
+
+			if (sizeof($herramientas_inspeccion) > 0) {
+			    
+				$this->db->set('updated_at', 'NOW()', FALSE);
+				$this->db->where('id_inspeccion', $idInspeccion);
+			    $this->db->where('id_estado', 1);
+				$this->db->update('inspecciones_normas', array('id_estado' => -1));
+
+			    if ($this->db->affected_rows() >= 1) {
+					$respuesta['id_inspeccion'] = $idInspeccion;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = "Se han eliminado correctamente las respuestas de Normas a la Inspeccion.";
+				}else{
+					$respuesta['id_inspeccion'] = -1;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = $this->db->error();
+				}
+			}else{
+				$respuesta['id_inspeccion'] = $idInspeccion;
+				$respuesta['resultado'] = 1;
+				$respuesta['mensaje'] = "La Inspeccion no posee respuestas de Normas Asociados.";
+			}
+		}catch(Exception $e){
+			$respuesta['resultado'] = -1;
+		    $respuesta['mensaje'] = $e;
+		    $respuesta['id_inspeccion'] = -1;
+		}
+		return $respuesta;
+	}
+
+	public function eliminarNormasChecklistInspeccion($idInspeccion, $id_usuario){
+		try{
+			$herramientas_inspeccion = $this->db->get_where('inspecciones_checklists', array('id_inspeccion' => $idInspeccion, 'id_estado' => 1))->result();
+			$respuesta = array('resultado' => null,
+						'mensaje' => null,
+						'id_inspeccion_checklist' => null
+					  );
+
+			$id_inspeccion_checklist = null;
+
+			if (sizeof($herramientas_inspeccion) > 0) {
+				$id_inspeccion_checklist = $herramientas_inspeccion[0]->id;
+			    
+				$this->db->set('updated_at', 'NOW()', FALSE);
+				$this->db->where('id_inspeccion', $idInspeccion);
+			    $this->db->where('id_estado', 1);
+				$this->db->update('inspecciones_checklists', array('id_estado' => -1));
+
+			    if ($this->db->affected_rows() >= 1) {
+					$respuesta['id_inspeccion_checklist'] = $id_inspeccion_checklist;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = "Se han eliminado correctamente las respuestas de Normas Checklist a la Inspeccion.";
+				}else{
+					$respuesta['id_inspeccion_checklist'] = $id_inspeccion_checklist;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = $this->db->error();
+				}
+			}else{
+				$respuesta['id_inspeccion_checklist'] = $id_inspeccion_checklist;
+				$respuesta['resultado'] = 1;
+				$respuesta['mensaje'] = "La Inspeccion no posee respuestas de Normas Checklist Asociados.";
+			}
+		}catch(Exception $e){
+			$respuesta['resultado'] = -1;
+		    $respuesta['mensaje'] = $e;
+		    $respuesta['id_inspeccion_checklist'] = -1;
+		}
+		return $respuesta;
+	}
 }
