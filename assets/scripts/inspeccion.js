@@ -61,39 +61,40 @@
         var loader = document.getElementById("loader");
         loader.removeAttribute('hidden');
         var es_temporal = document.getElementById('inputEsTemporal').value;
-            
-        var form = document.getElementById("agregarInspeccion");
-        //form.preventDefault();
-        var formData = new FormData(form);
-        formData.append("es_temporal", es_temporal);
-        var baseurl = (window.origin + '/Inspeccion/agregarInspeccion');
-        jQuery.ajax({
-        type: form.getAttribute('method'),
-        url: baseurl,
-        dataType: 'json',
-        cache: false,
-        contentType: false,
-        processData: false,
-        data: formData,
-        success: function(data) {
-            if (data) {
+        if (es_temporal == 1) {
+            var form = document.getElementById("agregarInspeccion");
+            //form.preventDefault();
+            var formData = new FormData(form);
+            formData.append("es_temporal", es_temporal);
+            var baseurl = (window.origin + '/Inspeccion/agregarInspeccion');
+            jQuery.ajax({
+            type: form.getAttribute('method'),
+            url: baseurl,
+            dataType: 'json',
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: formData,
+            success: function(data) {
+                if (data) {
 
-                if(data['resultado'] == '1')
-                {
+                    if(data['resultado'] == '1')
+                    {
+                        feather.replace();
+                        $('[data-toggle="tooltip"]').tooltip();
+                        id_inspeccion_form = document.getElementById('inputIdInspeccion').value;
+                        if (id_inspeccion_form.trim() == "") {
+                            document.getElementById('inputIdInspeccion').value = data.id_inspeccion;
+                        }
+                    }else{
+                        location.reload();
+                    }
                     feather.replace();
                     $('[data-toggle="tooltip"]').tooltip();
-                    id_inspeccion_form = document.getElementById('inputIdInspeccion').value;
-                    if (id_inspeccion_form.trim() == "") {
-                        document.getElementById('inputIdInspeccion').value = data.id_inspeccion;
-                    }
-                }else{
-                    location.reload();
                 }
-                feather.replace();
-                $('[data-toggle="tooltip"]').tooltip();
             }
+            });
         }
-        });
 
         feather.replace();
         loader.setAttribute('hidden', '');
