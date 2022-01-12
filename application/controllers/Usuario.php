@@ -51,7 +51,6 @@ class Usuario extends CI_Controller {
 					    <th scope="col" class="texto-pequenio text-center align-middle registro">Apellidos</th>
 					    <th scope="col" class="texto-pequenio text-center align-middle registro">Email</th>
 					    <th scope="col" class="texto-pequenio text-center align-middle registro">Perfil</th>
-					    <th scope="col" class="texto-pequenio text-center align-middle registro">Hospital</th>
 					    <th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 					    <th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 					</tr>
@@ -70,7 +69,6 @@ class Usuario extends CI_Controller {
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$usuario['apellidos'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$usuario['email'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$usuario['pf_nombre'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.(is_null($usuario['nombre']) ? "" : $usuario['cod_deis'].' - '.$usuario['nombre']).'</p></td>
 						        <td class="text-center align-middle registro botonTabla">
 						        	<a id="edit_'.$usuario['id_usuario'].'" class="view_usuario" href="ModificarUsuario/?idUsuario='.$usuario['id_usuario'].'" data-id="'.$usuario['id_usuario'].'" data-nombre="'.$usuario['nombres'].'">
 						        		<i data-feather="edit-3" data-toggle="tooltip" data-placement="top" title="modificar"></i>

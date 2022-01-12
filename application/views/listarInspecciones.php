@@ -103,11 +103,11 @@
 					        	</td>
 					        	<td class="text-center align-middle registro botonTabla">
 					        		<?php if ($inspeccion["id_estado"] == "1") { ?>
-						        					<a id="trash_<?php echo $inspeccion['id']; ?>" class="trash" href="#" data-toggle="modal" data-target="#modalEliminarInspeccion" data-id="<?php echo $inspeccion['id']; ?>" data-inspeccion="<?php echo $inspeccion['id']; ?>">
+						        					<a id="trash_<?php echo $inspeccion['id']; ?>" class="trash" href="#" data-toggle="modal" data-target="#modalEliminarInspeccion" data-id="<?php echo $inspeccion['id']; ?>" data-inspeccion="<?php echo $inspeccion['edificio']; ?>">
 										        		<i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="Eliminar"></i>       		
 									        		</a>
 					        		<?php }else{ ?>
-					        						<a id="trash_<?php echo $inspeccion['id']; ?>" class="trash" href="#" data-toggle="modal" data-target="#modalActivarInspeccion" data-id="<?php echo $inspeccion['id']; ?>" data-inspeccion="<?php echo $inspeccion['id']; ?>">
+					        						<a id="trash_<?php echo $inspeccion['id']; ?>" class="trash" href="#" data-toggle="modal" data-target="#modalActivarInspeccion" data-id="<?php echo $inspeccion['id']; ?>" data-inspeccion="<?php echo $inspeccion['edificio']; ?>">
 										        		<i data-feather="check-circle" data-toggle="tooltip" data-placement="top" title="Activar"></i>       		
 									        		</a>
 					        		<?php } ?>

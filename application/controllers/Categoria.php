@@ -242,7 +242,7 @@ class Categoria extends CI_Controller {
 			$respuesta = 0;
 			if($resultado > 0)
 				$respuesta = 1;
-			#echo json_encode($respuesta);
+			echo json_encode($respuesta);
 		}
 	}
 

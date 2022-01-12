@@ -1195,6 +1195,8 @@ class Inspeccion extends CI_Controller {
 								<th scope="col" class="texto-pequenio text-center align-middle registro">Edificio</th>
 								<th scope="col" class="texto-pequenio text-center align-middle registro">Direcci&oacute;n</th>
 								<th scope="col" class="texto-pequenio text-center align-middle registro">cant. Ascensores</th>
+
+
 								<th scope="col" class="texto-pequenio text-center align-middle registro">Tecnico</th>
 								<th scope="col" class="texto-pequenio text-center align-middle registro">Rut Admin</th>
 								<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre Admin</th>
@@ -1242,11 +1244,11 @@ class Inspeccion extends CI_Controller {
 					        	</td>
 					        	<td class="text-center align-middle registro botonTabla">';
 					        		if ($inspeccion["id_estado"] == "1") {
-						        					$table_inspecciones .= '<a id="trash_'.$inspeccion['id'].'" class="trash" href="#" data-toggle="modal" data-target="#modalEliminarInspeccion" data-id="'.$inspeccion['id'].'" data-inspeccion="'.$inspeccion['id'].'">
+						        					$table_inspecciones .= '<a id="trash_'.$inspeccion['id'].'" class="trash" href="#" data-toggle="modal" data-target="#modalEliminarInspeccion" data-id="'.$inspeccion['id'].'" data-inspeccion="'.$inspeccion['edificio'].'">
 										        		<i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="Eliminar"></i>       		
 									        		</a>';
 					        		}else{
-					        			$table_inspecciones .= '<a id="trash_'.$inspeccion['id'].'" class="trash" href="#" data-toggle="modal" data-target="#modalActivarInspeccion" data-id="'.$inspeccion['id'].'" data-inspeccion="'.$inspeccion['id'].'">
+					        			$table_inspecciones .= '<a id="trash_'.$inspeccion['id'].'" class="trash" href="#" data-toggle="modal" data-target="#modalActivarInspeccion" data-id="'.$inspeccion['id'].'" data-inspeccion="'.$inspeccion['edificio'].'">
 										        		<i data-feather="check-circle" data-toggle="tooltip" data-placement="top" title="Activar"></i>       		
 									        		</a>';
 					        		}
@@ -1644,6 +1646,22 @@ class Inspeccion extends CI_Controller {
 		}else
 		{
 			redirect('Inicio');
+		}
+	}
+
+
+	public function eliminarInspeccion()
+	{
+		$usuario = $this->session->userdata();
+		if($usuario){
+			$idInspeccion = null;
+			if($this->input->POST('idInspeccion'))
+				$idInspeccion = $this->input->POST('idInspeccion');
+			$resultado = $this->inspeccion_model->eliminarInspeccion($idInspeccion, $usuario['id_usuario']);
+			$respuesta = 0;
+			if($resultado > 0)
+				$respuesta = 1;
+			echo json_encode($respuesta);
 		}
 	}
 

@@ -335,6 +335,119 @@
         feather.replace();
     });
 
+    $('#eliminarEmpresa').click(function(e){
+    idEmpresa = $('#tituloEP').data('idempresa');
+    //var nombreEquipo = $('#tituloEE').data('nombreequipo');
+    var baseurl = window.origin + '/Empresa/eliminarEmpresa';
+
+        jQuery.ajax({
+        type: "POST",
+        url: baseurl,
+        dataType: 'json',
+        data: {idEmpresa: idEmpresa},
+        success: function(data) {
+        if (data)
+        {
+            if(data == '1')
+            {
+              $('#tituloMP').empty();
+              $("#parrafoMP").empty();
+              $("#tituloMP").append('<i class="plusTitulo mb-2" data-feather="check"></i> Exito!!!');
+              $("#parrafoMP").append('Se ha eliminado exitosamente la Empresa.');
+              $('#modalEliminarEmpresa').modal('hide');
+               listarEmpresas();
+              $('#modalMensajeEmpresa').modal({
+                show: true
+              });
+            }else{
+              $('#tituloMP').empty();
+              $("#parrafoMP").empty();
+              $("#tituloMP").append('<i class="plusTituloError mb-2" data-feather="x-circle"></i> Error!!!');
+              $("#parrafoMP").append('Ha ocurrido un error al intentar la Empresa.');
+              $('#modalEliminarEmpresa').modal('hide');
+              listarEmpresas();
+              $('#modalMensajeEmpresa').modal({
+                show: true
+              });
+            }
+            feather.replace()
+            $('[data-toggle="tooltip"]').tooltip()
+            }
+        }
+        });
+    });
+
+    function listarEmpresas()
+    {
+        var baseurl = window.origin + '/Empresa/listarEmpresas';
+        jQuery.ajax({
+        type: "POST",
+        url: baseurl,
+        dataType: 'json',
+        //data: {},
+        success: function(data) {
+        if (data)
+        {
+            var myJSON= JSON.stringify(data);
+            myJSON = JSON.parse(myJSON);
+            $('#tablaListaEmpresas').html(myJSON.table_empresas);
+            feather.replace()
+            $('#tListaEmpresas').dataTable({
+                searching: true,
+                paging:         true,
+                ordering:       true,
+                info:           true,
+                 "scrollX": false,
+                columnDefs: [
+                  { targets: 'no-sort', orderable: false }
+                ],
+                "drawCallback": function( settings ) {
+                    feather.replace();
+                    $('[data-toggle="tooltip"]').tooltip();
+                },
+                "oLanguage": {
+                    "sLengthMenu": "_MENU_ Registros por p&aacute;gina",
+                    "sZeroRecords": "No se encontraron registros",
+                    "sInfo": "Mostrando del _START_ al _END_ de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 de 0 registros",
+                    "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "sSearch":        "Buscar:",
+                    "sProcessing" : '<img src="<?php echo base_url(); ?>images/gif/spin2.svg" height="42" width="42" >',
+                    "oPaginate": {
+                        "sFirst":    "Primero",
+                        "sLast":    "Último",
+                        "sNext":    "Siguiente",
+                        "sPrevious": "Anterior"
+                    }
+                },
+                lengthMenu: [[10, 20], [10, 20]]
+            });
+
+            feather.replace();
+            $('[data-toggle="tooltip"]').tooltip();
+              //loader.setAttribute('hidden', '');
+          }
+        }
+        });
+    }
+
+
+
+
+    $('#modalEliminarEmpresa').on('show.bs.modal', function(e) {
+        //get data-id attribute of the clicked element
+        var idEmpresa = $(e.relatedTarget).data('id');
+        var nombreEmpresa = $(e.relatedTarget).data('empresa');
+        //populate the textbox
+        $("#tituloEP").text('Eliminar Empresa N° ' + idEmpresa);
+        $("#parrafoEP").text('¿Estás seguro que deseas eliminar la Empresa N° ' + idEmpresa + ', "' + nombreEmpresa + '"?');
+
+        $("#tituloEP").removeData("idempresa");
+        $("#tituloEP").attr("data-idempresa", idEmpresa);
+        //$("#tituloEE").removeData("nombreequipo");
+        //$("#tituloEE").attr("data-nombreEquipo", nombreEquipo);
+    });
+
     
 
     $('#modalAgregarEdificio').on('show.bs.modal', function (event) {

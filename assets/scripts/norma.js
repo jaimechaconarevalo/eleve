@@ -248,6 +248,117 @@
         }
     });
 
+
+    $('#eliminarNorma').click(function(e){
+        idNorma = $('#tituloEP').data('idnorma');
+        //var nombreEquipo = $('#tituloEE').data('nombreequipo');
+        var baseurl = window.origin + '/Norma/eliminarNorma';
+
+        jQuery.ajax({
+        type: "POST",
+        url: baseurl,
+        dataType: 'json',
+        data: {idNorma: idNorma},
+        success: function(data) {
+        if (data)
+        {
+            if(data == '1')
+            {
+              $('#tituloMP').empty();
+              $("#parrafoMP").empty();
+              $("#tituloMP").append('<i class="plusTitulo mb-2" data-feather="check"></i> Exito!!!');
+              $("#parrafoMP").append('Se ha eliminado exitosamente la Norma.');
+              $('#modalEliminarNorma').modal('hide');
+               listarNormas();
+              $('#modalMensajeNorma').modal({
+                show: true
+              });
+            }else{
+              $('#tituloMP').empty();
+              $("#parrafoMP").empty();
+              $("#tituloMP").append('<i class="plusTituloError mb-2" data-feather="x-circle"></i> Error!!!');
+              $("#parrafoMP").append('Ha ocurrido un error al intentar la Norma.');
+              $('#modalEliminarNorma').modal('hide');
+              listarNormas();
+              $('#modalMensajeNorma').modal({
+                show: true
+              });
+            }
+            feather.replace()
+            $('[data-toggle="tooltip"]').tooltip()
+            }
+        }
+        });
+    });
+
+    function listarNormas()
+    {
+        var baseurl = window.origin + '/Norma/listarNormas';
+        jQuery.ajax({
+        type: "POST",
+        url: baseurl,
+        dataType: 'json',
+        //data: {},
+        success: function(data) {
+        if (data)
+        {
+            var myJSON= JSON.stringify(data);
+            myJSON = JSON.parse(myJSON);
+            $('#tablaListaNormas').html(myJSON.table_normas);
+            feather.replace()
+            $('#tListaNormas').dataTable({
+                searching: true,
+                paging:         true,
+                ordering:       true,
+                info:           true,
+                 "scrollX": false,
+                columnDefs: [
+                  { targets: 'no-sort', orderable: false }
+                ],
+                "drawCallback": function( settings ) {
+                    feather.replace();
+                    $('[data-toggle="tooltip"]').tooltip();
+                },
+                "oLanguage": {
+                    "sLengthMenu": "_MENU_ Registros por p&aacute;gina",
+                    "sZeroRecords": "No se encontraron registros",
+                    "sInfo": "Mostrando del _START_ al _END_ de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 de 0 registros",
+                    "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "sSearch":        "Buscar:",
+                    "sProcessing" : '<img src="<?php echo base_url(); ?>images/gif/spin2.svg" height="42" width="42" >',
+                    "oPaginate": {
+                        "sFirst":    "Primero",
+                        "sLast":    "Último",
+                        "sNext":    "Siguiente",
+                        "sPrevious": "Anterior"
+                    }
+                },
+                lengthMenu: [[10, 20], [10, 20]]
+            });
+
+            feather.replace();
+            $('[data-toggle="tooltip"]').tooltip();
+              //loader.setAttribute('hidden', '');
+          }
+        }
+        });
+    }
+
+    $('#modalEliminarNorma').on('show.bs.modal', function(e) {
+        //get data-id attribute of the clicked element
+        var idNorma = $(e.relatedTarget).data('id');
+        var nombreNorma = $(e.relatedTarget).data('norma');
+        //populate the textbox
+        $("#tituloEP").text('Eliminar Norma N° ' + idNorma);
+        $("#parrafoEP").text('¿Estás seguro que deseas eliminar la Norma N° ' + idNorma + ', "' + nombreNorma + '"?');
+
+        $("#tituloEP").removeData("idnorma");
+        $("#tituloEP").attr("data-idnorma", idNorma);
+        //$("#tituloEE").removeData("nombreequipo");
+        //$("#tituloEE").attr("data-nombreEquipo", nombreEquipo);
+    });
+
 });
 
 
@@ -365,16 +476,84 @@ window.onload = function () {
                 data: {idNorma: idNorma},
                 success: function(data) {
                     if (data) {
-                        if (data.data) {
-                            var preguntas_seleccionadas = JSON.parse(localStorage.getItem("preguntas_seleccionadas"));
-                            if (preguntas_seleccionadas != null && preguntas_seleccionadas.length > 0) {
-                              localStorage.setItem("preguntas_seleccionadas", JSON.stringify(data.data));
-                            }else{
-                              localStorage.setItem("preguntas_seleccionadas", JSON.stringify(data.data));
-                            }
-                        }
-
+                       
+                        var preguntas_seleccionadas = [];
+                        var id_categoria_i = null;
+                        var div = '';
                         if (data.data_cp_n) {
+                            $.each(data.data_cp_n, function(index_c, categoria ) {
+
+                                div = div.concat('<div class="card" id="categoria',categoria.id_categoria,'">');
+
+                                    div = div.concat('<div class="card-header row" id="heading',categoria.id_categoria,'">');
+                                        div = div.concat('<div class="col-sm-9 text-left">');
+                                            div = div.concat('<h2 class="mb-0">');
+                                            div = div.concat('<button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse',categoria.id_categoria,'" aria-expanded="true" aria-controls="collapse',categoria.id_categoria,'">');
+                                            div = div.concat(categoria.codigo, ' - ', categoria.categoria);
+                                            div = div.concat('</button>');
+                                            div = div.concat('</h2>');
+                                        div = div.concat('</div>');
+                                        div = div.concat('<div id="agregarPregunta',categoria.id_categoria,'" class="col-sm-3 text-right">');
+                                            div = div.concat('<a class="btn btn-link text-danger eliminarCategoria" data-id="',categoria.id_categoria,'" data-codigo="',categoria.codigo,'" data-nombre="',categoria.categoria,'"><i stop-color data-feather="trash-2" class="pb-1" data-toggle="tooltip" data-placement="top" title="Eliminar Categor&iacute;a"></i></a>');
+                                            div = div.concat('<a class="btn btn-link agregarPregunta" data-id="',categoria.id_categoria,'" data-codigo="',categoria.codigo,'" data-nombre="',categoria.categoria,'" data-toggle="modal" data-target="#modalAgregarPregunta"><i stop-color data-feather="plus" class="pb-1"></i>Agregar Pregunta</a>'); 
+                                        div = div.concat('</div>');
+                                    div = div.concat('</div>');
+
+                                    div = div.concat('<div id="collapse',categoria.id_categoria,'" class="collapse show" aria-labelledby="heading',categoria.id_categoria,'" data-parent="#acordionCategorias">');
+                                        if (categoria.preguntas.length > 0) {
+
+                                            $.each(categoria.preguntas, function(index_p, pregunta) {
+                                                //contador++;
+
+                                                var id = pregunta.id_pregunta;
+                                                var codigo = pregunta.codigo;
+                                                var nombre = pregunta.pregunta;
+                                                var idCategoria = categoria.id_categoria;
+
+                                                if (preguntas_seleccionadas != null && preguntas_seleccionadas.length > 0) {
+                                                    preguntas_seleccionadas.push([id, idCategoria, codigo, nombre]);
+                                                    //localStorage.setItem("preguntas_seleccionadas", JSON.stringify(preguntas_seleccionadas));
+                                                }else{
+                                                    preguntas_seleccionadas.push([id, idCategoria, codigo, nombre]);
+                                                    //localStorage.setItem("preguntas_seleccionadas", JSON.stringify(preguntas_seleccionadas));
+                                                }
+
+                                                div = div.concat('<div id="pregunta',categoria.id_categoria, '_', pregunta.id_pregunta,'" class="card-body border">');
+                                                    div = div.concat('<div class="row">');
+                                                        div = div.concat('<div class="col-sm-10 text-left">');
+                                                            div = div.concat(pregunta.codigo, ' - ', pregunta.pregunta);
+                                                        div = div.concat('</div>');
+                                                        div = div.concat('<div class="col-sm-2 text-right">');
+                                                            div = div.concat('<a id="trash_',pregunta.id_pregunta,'" class="trash plusTituloError eliminarPregunta" href="#" data-id="',pregunta.id_pregunta,'" data-codigo="',pregunta.codigo,'" data-nombre="',pregunta.pregunta,'" data-idcategoria="',categoria.id_categoria,'">');
+                                                            div = div.concat('<i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="Eliminar Pregunta"></i>');
+                                                            div = div.concat('</a>');
+                                                        div = div.concat('</div>');
+                                                    div = div.concat('</div>');
+                                                div = div.concat('</div>');
+                                            });
+                                        }
+                                        /*div = div.concat('<div id="pregunta',id_categoria, '_', id_pregunta,'" class="card-body border">');
+                                            div = div.concat('<div class="row">');
+                                                div = div.concat('<div class="col-sm-10 text-left">');
+                                                    div = div.concat(cod_pregunta, ' - ', pregunta);
+                                                div = div.concat('</div>');
+                                                div = div.concat('<div class="col-sm-2 text-right">');
+                                                    div = div.concat('<a id="trash_',id_pregunta,'" class="trash plusTituloError eliminarPregunta" href="#" data-id="',id_pregunta,'" data-codigo="',cod_pregunta,'" data-nombre="',pregunta,'" data-idcategoria="',id_categoria,'">');
+                                                    div = div.concat('<i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="Eliminar Pregunta"></i>');
+                                                    div = div.concat('</a>');
+                                                div = div.concat('</div>');
+                                            div = div.concat('</div>');
+                                        div = div.concat('</div>');*/
+                                    
+                                    div = div.concat('</div>');
+                                div = div.concat('</div>');
+
+
+                            });
+
+                            localStorage.setItem("preguntas_seleccionadas", JSON.stringify(preguntas_seleccionadas));
+ 
+                            /*
                             var id_categoria_i = null;
                             var div = '';
                             for (var i = 0; i < data.data_cp_n.length; i++) {
@@ -435,7 +614,10 @@ window.onload = function () {
                                 }
                             }
                             div = div.concat('</div>');
-                            div = div.concat('</div>');
+                            div = div.concat('</div>');*/
+
+
+
                             $("#acordionCategorias").append(div);
                             feather.replace();
                             $('[data-toggle="tooltip"]').tooltip();

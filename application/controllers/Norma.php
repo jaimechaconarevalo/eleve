@@ -202,10 +202,6 @@ class Norma extends CI_Controller {
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Estado</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Cluster</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Servicio Salud</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Regi&oacute;n</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Macro Zona</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 					</tr>
@@ -222,10 +218,6 @@ class Norma extends CI_Controller {
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$norma['nombre'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.($norma["estado"] == "1" ? "Activo" : "Desactivado").'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$norma['created_at'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$norma['cluster'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$norma['servicio_salud'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$norma['region'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$norma['macro_zona'].'</p></td>
 					        	<td class="text-center align-middle registro botonTabla">
 						        	<a id="edit_'.$norma['id'].'" class="view_convenio" href="ModificarNorma/?idNorma='.$norma['id'].'">
 						        		<i data-feather="edit-3" data-toggle="tooltip" data-placement="top" title="Modificar"></i>       		
@@ -235,7 +227,7 @@ class Norma extends CI_Controller {
 
 					        	if ($norma["estado"] == "1") {
 		        					$table_normas .= '<a id="trash_'.$norma['id'].'" class="trash" href="#" data-toggle="modal" data-target="#modalEliminarNorma" data-id="'.$norma['id'].'" data-norma="'.$norma['nombre'].'">
-						        		<i data-feather="x-circle" data-toggle="tooltip" data-placement="top" title="Desactivar"></i>       		
+						        		<i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="Eliminar"></i>
 					        		</a>';
 				        		}else{
 	        						$table_normas .= '<a id="trash_'.$norma['id'].'" class="trash" href="#" data-toggle="modal" data-target="#modalActivarNorma" data-id="'.$norma['id'].'" data-norma="'.$norma['nombre'].'">
@@ -478,14 +470,14 @@ class Norma extends CI_Controller {
 		}
 	}
 
-	public function desactivarNorma()
+	public function eliminarNorma()
 	{
 		$usuario = $this->session->userdata();
 		if($usuario){
 			$idNorma = null;
-			if($this->input->POST('id_norma'))
-				$idNorma = $this->input->POST('id_norma');
-			$resultado = $this->norma_model->desactivarNorma($idNorma, $usuario['id_usuario']);
+			if($this->input->POST('idNorma'))
+				$idNorma = $this->input->POST('idNorma');
+			$resultado = $this->norma_model->eliminarNorma($idNorma, $usuario['id_usuario']);
 			$respuesta = 0;
 			if($resultado > 0)
 				$respuesta = 1;

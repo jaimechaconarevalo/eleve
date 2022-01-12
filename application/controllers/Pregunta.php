@@ -224,10 +224,6 @@ class Pregunta extends CI_Controller {
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Filtro</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Estado</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Cluster</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Servicio Salud</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Regi&oacute;n</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Macro Zona</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 					</tr>
@@ -245,10 +241,6 @@ class Pregunta extends CI_Controller {
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$pregunta['filtro'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.($pregunta["estado"] == "1" ? "Activo" : "Desactivado").'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$pregunta['created_at'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$pregunta['cluster'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$pregunta['servicio_salud'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$pregunta['region'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$pregunta['macro_zona'].'</p></td>
 					        	<td class="text-center align-middle registro botonTabla">
 						        	<a id="edit_'.$pregunta['id'].'" class="view_convenio" href="ModificarPregunta/?idPregunta='.$pregunta['id'].'">
 						        		<i data-feather="edit-3" data-toggle="tooltip" data-placement="top" title="Modificar"></i>       		
@@ -258,7 +250,7 @@ class Pregunta extends CI_Controller {
 
 					        	if ($pregunta["estado"] == "1") {
 		        					$table_preguntas .= '<a id="trash_'.$pregunta['id'].'" class="trash" href="#" data-toggle="modal" data-target="#modalEliminarPregunta" data-id="'.$pregunta['id'].'" data-pregunta="'.$pregunta['nombre'].'">
-						        		<i data-feather="x-circle" data-toggle="tooltip" data-placement="top" title="Desactivar"></i>       		
+						        		<i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="Eliminar"></i>
 					        		</a>';
 				        		}else{
 	        						$table_preguntas .= '<a id="trash_'.$pregunta['id'].'" class="trash" href="#" data-toggle="modal" data-target="#modalActivarPregunta" data-id="'.$pregunta['id'].'" data-pregunta="'.$pregunta['nombre'].'">
@@ -297,14 +289,14 @@ class Pregunta extends CI_Controller {
 		}
 	}
 
-	public function desactivarPregunta()
+	public function eliminarPregunta()
 	{
 		$usuario = $this->session->userdata();
 		if($usuario){
 			$idPregunta = null;
-			if($this->input->POST('id_pregunta'))
-				$idPregunta = $this->input->POST('id_pregunta');
-			$resultado = $this->pregunta_model->desactivarPregunta($idPregunta, $usuario['id_usuario']);
+			if($this->input->POST('idPregunta'))
+				$idPregunta = $this->input->POST('idPregunta');
+			$resultado = $this->pregunta_model->eliminarPregunta($idPregunta, $usuario['id_usuario']);
 			$respuesta = 0;
 			if($resultado > 0)
 				$respuesta = 1;

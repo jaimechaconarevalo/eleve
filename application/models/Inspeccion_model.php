@@ -858,5 +858,42 @@ class Inspeccion_model extends CI_Model
 		return $respuesta;
 	}
 
+	public function eliminarInspeccion($idInspeccion, $id_usuario)
+	{
+		try{
+			$inspeccion = $this->db->get_where('inspecciones', array('id' => $idInspeccion, 'id_estado' => 1))->result();
+			$respuesta = array('resultado' => null,
+						'mensaje' => null,
+						'id_inspeccion' => null
+					  );
+
+			if (sizeof($inspeccion) > 0) {
+
+				$data3 = array(
+			        'id_estado' => -1
+				);
+			    
+				$this->db->set('updated_at', 'NOW()', FALSE);
+				$this->db->where('id', $idInspeccion);
+			    $this->db->update('inspecciones', $data3);
+
+			    if ($this->db->affected_rows() >= 1) {
+					$respuesta['id_inspeccion'] = $idInspeccion;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = "Se ha eliminado correctamente la Norma.";
+				}else{
+					$respuesta['id_inspeccion'] = -1;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = $this->db->error();
+				}
+			}
+		}catch(Exception $e){
+			$respuesta['resultado'] = -1;
+		    $respuesta['mensaje'] = $e;
+		    $respuesta['id_inspeccion'] = -1;
+		}
+		return $respuesta;
+	}
+
 	
 }

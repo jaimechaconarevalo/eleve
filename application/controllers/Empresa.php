@@ -149,6 +149,21 @@ class Empresa extends CI_Controller {
 		}
 	}
 
+	public function eliminarEmpresa()
+	{
+		$usuario = $this->session->userdata();
+		if($usuario){
+			$idEmpresa = null;
+			if($this->input->POST('idEmpresa'))
+				$idEmpresa = $this->input->POST('idEmpresa');
+			$resultado = $this->empresa_model->eliminarEmpresa($idEmpresa, $usuario['id_usuario']);
+			$respuesta = 0;
+			if($resultado > 0)
+				$respuesta = 1;
+			echo json_encode($respuesta);
+		}
+	}
+
 	public function modificarEmpresa()
 	{
 		$usuario = $this->session->userdata();
@@ -204,16 +219,12 @@ class Empresa extends CI_Controller {
 				<thead class="thead-dark">
 					<tr>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"># ID</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Codigo</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Estado</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Rut</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Raz&oacute;n Social</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">N° Registro</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Direcci&oacute;n</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Cluster</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Servicio Salud</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Regi&oacute;n</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Macro Zona</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Estado</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 					</tr>
@@ -225,31 +236,24 @@ class Empresa extends CI_Controller {
 				{								
 					foreach ($empresas as $empresa) {
 						$table_empresas .= '<tr>
-						        <th scope="row" class="text-center align-middle registro"><p class="texto-pequenio">'.$empresa['id'].'</th>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$empresa['codigo'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$empresa['nombre'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.($empresa["estado"] == "1" ? "Activo" : "Desactivado").'</p></td>
+						        <th scope="row" class="text-center align-middle registro"><p class="texto-pequenio">'.$empresa['id_empresa'].'</th>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$empresa['rut'].'</p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$empresa['razon_social'].'</p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$empresa['num_registro'].'</p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$empresa['direccion'].'</p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.($empresa["id_estado"] == "1" ? "Activo" : "Desactivado").'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$empresa['created_at'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$empresa['cluster'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$empresa['servicio_salud'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$empresa['region'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$empresa['macro_zona'].'</p></td>
+						        
 					        	<td class="text-center align-middle registro botonTabla">
-						        	<a id="edit_'.$empresa['id'].'" class="view_convenio" href="ModificarEmpresa/?idEmpresa='.$empresa['id'].'">
+						        	<a id="edit_'.$empresa['id_empresa'].'" class="view_convenio" href="ModificarEmpresa/?idEmpresa='.$empresa['id_empresa'].'">
 						        		<i data-feather="edit-3" data-toggle="tooltip" data-placement="top" title="Modificar"></i>       		
 					        		</a>
 					        	</td>
 					        	<td class="text-center align-middle registro botonTabla">';
-
-					        	if ($empresa["estado"] == "1") {
-		        					$table_empresas .= '<a id="trash_'.$empresa['id'].'" class="trash" href="#" data-toggle="modal" data-target="#modalEliminarEmpresa" data-id="'.$empresa['id'].'" data-empresa="'.$empresa['nombre'].'">
-						        		<i data-feather="x-circle" data-toggle="tooltip" data-placement="top" title="Desactivar"></i>       		
+	        					$table_empresas .= '<a id="trash_'.$empresa['id_empresa'].'" class="trash" href="#" data-toggle="modal" data-target="#modalEliminarEmpresa" data-id="'.$empresa['id_empresa'].'" data-empresa="'.$empresa['razon_social'].'">
+						        		<i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="Eliminar"></i>       		
 					        		</a>';
-				        		}else{
-	        						$table_empresas .= '<a id="trash_'.$empresa['id'].'" class="trash" href="#" data-toggle="modal" data-target="#modalActivarEmpresa" data-id="'.$empresa['id'].'" data-empresa="'.$empresa['nombre'].'">
-						        		<i data-feather="check-circle" data-toggle="tooltip" data-placement="top" title="Activar"></i>       		
-					        		</a>';
-					        	}
+				        		
 
 					        	$table_empresas .= '</td>
 					    	</tr>';

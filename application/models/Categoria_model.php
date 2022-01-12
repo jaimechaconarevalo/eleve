@@ -218,13 +218,11 @@ class Categoria_model extends CI_Model
 	public function eliminarCategoria($idCategoria, $id_usuario)
 	{
 		try{
-			$categoria = $this->db->get_where('categorias', array('id' => $idCategoria, 'id' => 1))->result();
+			$categoria = $this->db->get_where('categorias', array('id' => $idCategoria, 'estado' => 1))->result();
 			$respuesta = array('resultado' => null,
 						'mensaje' => null,
 						'id_categoria' => null
 					  );
-
-			var_dump($categoria);
 
 			if (sizeof($categoria) > 0) {
 

@@ -168,10 +168,6 @@ class Carpeta extends CI_Controller {
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Estado</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Cluster</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Servicio Salud</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Regi&oacute;n</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Macro Zona</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 					</tr>
@@ -188,10 +184,6 @@ class Carpeta extends CI_Controller {
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$carpeta['nombre'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.($carpeta["estado"] == "1" ? "Activo" : "Desactivado").'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$carpeta['created_at'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$carpeta['cluster'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$carpeta['servicio_salud'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$carpeta['region'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$carpeta['macro_zona'].'</p></td>
 					        	<td class="text-center align-middle registro botonTabla">
 						        	<a id="edit_'.$carpeta['id'].'" class="view_convenio" href="ModificarCarpeta/?idCarpeta='.$carpeta['id'].'">
 						        		<i data-feather="edit-3" data-toggle="tooltip" data-placement="top" title="Modificar"></i>       		
@@ -201,7 +193,7 @@ class Carpeta extends CI_Controller {
 
 					        	if ($carpeta["estado"] == "1") {
 		        					$table_carpetas .= '<a id="trash_'.$carpeta['id'].'" class="trash" href="#" data-toggle="modal" data-target="#modalEliminarCarpeta" data-id="'.$carpeta['id'].'" data-carpeta="'.$carpeta['nombre'].'">
-						        		<i data-feather="x-circle" data-toggle="tooltip" data-placement="top" title="Desactivar"></i>       		
+						        		<i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="Eliminar"></i>       		
 					        		</a>';
 				        		}else{
 	        						$table_carpetas .= '<a id="trash_'.$carpeta['id'].'" class="trash" href="#" data-toggle="modal" data-target="#modalActivarCarpeta" data-id="'.$carpeta['id'].'" data-carpeta="'.$carpeta['nombre'].'">
@@ -240,14 +232,14 @@ class Carpeta extends CI_Controller {
 		}
 	}
 
-	public function desactivarCarpeta()
+	public function eliminarCarpeta()
 	{
 		$usuario = $this->session->userdata();
 		if($usuario){
 			$idCarpeta = null;
-			if($this->input->POST('id_carpeta'))
-				$idCarpeta = $this->input->POST('id_carpeta');
-			$resultado = $this->carpeta_model->desactivarCarpeta($idCarpeta, $usuario['id_usuario']);
+			if($this->input->POST('idCarpeta'))
+				$idCarpeta = $this->input->POST('idCarpeta');
+			$resultado = $this->carpeta_model->eliminarCarpeta($idCarpeta, $usuario['id_usuario']);
 			$respuesta = 0;
 			if($resultado > 0)
 				$respuesta = 1;

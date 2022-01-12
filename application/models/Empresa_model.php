@@ -67,10 +67,10 @@ class Empresa_model extends CI_Model
 
 	public function obtenerEmpresa($idEmpresa, $id_usuario)
 	{
-		$this->db->select('h.id, h.codigo, h.nombre, h.observaciones, h.estado, h.created_at, h.updated_at, h.id_usuario');
-		$this->db->from('empresas h');
-		$this->db->where('h.estado', 1);
-		$this->db->where('h.id', $idEmpresa);
+		$this->db->select('em.id_empresa, em.cod_empresa, em.razon_social, em.num_registro, em.direccion, em.rut, em.email, em.observaciones, em.id_estado, em.created_at, em.updated_at, em.id_usuario');
+		$this->db->from('empresas_mantenedoras em');
+		$this->db->where('em.id_estado', 1);
+		$this->db->where('em.id_empresa', $idEmpresa);
 		$empresa = $this->db->get();
 		return $empresa->result_array();
 	}
@@ -200,10 +200,10 @@ class Empresa_model extends CI_Model
 			);
 
 			if ($idEmpresa && !is_null($idEmpresa)) {
-				$empresa = $this->db->get_where('empresas_mantenedoras', array('id' => $idEmpresa))->result();
+				$empresa = $this->db->get_where('empresas_mantenedoras', array('id_empresa' => $idEmpresa))->result();
 				if (sizeof($empresa) > 0) {
 					$this->db->set('updated_at', 'NOW()', FALSE);
-					$this->db->where('id', $idEmpresa);
+					$this->db->where('id_empresa', $idEmpresa);
 					$this->db->update('empresas_mantenedoras', $data);
 
 					if ($this->db->affected_rows() >= 1) {
@@ -464,38 +464,41 @@ class Empresa_model extends CI_Model
 		return $respuesta;
 	}
 
-	public function eliminarItemCostoEmpresa($idEmpresa, $id_usuario){
+	public function eliminarEmpresa($idEmpresa, $id_usuario)
+	{
 		try{
-			$item_costos_empresa = $this->db->get_where('empresas_suministros', array('empresas_id' => $idEmpresa))->result();
+			$empresa = $this->db->get_where('empresas_mantenedoras', array('id_empresa' => $idEmpresa, 'id_estado' => 1))->result();
 			$respuesta = array('resultado' => null,
 						'mensaje' => null,
 						'id_empresa' => null
 					  );
 
-			if (sizeof($item_costos_empresa) > 0) {
-			    $this->db->where('empresas_id', $idEmpresa);
-				$this->db->delete('empresas_suministros');
+			if (sizeof($empresa) > 0) {
+
+				$data3 = array(
+			        'id_estado' => -1
+				);
+			    
+				$this->db->set('updated_at', 'NOW()', FALSE);
+				$this->db->where('id_empresa', $idEmpresa);
+			    $this->db->update('empresas_mantenedoras', $data3);
 
 			    if ($this->db->affected_rows() >= 1) {
 					$respuesta['id_empresa'] = $idEmpresa;
 					$respuesta['resultado'] = $this->db->affected_rows();
-					$respuesta['mensaje'] = "Se ha eliminado correctamente los Item de Costos dla Empresa.";
+					$respuesta['mensaje'] = "Se ha eliminado correctamente la Empresa.";
 				}else{
 					$respuesta['id_empresa'] = -1;
 					$respuesta['resultado'] = $this->db->affected_rows();
 					$respuesta['mensaje'] = $this->db->error();
 				}
-			}else{
-				$respuesta['id_empresa'] = $idEmpresa;
-				$respuesta['resultado'] = 1;
-				$respuesta['mensaje'] = "El empresa no posee Item de Costos Asociados.";
 			}
 		}catch(Exception $e){
 			$respuesta['resultado'] = -1;
 		    $respuesta['mensaje'] = $e;
 		    $respuesta['id_empresa'] = -1;
 		}
-
 		return $respuesta;
 	}
+
 }

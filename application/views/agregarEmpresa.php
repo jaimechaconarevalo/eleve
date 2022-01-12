@@ -18,7 +18,7 @@
 		<div id="filtros" class="mt-3 mr-3 ml-3">
 			<form id="agregarEmpresa" action="agregarEmpresa" method="POST">
 				<div class="row">
-					<input type="text" class="form-control form-control-sm" id="inputIdEmpresa" name="inputIdEmpresa" value="<?php if(isset($empresa['id'])): echo $empresa['id']; endif; ?>" hidden>
+					<input type="text" class="form-control form-control-sm" id="inputIdEmpresa" name="inputIdEmpresa" value="<?php if(isset($empresa['id_empresa'])): echo $empresa['id_empresa']; endif; ?>" hidden>
 				</div>
 				<div class="row">
 					<div class="form-group col-sm-6">
@@ -33,7 +33,7 @@
 				<div class="row">
 					<div class="form-group col-sm-6">
 						<label for="inputNumRegistro">N° Registro</label>
-						<input type="text" class="form-control  form-control-sm" id="inputNumRegistro" minlength="1" placeholder="Ingrese un N° de Registro de la Empresa" name="inputNumRegistro" value="<?php if(isset($empresa['numRegistro'])): echo $empresa['numRegistro']; endif; ?>">
+						<input type="text" class="form-control  form-control-sm" id="inputNumRegistro" minlength="1" placeholder="Ingrese un N° de Registro de la Empresa" name="inputNumRegistro" value="<?php if(isset($empresa['num_registro'])): echo $empresa['num_registro']; endif; ?>">
 					</div>
 					<div class="form-group col-sm-6">
 						<label for="inputDireccion">Direcci&oacute;n</label>

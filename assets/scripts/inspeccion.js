@@ -509,6 +509,62 @@
         }
     });
 
+    $('#eliminarInspeccion').click(function(e){
+        idInspeccion = $('#tituloEP').data('idinspeccion');
+        //var nombreEquipo = $('#tituloEE').data('nombreequipo');
+        var baseurl = window.origin + '/Inspeccion/eliminarInspeccion';
+
+        jQuery.ajax({
+        type: "POST",
+        url: baseurl,
+        dataType: 'json',
+        data: {idInspeccion: idInspeccion},
+        success: function(data) {
+        if (data)
+        {
+            if(data == '1')
+            {
+              $('#tituloMP').empty();
+              $("#parrafoMP").empty();
+              $("#tituloMP").append('<i class="plusTitulo mb-2" data-feather="check"></i> Exito!!!');
+              $("#parrafoMP").append('Se ha eliminado exitosamente la Inspeccion.');
+              $('#modalEliminarInspeccion').modal('hide');
+               listarInspecciones();
+              $('#modalMensajeInspeccion').modal({
+                show: true
+              });
+            }else{
+              $('#tituloMP').empty();
+              $("#parrafoMP").empty();
+              $("#tituloMP").append('<i class="plusTituloError mb-2" data-feather="x-circle"></i> Error!!!');
+              $("#parrafoMP").append('Ha ocurrido un error al eliminar la Inspeccion.');
+              $('#modalEliminarInspeccion').modal('hide');
+              listarInspecciones();
+              $('#modalMensajeInspeccion').modal({
+                show: true
+              });
+            }
+            feather.replace()
+            $('[data-toggle="tooltip"]').tooltip()
+            }
+        }
+        });
+    });
+
+    $('#modalEliminarInspeccion').on('show.bs.modal', function(e) {
+        //get data-id attribute of the clicked element
+        var idInspeccion = $(e.relatedTarget).data('id');
+        var nombreInspeccion = $(e.relatedTarget).data('inspeccion');
+        //populate the textbox
+        $("#tituloEP").text('Eliminar Inspección N° ' + idInspeccion);
+        $("#parrafoEP").text('¿Estás seguro que deseas eliminar la Inspección N° ' + idInspeccion + ', "' + nombreInspeccion + '"?');
+
+        $("#tituloEP").removeData("idinspeccion");
+        $("#tituloEP").attr("data-idinspeccion", idInspeccion);
+        //$("#tituloEE").removeData("nombreequipo");
+        //$("#tituloEE").attr("data-nombreEquipo", nombreEquipo);
+    });
+
 
     $('#rbSiCarpeta').on('click',  function(e) {
         $('#acordeonCarpeta').collapse('show');

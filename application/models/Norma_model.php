@@ -409,4 +409,41 @@ class Norma_model extends CI_Model
 		}
 		return $respuesta;
 	}
+
+	public function eliminarNorma($idNorma, $id_usuario)
+	{
+		try{
+			$norma = $this->db->get_where('normas', array('id' => $idNorma, 'estado' => 1))->result();
+			$respuesta = array('resultado' => null,
+						'mensaje' => null,
+						'id_norma' => null
+					  );
+
+			if (sizeof($norma) > 0) {
+
+				$data3 = array(
+			        'estado' => -1
+				);
+			    
+				$this->db->set('updated_at', 'NOW()', FALSE);
+				$this->db->where('id', $idNorma);
+			    $this->db->update('normas', $data3);
+
+			    if ($this->db->affected_rows() >= 1) {
+					$respuesta['id_norma'] = $idNorma;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = "Se ha eliminado correctamente la Norma.";
+				}else{
+					$respuesta['id_norma'] = -1;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = $this->db->error();
+				}
+			}
+		}catch(Exception $e){
+			$respuesta['resultado'] = -1;
+		    $respuesta['mensaje'] = $e;
+		    $respuesta['id_norma'] = -1;
+		}
+		return $respuesta;
+	}
 }

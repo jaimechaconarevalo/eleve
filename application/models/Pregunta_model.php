@@ -67,7 +67,7 @@ class Pregunta_model extends CI_Model
 
 	public function obtenerPregunta($idPregunta, $id_usuario)
 	{
-		$this->db->select('h.id, h.codigo, h.nombre, h.observaciones, h.estado, h.created_at, h.updated_at, h.id_usuario');
+		$this->db->select('h.id, h.codigo, h.nombre, h.filtro, h.observaciones, h.estado, h.created_at, h.updated_at, h.id_usuario');
 		$this->db->from('preguntas h');
 		$this->db->where('h.estado', 1);
 		$this->db->where('h.id', $idPregunta);
@@ -608,6 +608,43 @@ class Pregunta_model extends CI_Model
 		    $respuesta['id_pregunta'] = -1;
 		}
 
+		return $respuesta;
+	}
+
+	public function eliminarPregunta($idPregunta, $id_usuario)
+	{
+		try{
+			$pregunta = $this->db->get_where('preguntas', array('id' => $idPregunta, 'estado' => 1))->result();
+			$respuesta = array('resultado' => null,
+						'mensaje' => null,
+						'id_pregunta' => null
+					  );
+
+			if (sizeof($pregunta) > 0) {
+
+				$data3 = array(
+			        'estado' => -1
+				);
+			    
+				$this->db->set('updated_at', 'NOW()', FALSE);
+				$this->db->where('id', $idPregunta);
+			    $this->db->update('preguntas', $data3);
+
+			    if ($this->db->affected_rows() >= 1) {
+					$respuesta['id_pregunta'] = $idPregunta;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = "Se ha eliminado correctamente la Pregunta.";
+				}else{
+					$respuesta['id_pregunta'] = -1;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = $this->db->error();
+				}
+			}
+		}catch(Exception $e){
+			$respuesta['resultado'] = -1;
+		    $respuesta['mensaje'] = $e;
+		    $respuesta['id_pregunta'] = -1;
+		}
 		return $respuesta;
 	}
 

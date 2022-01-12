@@ -455,4 +455,41 @@ class Herramienta_model extends CI_Model
 		}
 		return $respuesta;
 	}
+
+	public function eliminarHerramienta($idHerramienta, $id_usuario)
+	{
+		try{
+			$herramienta = $this->db->get_where('herramientas', array('id' => $idHerramienta, 'estado' => 1))->result();
+			$respuesta = array('resultado' => null,
+						'mensaje' => null,
+						'id_herramienta' => null
+					  );
+
+			if (sizeof($herramienta) > 0) {
+
+				$data3 = array(
+			        'estado' => -1
+				);
+			    
+				$this->db->set('updated_at', 'NOW()', FALSE);
+				$this->db->where('id', $idHerramienta);
+			    $this->db->update('herramientas', $data3);
+
+			    if ($this->db->affected_rows() >= 1) {
+					$respuesta['id_herramienta'] = $idHerramienta;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = "Se ha eliminado correctamente la Herramienta.";
+				}else{
+					$respuesta['id_herramienta'] = -1;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = $this->db->error();
+				}
+			}
+		}catch(Exception $e){
+			$respuesta['resultado'] = -1;
+		    $respuesta['mensaje'] = $e;
+		    $respuesta['id_herramienta'] = -1;
+		}
+		return $respuesta;
+	}
 }

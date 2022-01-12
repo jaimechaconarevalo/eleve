@@ -455,4 +455,41 @@ class Carpeta_model extends CI_Model
 		}
 		return $respuesta;
 	}
+
+	public function eliminarCarpeta($idCarpeta, $id_usuario)
+	{
+		try{
+			$carpeta = $this->db->get_where('carpetas', array('id' => $idCarpeta, 'estado' => 1))->result();
+			$respuesta = array('resultado' => null,
+						'mensaje' => null,
+						'id_carpeta' => null
+					  );
+
+			if (sizeof($carpeta) > 0) {
+
+				$data3 = array(
+			        'estado' => -1
+				);
+			    
+				$this->db->set('updated_at', 'NOW()', FALSE);
+				$this->db->where('id', $idCarpeta);
+			    $this->db->update('carpetas', $data3);
+
+			    if ($this->db->affected_rows() >= 1) {
+					$respuesta['id_carpeta'] = $idCarpeta;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = "Se ha eliminado correctamente la Carpeta.";
+				}else{
+					$respuesta['id_carpeta'] = -1;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = $this->db->error();
+				}
+			}
+		}catch(Exception $e){
+			$respuesta['resultado'] = -1;
+		    $respuesta['mensaje'] = $e;
+		    $respuesta['id_carpeta'] = -1;
+		}
+		return $respuesta;
+	}
 }

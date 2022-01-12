@@ -168,10 +168,6 @@ class Herramienta extends CI_Controller {
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Estado</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Cluster</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Servicio Salud</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Regi&oacute;n</th>
-						<th scope="col" class="texto-pequenio text-center align-middle registro">Macro Zona</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 					</tr>
@@ -188,10 +184,6 @@ class Herramienta extends CI_Controller {
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$herramienta['nombre'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.($herramienta["estado"] == "1" ? "Activo" : "Desactivado").'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$herramienta['created_at'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$herramienta['cluster'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$herramienta['servicio_salud'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$herramienta['region'].'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$herramienta['macro_zona'].'</p></td>
 					        	<td class="text-center align-middle registro botonTabla">
 						        	<a id="edit_'.$herramienta['id'].'" class="view_convenio" href="ModificarHerramienta/?idHerramienta='.$herramienta['id'].'">
 						        		<i data-feather="edit-3" data-toggle="tooltip" data-placement="top" title="Modificar"></i>       		
@@ -201,7 +193,7 @@ class Herramienta extends CI_Controller {
 
 					        	if ($herramienta["estado"] == "1") {
 		        					$table_herramientas .= '<a id="trash_'.$herramienta['id'].'" class="trash" href="#" data-toggle="modal" data-target="#modalEliminarHerramienta" data-id="'.$herramienta['id'].'" data-herramienta="'.$herramienta['nombre'].'">
-						        		<i data-feather="x-circle" data-toggle="tooltip" data-placement="top" title="Desactivar"></i>       		
+						        		<i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="Eliminar"></i>       			
 					        		</a>';
 				        		}else{
 	        						$table_herramientas .= '<a id="trash_'.$herramienta['id'].'" class="trash" href="#" data-toggle="modal" data-target="#modalActivarHerramienta" data-id="'.$herramienta['id'].'" data-herramienta="'.$herramienta['nombre'].'">
@@ -240,14 +232,14 @@ class Herramienta extends CI_Controller {
 		}
 	}
 
-	public function desactivarHerramienta()
+	public function eliminarHerramienta()
 	{
 		$usuario = $this->session->userdata();
 		if($usuario){
 			$idHerramienta = null;
-			if($this->input->POST('id_herramienta'))
-				$idHerramienta = $this->input->POST('id_herramienta');
-			$resultado = $this->herramienta_model->desactivarHerramienta($idHerramienta, $usuario['id_usuario']);
+			if($this->input->POST('idHerramienta'))
+				$idHerramienta = $this->input->POST('idHerramienta');
+			$resultado = $this->herramienta_model->eliminarHerramienta($idHerramienta, $usuario['id_usuario']);
 			$respuesta = 0;
 			if($resultado > 0)
 				$respuesta = 1;
