@@ -1192,7 +1192,7 @@ class Inspeccion extends CI_Controller {
 
 				$inspecciones =  $this->inspeccion_model->listarInspecciones($usuario["id_usuario"], $temporal);
 
-				if (isset($inspecciones) && sizeof($inspecciones) > 0) {
+				#if (isset($inspecciones) && sizeof($inspecciones) > 0) {
 					$table_inspecciones ='
 					<table id="tListaInspecciones" class="table table-sm table-hover table-bordered">
 						<thead class="thead-dark">
@@ -1268,7 +1268,7 @@ class Inspeccion extends CI_Controller {
 			        $table_inspecciones .='
 			        	</tbody>
 			        </table>';
-			    }
+			   # }
 
 				$datos['table_inspecciones'] = $table_inspecciones;
 				echo json_encode($datos);
