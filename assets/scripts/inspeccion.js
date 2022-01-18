@@ -87,7 +87,16 @@
                             document.getElementById('inputIdInspeccion').value = data.id_inspeccion;
                         }
                     }else{
-                        location.reload();
+                        if (data.id_inspeccion > 0 && data.resultado.resultado == 0) {
+                            feather.replace();
+                            $('[data-toggle="tooltip"]').tooltip();
+                            id_inspeccion_form = document.getElementById('inputIdInspeccion').value;
+                            if (id_inspeccion_form.trim() == "") {
+                                document.getElementById('inputIdInspeccion').value = data.id_inspeccion;
+                            }
+                        }else{
+                            location.reload();    
+                        }
                     }
                     feather.replace();
                     $('[data-toggle="tooltip"]').tooltip();
