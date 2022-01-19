@@ -42,6 +42,11 @@
 						<label for="inputTecnico">Nombre del Tecnico</label>
 						<input type="text" class="form-control  form-control-sm" id="inputTecnico" minlength="1" placeholder="Ingrese Nombre del Tecnico" name="inputTecnico" value="<?php if(isset($inspeccion['nombre_tecnico'])): echo $inspeccion['nombre_tecnico']; endif; ?>">
 					</div>
+
+					<div class="form-group col-sm-6">
+						<label for="inputTecnico">Cantidad de Ascensores</label>
+						<input type="text" class="form-control  form-control-sm" id="inputCantAscensor" minlength="1" placeholder="Ingrese Cantidad de Ascensores" name="inputCantAscensor" value="<?php if(isset($inspeccion['cantidad_ascensor'])): echo $inspeccion['cantidad_ascensor']; endif; ?>">
+					</div>
 				</div>
 
 				<div class="row">

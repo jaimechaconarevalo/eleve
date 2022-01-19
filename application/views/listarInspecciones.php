@@ -92,8 +92,8 @@
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo ($inspeccion["id_estado"] == "1" ? "Activo" : "Eliminado"); ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['created_at']; ?></p></td>
 					        	<td class="text-center align-middle registro botonTabla">
-						        	<a id="edit_<?php echo $inspeccion['id']; ?>" class="view_convenio" href="visualizarInspeccion/?idInspeccion=<?php echo $inspeccion['id']; ?>">
-						        		<i data-feather="search" data-toggle="tooltip" data-placement="top" title="Visualizar"></i>
+						        	<a id="edit_<?php echo $inspeccion['id']; ?>" class="view_convenio" href="revisarInspeccion/?idInspeccion=<?php echo $inspeccion['id']; ?>">
+						        		<i data-feather="file-text" data-toggle="tooltip" data-placement="top" title="Visualizar Reporte"></i>
 					        		</a>
 					        	</td>
 					        	<td class="text-center align-middle registro botonTabla">

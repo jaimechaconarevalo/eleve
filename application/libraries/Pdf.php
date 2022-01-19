@@ -55,10 +55,14 @@ class Pdf
 	 {
 	 	unset($_SESSION['pdf']);
 	    $dompdf = new Dompdf();
+
+	    #$m = new Merger();
+	    #$m->addRaw($dompdf->output());
 	    //$dompdf->set_option('isHtml5ParserEnabled', true);
 	   // $paper_size = array(0,0,360,360);
 		//$dompdf->set_paper($paper_size);
-		$dompdf->set_paper('A4', 'landscape');
+		#$dompdf->set_paper('A4', 'landscape');
+		$dompdf->set_paper('letter', 'portrait');
 	    $dompdf->loadHtml(utf8_decode($html));
 
 	    //var_dump($html);
