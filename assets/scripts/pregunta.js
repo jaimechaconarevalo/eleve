@@ -227,7 +227,7 @@
           },
           inputObservacionesE: {
             required: false,
-            maxlength: 300
+            maxlength: 500
           }
         },
         messages:{
@@ -347,7 +347,7 @@
           },
           inputObservaciones: {
             required: false,
-            maxlength: 300
+            maxlength: 500
           }
         },
         messages:{
