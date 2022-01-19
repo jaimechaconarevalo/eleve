@@ -200,6 +200,7 @@ class Inspeccion extends CI_Controller {
 				    $tood = $request->files->get('file_111');
 				    var_dump($todo);*/
 
+
 				try{
 					$accion = 'agregado';
 					$idInspeccion = null;
@@ -357,7 +358,6 @@ class Inspeccion extends CI_Controller {
 
 					/*$contador_herramienta = 1;
 					$respuestas_herramienta = array();
-
 					for ($i=0; $i < $contador_herramienta; $i++) {
 						if(!is_null($this->input->POST('rbHerramienta'.$contador_herramienta)) && trim($this->input->POST('rbHerramienta'.$contador_herramienta)) != ""){
 							$respuesta_herramienta = explode("-", $this->input->POST('rbHerramienta'.$contador_herramienta));
@@ -752,7 +752,6 @@ class Inspeccion extends CI_Controller {
 											if ($resultado_obs_check && isset($resultado_obs_check["resultado"]) && is_numeric($resultado_obs_check["resultado"]) && (int)$resultado_obs_check["resultado"] > 0)
 												$id_inspeccion_checklist_obs = (int)$resultado_obs_check["id_inspeccion_checklist_obs"];
 											
-
 											$nuevoNombre = $id_inspeccion_checklist.'_'.$id_inspeccion_checklist_obs.'_'.$id_categoria.'_'.$orden.'.png';
 											
 											$config['upload_path'] = './assets/files/image';
@@ -1047,7 +1046,6 @@ class Inspeccion extends CI_Controller {
 				    $data['mensaje'] = $e;
 				    $data['id_inspeccion'] = -1;
 				}
-				
 				echo json_encode($data);
 			}else{
 				$usuario['titulo'] = 'Agregar Inspeccion';
@@ -1328,7 +1326,7 @@ class Inspeccion extends CI_Controller {
 
 				$inspecciones =  $this->inspeccion_model->listarInspecciones($usuario["id_usuario"], $temporal);
 
-				if (isset($inspecciones) && sizeof($inspecciones) > 0) {
+				#if (isset($inspecciones) && sizeof($inspecciones) > 0) {
 					$table_inspecciones ='
 					<table id="tListaInspecciones" class="table table-sm table-hover table-bordered">
 						<thead class="thead-dark">
@@ -1404,7 +1402,7 @@ class Inspeccion extends CI_Controller {
 			        $table_inspecciones .='
 			        	</tbody>
 			        </table>';
-			    }
+			   # }
 
 				$datos['table_inspecciones'] = $table_inspecciones;
 				echo json_encode($datos);

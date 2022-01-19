@@ -97,7 +97,6 @@
                         }else{
                             location.reload();    
                         }
-                        
                     }
                     feather.replace();
                     $('[data-toggle="tooltip"]').tooltip();
