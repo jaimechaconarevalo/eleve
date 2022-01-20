@@ -580,11 +580,11 @@ class Pregunta_model extends CI_Model
 
 			$data = array(
 				'id_estado' => -1,
-				'id_usuario' => $id_usuario,
-				'updated_at' => 'now()'
+				'id_usuario' => $id_usuario
 			);
 
 			if (sizeof($respuestas) > 0) {
+				$this->db->set('updated_at', 'NOW()', FALSE);
 			    $this->db->where('id_pregunta', $idPregunta);
 				$this->db->update('respuestas', $data);
 
