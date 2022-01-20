@@ -64,10 +64,6 @@ class Pregunta extends CI_Controller {
 				$respuesta = 0;
 				$mensaje = '';
 				$resultado = $this->pregunta_model->agregarPregunta($idPregunta, $codigo, $nombre, $filtro, $observacion, $usuario["id_usuario"]);
-				var_dump('respuestas_preguntas');
-				var_dump($respuestas_preguntas);
-				var_dump('resultado de agregarPregunta');
-				var_dump($resultado);
 				if($resultado && $resultado["resultado"] > 0)
 				{
 					if($resultado['id_pregunta'])
@@ -76,8 +72,7 @@ class Pregunta extends CI_Controller {
 							$idPregunta = (int)$resultado['id_pregunta'];
 
 							$resultado_erp = $this->pregunta_model->eliminarRespuestasPregunta($idPregunta, $usuario["id_usuario"]);
-							var_dump('eliminacion de respuestas_preguntas');
-							var_dump($resultado_erp);
+
 							$contador = 0;
 							if (isset($resultado_erp) && $resultado_erp["resultado"] > 0) {
 
