@@ -186,8 +186,8 @@
 							  			<tr>
 									        <!--<th class="text-left align-middle"><p><?php echo $carpeta['codigo']; ?></p></th>-->
 									        <td class="text-left align-middle"><p><?php echo $carpeta['nombre']; ?></p></td>
-									        <td class="text-left align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_si" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta pauta_carpeta" value="si-<?php echo $carpeta['id']; ?>"  <?php echo (isset($respuesta_carpeta_rb) && $respuesta_carpeta_rb === 1 ? 'checked' : ''); ?>></td>
-							      			<td class="text-left align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_no" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta pauta_carpeta" value="no-<?php echo $carpeta['id']; ?>" <?php echo (isset($respuesta_carpeta_rb) && $respuesta_carpeta_rb === 0 ? 'checked' : ''); ?>></td>
+									        <td class="text-left align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_si" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta_carpeta" value="si-<?php echo $carpeta['id']; ?>"  <?php echo (isset($respuesta_carpeta_rb) && $respuesta_carpeta_rb === 1 ? 'checked' : ''); ?>></td>
+							      			<td class="text-left align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_no" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta_carpeta" value="no-<?php echo $carpeta['id']; ?>" <?php echo (isset($respuesta_carpeta_rb) && $respuesta_carpeta_rb === 0 ? 'checked' : ''); ?>></td>
 								    	</tr>
 								  		<?php 
 								  		endforeach;

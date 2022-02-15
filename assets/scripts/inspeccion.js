@@ -4,7 +4,7 @@
 
     function listarInspecciones() {
         var temporal = document.getElementById('inspeccionesTemporales').value;
-        var baseurl = window.origin + '/Inspeccion/listarInspecciones';
+        var baseurl = window.origin + '/eleve/Inspeccion/listarInspecciones';
         jQuery.ajax({
         type: "POST",
         url: baseurl,
@@ -66,7 +66,7 @@
             //form.preventDefault();
             var formData = new FormData(form);
             formData.append("es_temporal", es_temporal);
-            var baseurl = (window.origin + '/Inspeccion/agregarInspeccion');
+            var baseurl = (window.origin + '/eleve/Inspeccion/agregarInspeccion');
             jQuery.ajax({
             type: form.getAttribute('method'),
             url: baseurl,
@@ -111,6 +111,190 @@
         //}else{
         
         //}
+    }
+
+    function guardar_elemento(element) {
+        //alert(element.currentTarget.id.concat(' - ', element.currentTarget.value));
+        var loader = document.getElementById("loader");
+        loader.removeAttribute('hidden');
+        var es_temporal = document.getElementById('inputEsTemporal').value;
+        if (es_temporal == 1) {
+            //form.preventDefault();
+
+            var id_elemento = null;
+            var valor_elemento = null;
+            var total_carpetas = null;
+            var total_normas = null;
+            var total_herramientas = null;
+            var total_categorias = null;
+            var total_preguntas = null;
+            var id_categoria = null;
+            var id_pregunta = null;
+            var formData = null;
+
+            if (element != null) {
+                if (element.currentTarget === undefined) {
+                    id_elemento = element.id;
+                    valor_elemento = element.value;
+                }else{
+                    id_elemento = element.currentTarget.id;
+                    valor_elemento = element.currentTarget.value;    
+                }
+
+
+                if (id_elemento.includes("rbCarpeta")) {
+                    total_carpetas = document.getElementById('inputTotalCarpetas').value;
+                }
+
+                if (id_elemento.includes("rbNorma")) {
+                    total_normas = document.getElementById('inputTotalNormas').value;
+                }
+
+                if (id_elemento.includes("rbHerramienta")) {
+                    total_herramientas = document.getElementById('inputTotalHerramientas').value;
+                }
+
+                if (id_elemento.includes("rbPregunta")) {
+                    total_categorias = document.getElementById('inputTotalCategorias').value;
+                    id_categoria = element.currentTarget.dataset.id_categoria;
+                    id_pregunta = element.currentTarget.dataset.id_pregunta;
+                    //total_preguntas = document.getElementById('inputTotalPreguntas_'.concat())
+                }
+
+                if (id_elemento.includes("sRespuesta")) {
+                    total_categorias = document.getElementById('inputTotalCategorias').value;
+                    id_categoria = element.currentTarget.dataset.id_categoria;
+                    id_pregunta = element.currentTarget.dataset.id_pregunta;
+                    //total_preguntas = document.getElementById('inputTotalPreguntas_'.concat())
+                }
+
+                if (id_elemento.includes("inputObservaciones")) {
+                    total_categorias = document.getElementById('inputTotalCategorias').value;
+                    id_categoria = element.currentTarget.dataset.id_categoria;
+                    id_pregunta = element.currentTarget.dataset.id_pregunta;
+                    //total_preguntas = document.getElementById('inputTotalPreguntas_'.concat())
+                }
+
+                if (id_elemento.includes("picture_")) {
+
+                    var baseurl = (window.origin + '/eleve/Inspeccion/agregarInspeccionTemporal');
+
+                    var form = document.createElement("form");
+                    form.setAttribute("method", 'POST');
+                    form.setAttribute("action", (window.origin + '/eleve/Inspeccion/agregarInspeccionTemporal'));
+                    form.setAttribute('enctype', 'multipart/form-data');
+                    form.appendChild(element);
+
+                    formData = new FormData(form);
+                    var id_inspeccion = document.getElementById('inputIdInspeccion').value;
+
+                    total_categorias = document.getElementById('inputTotalCategorias').value;
+                    formData.append("id_inspeccion", id_inspeccion);
+                    formData.append("total_categorias", total_categorias);
+                    //formData.append("archivo", element.files[0], element.name);
+                    formData.append("id_inspeccion", id_inspeccion);
+                    formData.append("es_temporal", es_temporal);
+                    formData.append("id_elemento", id_elemento);
+                    formData.append("valor_elemento", valor_elemento);
+                    formData.append("total_categorias", total_categorias);
+                    formData.append("id_categoria", element.dataset.id_categoria);
+                    formData.append("id_pregunta", element.dataset.id_pregunta);
+
+
+                   
+                    //formData.append('action', 'agregarInspeccionTemporal');
+                    // Attach file
+                    //formData.append('archivo', $(element)[0].files[0]);
+
+
+                    //formData.append('archivos[]', element.files[0], element.files[0].name);
+
+                    $.ajax({
+                    type: 'POST',
+                    url: baseurl,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'json',
+                    //enctype: "multipart/form-data",
+                    data: formData,
+                    success: function(data) {
+                        if (data) {
+                            if(data['resultado'] == '1')
+                            {
+                                feather.replace();
+                                $('[data-toggle="tooltip"]').tooltip();
+                                id_inspeccion_form = document.getElementById('inputIdInspeccion').value;
+                                if (id_inspeccion_form.trim() == "") {
+                                    document.getElementById('inputIdInspeccion').value = data.id_inspeccion;
+                                }
+                            }else{
+                                if (data.id_inspeccion > 0 && data.resultado.resultado == 0) {
+                                    feather.replace();
+                                    $('[data-toggle="tooltip"]').tooltip();
+                                    id_inspeccion_form = document.getElementById('inputIdInspeccion').value;
+                                    if (id_inspeccion_form.trim() == "") {
+                                        document.getElementById('inputIdInspeccion').value = data.id_inspeccion;
+                                    }
+                                }else{
+                                    location.reload();    
+                                }
+                            }
+                            feather.replace();
+                            $('[data-toggle="tooltip"]').tooltip();
+                            loader.setAttribute('hidden', '');
+                        }
+                    }
+                    });
+
+                }else{
+                    var id_inspeccion = document.getElementById('inputIdInspeccion').value;
+
+                    var baseurl = (window.origin + '/eleve/Inspeccion/agregarInspeccionTemporal');
+                    jQuery.ajax({
+                    type: 'POST',
+                    url: baseurl,
+                    dataType: 'json',
+                    data: {id_inspeccion: id_inspeccion, es_temporal: es_temporal, id_elemento: id_elemento, valor_elemento: valor_elemento, total_carpetas: total_carpetas, total_normas: total_normas, total_herramientas: total_herramientas,  total_categorias: total_categorias, id_categoria: id_categoria, id_pregunta: id_pregunta},
+                    success: function(data) {
+                        if (data) {
+                            if(data['resultado'] == '1')
+                            {
+                                feather.replace();
+                                $('[data-toggle="tooltip"]').tooltip();
+                                id_inspeccion_form = document.getElementById('inputIdInspeccion').value;
+                                if (id_inspeccion_form.trim() == "") {
+                                    document.getElementById('inputIdInspeccion').value = data.id_inspeccion;
+                                }
+                            }else{
+                                if (data.id_inspeccion > 0 && data.resultado.resultado == 0) {
+                                    feather.replace();
+                                    $('[data-toggle="tooltip"]').tooltip();
+                                    id_inspeccion_form = document.getElementById('inputIdInspeccion').value;
+                                    if (id_inspeccion_form.trim() == "") {
+                                        document.getElementById('inputIdInspeccion').value = data.id_inspeccion;
+                                    }
+                                }else{
+                                    location.reload();    
+                                }
+                            }
+                            feather.replace();
+                            $('[data-toggle="tooltip"]').tooltip();
+                            loader.setAttribute('hidden', '');
+                        }
+                    }
+                    });
+                }
+
+            }
+        }
+
+        feather.replace();
+        $('[data-toggle="tooltip"]').tooltip();
+        //}else{
+        
+        //}
+
+        //alert(element.currentTarget.id.concat(' - ', element.currentTarget.value));
     }
 
     function checkRut(rut) {
@@ -193,13 +377,27 @@
       var resultado = checkRut(this);
     });
 
-    $("#inputRutA, #inputTecnico, #inputNombreE, #inputDireccionE, #inputRutE, #inputIdE, #inputNombreA, #inputEmailA, #idEmpresaMantenedora, #inputNombreRM, #inputFechaUM, #rbSiCarpeta, #rbNoCarpeta, .pauta_carpeta, .pauta, #inputMarca, #selectUso, #inputCapacidad, #inputCapacidadKG, #selectSalaMaquina, #inputVelocidad, #inputRecorrido, #inputParadas, #selectTipoTraccion, #inputCantidad, #inputDiamTraccion, #inputEnclavamientoElectrico, #inputEnclavamientoMecanico, #inputDiamCableLimitador, #idNorma").change(function() {
-        guardar_datos();
+    $(".pauta_carpeta").change(function(e) {
+        guardar_elemento(e);
+    });
+
+    /*$(".pauta_norma").change(function(e) {
+        guardar_elemento(e);
+    });*/
+
+    $('#acordionCategorias').on('change', '.observacionNueva', function(e) {
+        guardar_elemento(e);
+    });
+    
+
+    $("#inputRutA, #inputTecnico, #inputCantAscensor, #inputNombreE, #inputDireccionE, #inputRutE, #inputIdE, #inputNombreA, #inputEmailA, #idEmpresaMantenedora, #inputNombreRM, #inputFechaUM, #rbSiCarpeta, #rbNoCarpeta, .pauta, #inputMarca, #selectUso, #inputCapacidad, #inputCapacidadKG, #selectSalaMaquina, #inputVelocidad, #inputRecorrido, #inputParadas, #selectTipoTraccion, #inputCantidad, #inputDiamTraccion, #inputEnclavamientoElectrico, #inputEnclavamientoMecanico, #inputDiamCableLimitador, #idNorma").change(function(e) {
+        //guardar_datos();
+
+        guardar_elemento(e);
     });
 
     $('#acordionCategorias').on('change', '.respuestas_checklist', function(e) {
-    //$("#acordionCategorias").change('.respuestas_checklist', function() {
-        guardar_datos();
+        guardar_elemento(e);
     });
 
 
@@ -227,7 +425,8 @@
                 this.removeAttribute("hidden");
             });
        }
-       guardar_datos();
+       //guardar_datos();
+       guardar_elemento(e);
     });
 
     $('#inspeccionesTemporales').on('change',function(e){
@@ -250,13 +449,15 @@
             $('#idEmpresaMantenedora').val('');
             $('#modalBuscarEmpresa').modal('hide');
         }
-        guardar_datos();   
+
+
+       guardar_elemento(document.getElementById('idEmpresaMantenedora'));  
     });
 
     $('#modalBuscarEmpresa').on('shown.bs.modal', function () {
     //$('#tListaNormas').on('click', '.seleccionNorma', function(e) {
         
-        var baseurl =  window.origin + '/Empresa/json_listarEmpresas';
+        var baseurl =  window.origin + '/eleve/Empresa/json_listarEmpresas';
         jQuery.ajax({
             type: "POST",
             url: baseurl,
@@ -420,7 +621,7 @@
 
 
 
-                var baseurl = (window.origin + '/Inspeccion/agregarInspeccion');
+                var baseurl = (window.origin + '/eleve/Inspeccion/agregarInspeccion');
                 jQuery.ajax({
                 type: form.getAttribute('method'),
                 url: baseurl,
@@ -512,7 +713,7 @@
     });
 
     $("#modalMensajeInspeccion").on("hidden.bs.modal", function () {
-        var pagina = window.location.pathname.split('/')[2].toLowerCase();
+        var pagina = window.location.pathname.split('/')[3].toLowerCase();
         if (pagina == "modificarinspeccion") {
             location.reload();
         }
@@ -521,7 +722,7 @@
     $('#eliminarInspeccion').click(function(e){
         idInspeccion = $('#tituloEP').data('idinspeccion');
         //var nombreEquipo = $('#tituloEE').data('nombreequipo');
-        var baseurl = window.origin + '/Inspeccion/eliminarInspeccion';
+        var baseurl = window.origin + '/eleve/Inspeccion/eliminarInspeccion';
 
         jQuery.ajax({
         type: "POST",
@@ -601,7 +802,10 @@
         $('#id_front').hide();
         $('#video-stream').show();
         $('#video-stream').addClass("rounded");
-        guardar_datos();
+        //guardar_datos();
+
+        //var id = document.getElementById('seleccionarFoto').dataset.id;
+        //var input_foto = id.concat('_', (document.getElementById('div_'.concat(id)).children.length))
     });
     
 
@@ -717,7 +921,8 @@
 
         }
 
-        guardar_datos();
+        //guardar_datos();
+        guardar_elemento(e);
 
     });
 
@@ -762,7 +967,7 @@
                 e.preventDefault();
                 var form = document.getElementById("agregarEmpresa");
                 var formData = new FormData(form);
-                var baseurl = (window.origin + '/Empresa/agregarEmpresa');
+                var baseurl = (window.origin + '/eleve/Empresa/agregarEmpresa');
                 jQuery.ajax({
                 type: form.getAttribute('method'),
                 url: baseurl,
@@ -1017,8 +1222,13 @@
                             x.id = 'picture_'.concat(e.currentTarget.dataset.id, '_', e.currentTarget.dataset.cant);
                             x.name = 'picture_'.concat(e.currentTarget.dataset.id, '_', e.currentTarget.dataset.cant);
                             x.setAttribute("hidden", true);
+                            x.dataset.id_categoria = e.currentTarget.dataset.id.split('_')[0];
+                            x.dataset.id_pregunta = e.currentTarget.dataset.id.split('_')[1];
                             //$('#div_'.concat(id)).append(x);
                             div_1.append(x);
+
+                             //guardar_elemento(x);
+                             guardar_datos();
                         });
 
 
@@ -1244,13 +1454,12 @@
                             x.name = 'picture_'.concat(id_concatenado);
                             x.setAttribute("hidden", true);
                             //$('#div_'.concat(id)).append(x);
+                            x.dataset.id_categoria = id.split('_')[0];
+                            x.dataset.id_pregunta = id.split('_')[1];
                             div.append(x);
 
+                            guardar_elemento(x);
                         });
-
-
-
-
 
             $('#div_'.concat(id)).append(div);
             //$(document.getElementById('foto_1_'.concat(id))).attr('src', data_image);
@@ -1283,7 +1492,8 @@
                 cat_sala_maquinas.removeAttribute('hidden');
             }
         }
-        guardar_datos();
+        //guardar_datos();
+        guardar_elemento(e);
     });
 
     /*$('#acordeonCarpeta').on('show.bs.collapse', function () {
@@ -1307,7 +1517,7 @@
             $('#idNorma').val(idNorma);
             $('#modalBuscarNorma').modal('hide');
             if (idNorma) {
-                var baseurl =  window.origin + '/Norma/json_listarCategoriasPreguntas';
+                var baseurl =  window.origin + '/eleve/Norma/json_listarCategoriasPreguntas';
                 jQuery.ajax({
                     type: "POST",
                     url: baseurl,
@@ -1449,7 +1659,7 @@
                                                                 div = div.concat('<div class="row justify-content-md-left">');
                                                                     div = div.concat('<div class="form-group col-sm-12  mt-3">');
                                                                         //div = div.concat('<label for="sRespuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'">Respuesta</label>');
-                                                                        div = div.concat('<select id="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" name="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" class="custom-select custom-select-sm respuestas_checklist">');
+                                                                        div = div.concat('<select id="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" name="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" class="custom-select custom-select-sm respuestas_checklist">');
                                                                             div = div.concat('<option value="-1" selected>Seleccione una Respuesta</option>');
                                                                             
                                                                             $.each(pregunta.respuestas, function(index_r, respuesta) {
@@ -1465,7 +1675,7 @@
                                                             div = div.concat('<div class="justify-content-md-left p-3">');
                                                             //div = div.concat('<label for="inputObservaciones">Nueva Respuesta</label>');
                                                             //div = div.concat('<input type="text" class="form-control form-control-sm" id="inputObservaciones" minlength="1" placeholder="Ingrese una Respuesta" name="inputObservaciones" value="">');
-                                                                div = div.concat('<textarea class="form-control form-control-sm block" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" rows="2"></textarea>');
+                                                                div = div.concat('<textarea class="form-control form-control-sm block observacionNueva" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" rows="2"></textarea>');
                                                             div = div.concat('</div>');
                                                         div = div.concat('</div>');
                                                     div = div.concat('</div>');
@@ -1473,7 +1683,7 @@
                                             }else{
                                                 div = div.concat('<div class="col-sm-6">');
                                                 div = div.concat('<label for="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'">Nueva Respuesta</label>');
-                                                div = div.concat('<textarea class="form-control form-control-sm block" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" rows="2"></textarea>');
+                                                div = div.concat('<textarea class="form-control form-control-sm block observacionNueva" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" rows="2"></textarea>');
                                                 div = div.concat('</div>');
                                             }
 
@@ -1532,14 +1742,15 @@
 
         }
 
-        guardar_datos();
+        //guardar_datos();
+        guardar_elemento(document.getElementById('idNorma'));
     });
 
 });
 
 
 window.onload = function () {
-    if(window.location.pathname.split('/')[2].toLowerCase() == 'listarInspecciones'.toLowerCase())
+    if(window.location.pathname.split('/')[3].toLowerCase() == 'listarInspecciones'.toLowerCase())
     {
         $('#tListaInspecciones').dataTable({
             searching: true,
@@ -1574,13 +1785,13 @@ window.onload = function () {
         feather.replace();
     }
 
-    if(window.location.pathname.split('/')[2].toLowerCase() == 'agregarInspeccion'.toLowerCase() || window.location.pathname.split('/')[2].toLowerCase() == 'modificarInspeccion'.toLowerCase())
+    if(window.location.pathname.split('/')[3].toLowerCase() == 'agregarInspeccion'.toLowerCase() || window.location.pathname.split('/')[3].toLowerCase() == 'modificarInspeccion'.toLowerCase())
     {
         var idInspeccion = document.getElementById('inputIdInspeccion').value;
         var idNorma = document.getElementById('idNorma').value;
         
         if (idInspeccion != "" && idNorma != "") {
-            var baseurl =  window.origin + '/Inspeccion/json_listarCategoriasPreguntasRespuestaInspeccion';
+            var baseurl =  window.origin + '/eleve/Inspeccion/json_listarCategoriasPreguntasRespuestaInspeccion';
             jQuery.ajax({
                 type: "POST",
                 url: baseurl,
@@ -1722,7 +1933,7 @@ window.onload = function () {
                                                                 div = div.concat('<div class="row justify-content-md-left">');
                                                                     div = div.concat('<div class="form-group col-sm-12  mt-3">');
                                                                         //div = div.concat('<label for="sRespuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'">Respuesta</label>');
-                                                                        div = div.concat('<select id="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" name="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" class="custom-select custom-select-sm respuestas_checklist">');
+                                                                        div = div.concat('<select id="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" name="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" class="custom-select custom-select-sm respuestas_checklist">');
                                                                             div = div.concat('<option value="-1" selected>Seleccione una Respuesta</option>');
                                                                             
                                                                             $.each(pregunta.respuestas, function(index_r, respuesta) {
@@ -1738,7 +1949,7 @@ window.onload = function () {
                                                             div = div.concat('<div class="justify-content-md-left p-3">');
                                                             //div = div.concat('<label for="inputObservaciones">Nueva Respuesta</label>');
                                                             //div = div.concat('<input type="text" class="form-control form-control-sm" id="inputObservaciones" minlength="1" placeholder="Ingrese una Respuesta" name="inputObservaciones" value="">');
-                                                                div = div.concat('<textarea class="form-control form-control-sm block" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" rows="2"></textarea>');
+                                                                div = div.concat('<textarea class="form-control form-control-sm block observacionNueva" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'"  data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" rows="2"></textarea>');
                                                             div = div.concat('</div>');
                                                         div = div.concat('</div>');
                                                     div = div.concat('</div>');
@@ -1746,7 +1957,7 @@ window.onload = function () {
                                             }else{
                                                 div = div.concat('<div class="col-sm-6">');
                                                 div = div.concat('<label for="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'">Nueva Respuesta</label>');
-                                                div = div.concat('<textarea class="form-control form-control-sm block" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" rows="2"></textarea>');
+                                                div = div.concat('<textarea class="form-control form-control-sm block observacionNueva" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" rows="2"></textarea>');
                                                 div = div.concat('</div>');
                                             }
 
@@ -1777,7 +1988,7 @@ window.onload = function () {
                                                     div = div.concat('<button type="button" class="close" aria-label="Close">');
                                                     div = div.concat('<span class="close quitarImagen" aria-hidden="true" id="close_',imagen.id_imagen,'" data-id="',imagen.id_imagen,'" data-id_div="',categoria.id_categoria,'_',pregunta.id_pregunta,'">×</span>');
                                                     div = div.concat('</button>');
-                                                    div = div.concat('<img alt="Alt information for image" class="img-fluid rounded float-left" src="',window.origin + '/assets/files/image/',imagen.file_name,'" width="150" id="',imagen.id_imagen,'">');
+                                                    div = div.concat('<img alt="Alt information for image" class="img-fluid rounded float-left" src="',window.origin + '/eleve/assets/files/image/',imagen.file_name,'" width="150" id="',imagen.id_imagen,'">');
                                                     div = div.concat('<input type="file" id="picture_',imagen.archivo_id,'_',imagen.id_imagen,'" name="picture_',imagen.archivo_id,'_',imagen.id_imagen,'" data-origen="1" data-archivo_id="',imagen.archivo_id,'" hidden="true">');
                                                     div = div.concat('</div>');
                                                 });
@@ -1815,7 +2026,7 @@ window.onload = function () {
 
 
 
-            var baseurl =  window.origin + '/Inspeccion/json_listarObservacionesInspeccion';
+            var baseurl =  window.origin + '/eleve/Inspeccion/json_listarObservacionesInspeccion';
             jQuery.ajax({
                 type: "POST",
                 url: baseurl,
@@ -1832,7 +2043,7 @@ window.onload = function () {
                                 $.each(data.data_obs_generales, function(index_i, imagen) {
                                     div = div.concat('<div class="float-sm-left m-3" id="div_contenedor_',imagen.orden_r,'">');
                                     div = div.concat('<div class="card border-secondary" style="width: 18rem;">');
-                                    div = div.concat('<img alt="Alt information for image" class="img-fluid rounded float-left" src="',window.origin + '/assets/files/image/',imagen.file_name,'" id="imagen_',imagen.orden_r,'">');
+                                    div = div.concat('<img alt="Alt information for image" class="img-fluid rounded float-left" src="',window.origin + '/eleve/assets/files/image/',imagen.file_name,'" id="imagen_',imagen.orden_r,'">');
                                     div = div.concat('<div class="card-body text-secondary">');
                                     div = div.concat('<input type="text" class="form-control  form-control-sm" id="input_obs_',imagen.id_categoria,'-',imagen.archivo_id,'_',imagen.orden_r,'" name="input_obs_',imagen.id_categoria,'-',imagen.archivo_id,'_',imagen.orden_r,'" value="',imagen.observacion_item,'" hidden="true">');
                                     div = div.concat('<h5 class="card-title">',imagen.orden_r,'.- "',imagen.codigo_c,'_',imagen.categoria,'"</h5>');

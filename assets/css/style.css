@@ -90,6 +90,11 @@ input[type=radio].pauta {
     height: 20px;
 }
 
+input[type=radio].pauta_carpeta {
+    width: 20px;
+    height: 20px;
+}
+
 .thl-radius {
     border-radius: 10px 0px 0px 0px !important;
 	border-top: 0px !important;
