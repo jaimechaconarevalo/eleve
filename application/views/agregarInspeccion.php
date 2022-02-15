@@ -349,7 +349,7 @@
 							<div class="form-group col-sm-6">
 								<label for="inputSuspension">Suspension</label>
 								<select id="selectSuspension" name="selectSuspension" class="custom-select custom-select-sm">
-									<option selected>Seleccione una Suspension</option>
+									<option value="-1" selected>Seleccione una Suspension</option>
 									<?php if(isset($suspensiones)) {
 				        					foreach ($suspensiones as $suspension): 
 				        						$selected = ''; 
@@ -390,7 +390,7 @@
 							<div class="form-group col-sm-6">
 								<label for="selectTipoTraccion">Tipo Tracción</label>
 								<select id="selectTipoTraccion" name="selectTipoTraccion" class="custom-select custom-select-sm">
-									<option selected>Seleccione un Tipo Tracción</option>
+									<option value="-1" selected>Seleccione un Tipo Tracción</option>
 
 									<?php if(isset($tipos_traccion)) {
 

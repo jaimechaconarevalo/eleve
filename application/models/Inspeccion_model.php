@@ -599,7 +599,7 @@ class Inspeccion_model extends CI_Model
 						$dataE = array(
 					        $valor_campo => $valor_elemento,
 					        'id_inspeccion' => $idInspeccion,
-							'id_usuario' => $id_usuario
+					        'orden' => 1
 						);
 						
 						try{
@@ -666,6 +666,10 @@ class Inspeccion_model extends CI_Model
 			}else{
 				$data = null;
 				if (!is_null($valor_campo) && strlen($valor_campo) > 0 && trim($valor_campo) != "") {
+
+					if ($valor_elemento == -1)
+						$valor_elemento = null;
+
 					$data = array(
 				        $valor_campo => $valor_elemento,
 						'es_temporal' => $es_temporal,
@@ -1190,6 +1194,8 @@ class Inspeccion_model extends CI_Model
 					$this->db->insert('respuestas', $data_respuesta);
 					if ($this->db->affected_rows() >= 1) {
 						$idRespuesta = $this->db->insert_id();
+						$respuesta['id_respuesta'] = $idRespuesta;
+						$respuesta['respuesta'] = $observacion;
 						$data = array(
 					        'id_inspecciones_checklists' => $id_inspeccion_checklist,
 							'id_respuesta' => $idRespuesta,
@@ -1508,6 +1514,18 @@ class Inspeccion_model extends CI_Model
 		$this->db->where('i.id_estado', 1);
 		$this->db->where('ic.id_estado', 1);
 		$this->db->where('icr.id_estado', 1);
+		$inspeccion = $this->db->get();
+		return $inspeccion->result_array();
+	}
+
+	public function obtenerNombreArchivoObs($idInspeccion, $id_categoria, $id_usuario)
+	{
+		$this->db->select('ic.id, ic.id_inspeccion, ic.id_norma, ic.orden, ic.id_estado, ic.created_at, ic.updated_at');
+		$this->db->from('inspecciones i');
+		$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion');
+		$this->db->where('i.id', $idInspeccion);
+		$this->db->where('i.id_estado', 1);
+		$this->db->where('ic.id_estado', 1);
 		$inspeccion = $this->db->get();
 		return $inspeccion->result_array();
 	}

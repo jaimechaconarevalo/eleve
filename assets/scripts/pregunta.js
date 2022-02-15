@@ -271,7 +271,7 @@
                 formData.append("respuestas_preguntas", JSON.stringify(respuestas_preguntas_a));
 
 
-                var baseurl = (window.origin + '/eleve/Pregunta/agregarPregunta');
+                var baseurl = (window.origin + '/Pregunta/agregarPregunta');
                 jQuery.ajax({
                 type: form.getAttribute('method'),
                 url: baseurl,
@@ -368,7 +368,7 @@
     });
 
     $("#modalMensajePregunta").on("hidden.bs.modal", function () {
-        var pagina = window.location.pathname.split('/')[3].toLowerCase() ;
+        var pagina = window.location.pathname.split('/')[2].toLowerCase() ;
         if (pagina == "modificarpregunta") {
             location.reload();
         }
@@ -377,7 +377,7 @@
     $('#eliminarPregunta').click(function(e){
     idPregunta = $('#tituloEP').data('idpregunta');
     //var nombreEquipo = $('#tituloEE').data('nombreequipo');
-    var baseurl = window.origin + '/eleve/Pregunta/eliminarPregunta';
+    var baseurl = window.origin + '/Pregunta/eliminarPregunta';
 
         jQuery.ajax({
         type: "POST",
@@ -418,7 +418,7 @@
 
     function listarPreguntas()
     {
-        var baseurl = window.origin + '/eleve/Pregunta/listarPreguntas';
+        var baseurl = window.origin + '/Pregunta/listarPreguntas';
         jQuery.ajax({
         type: "POST",
         url: baseurl,
@@ -489,7 +489,7 @@
 
 
 window.onload = function () {
-    if(window.location.pathname.split('/')[3].toLowerCase()  == 'listarPreguntas'.toLowerCase())
+    if(window.location.pathname.split('/')[2].toLowerCase()  == 'listarPreguntas'.toLowerCase())
     {
         $('#tListaPreguntas').dataTable({
             searching: true,
@@ -524,12 +524,12 @@ window.onload = function () {
         feather.replace();
     }
 
-    if(window.location.pathname.split('/')[3].toLowerCase()  == 'modificarPregunta'.toLowerCase())
+    if(window.location.pathname.split('/')[2].toLowerCase()  == 'modificarPregunta'.toLowerCase())
     {
 
         var idPregunta = document.getElementById('inputIdPregunta').value;
         if (idPregunta) {
-            var baseurl =  window.origin + '/eleve/Pregunta/json_listarRespuestasPregunta';
+            var baseurl =  window.origin + '/Pregunta/json_listarRespuestasPregunta';
             jQuery.ajax({
                 type: "POST",
                 url: baseurl,
