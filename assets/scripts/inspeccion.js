@@ -302,7 +302,28 @@
                                         document.getElementById('inputIdInspeccion').value = data.id_inspeccion;
                                     }
                                 }else{
-                                    location.reload();    
+                                    if (data.id_inspeccion > 0 && data.resultado.resultado == -1) {
+                                        $('#tituloMP').empty();
+                                        $("#parrafoMP").empty();
+                                        $("#tituloMP").append('<i class="plusTituloError mb-2" data-feather="x-circle"></i> Error!!!');
+                                        $("#parrafoMP").append('Ha ocurrido un error al intentar agregar la Inspeccion.');
+
+                                        if (data.resultado.mensaje != null) {
+                                            $("#parrafoMP").append('</br></br>Codigo: ', data.resultado.mensaje.code);
+                                            $("#parrafoMP").append('</br></br>Detalle: </br>', data.resultado.mensaje.message);
+                                        }else{
+                                            if (data.mensaje != null) {
+                                                $("#parrafoMP").append('</br></br>Detalle: </br>', data.mensaje);
+                                            }
+                                        }
+                                            
+                                        $('#modalMensajeInspeccion').modal({
+                                          show: true
+                                        });
+                                        $('[data-toggle="tooltip"]').tooltip();
+                                        feather.replace();
+                                        
+                                    }
                                 }
                             }
                             feather.replace();
