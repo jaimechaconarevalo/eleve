@@ -67,11 +67,16 @@ class Inspeccion_model extends CI_Model
 
 	public function obtenerInspeccion($idInspeccion, $id_usuario)
 	{
-	$this->db->select('i.id, i.id_edificio, i.nombre_tecnico, i.cantidad_ascensor, i.rut_admin, i.nombre_admin, i.email_admin, i.fecha_contrato_mant, i.contrato_vigente, i.id_empresa_mantenedora, i.nombre_mant_2, i.fecha_ultima_mant, i.marca_ascensor, i.id_uso, i.capacidad_personas, i.capacidad_kg, i.id_suspension, i.sala_maquinas, i.velocidad, i.recorrido, i.paradas, i.id_tipo_traccion, i.cantidad, i.diametro_traccion, i.enclavamiento_electrico, i.enclavamiento_mecanico, i.diametro_cable, i.id_estado, i.id_usuario, i.created_at, i.updated_at, e.rol, e.nombre as edificio, e.rut as rut_e, e.domicilio, em.cod_empresa, em.razon_social, em.num_registro, em.direccion as direccion_em, em.rut as rut_em, em.email as email_em, em.observaciones as observaciones_em, i.es_temporal');
+	$this->db->select('i.id, i.id_edificio, i.nombre_tecnico, i.cantidad_ascensor, i.rut_admin, i.nombre_admin, i.email_admin, i.fecha_contrato_mant, i.contrato_vigente, i.id_empresa_mantenedora, i.nombre_mant_2, i.fecha_ultima_mant, i.marca_ascensor, i.id_uso, i.capacidad_personas, i.capacidad_kg, i.id_suspension, s.nombre as suspension, i.sala_maquinas, i.velocidad, i.recorrido, i.paradas, i.id_tipo_traccion, i.cantidad, i.diametro_traccion, i.enclavamiento_electrico, i.enclavamiento_mecanico, i.diametro_cable, i.id_estado, i.id_usuario, i.created_at, i.updated_at, e.rol, e.nombre as edificio, e.rut as rut_e, e.domicilio, em.cod_empresa, em.razon_social, em.num_registro, em.direccion as direccion_em, em.rut as rut_em, em.email as email_em, em.observaciones as observaciones_em, i.es_temporal, n.id as id_norma, n.codigo as codigo_norma, n.nombre as norma, n.observaciones as obs_norma, us.codigo as codigo_uso, us.nombre as uso, us.observaciones as obs_uso');
 		$this->db->from('inspecciones i');
 		$this->db->join('edificios e', 'i.id_edificio = e.id', 'LEFT');
 		$this->db->join('empresas_mantenedoras em', 'i.id_empresa_mantenedora = em.id_empresa', 'LEFT');
+		$this->db->join('suspensiones s', 'i.id_suspension = s.id', 'LEFT');
+		$this->db->join('inspecciones_normas ino', 'i.id = ino.id_inspeccion', 'LEFT');
+		$this->db->join('normas n', 'ino.id_norma = n.id', 'LEFT');
+		$this->db->join('usos us', 'i.id_uso = us.id', 'LEFT');
 		$this->db->where('i.id_estado', 1);
+		$this->db->where('ino.id_estado', 1);
 		$this->db->where('i.id', $idInspeccion);
 		$inspeccion = $this->db->get();
 		return $inspeccion->result_array();
@@ -99,10 +104,12 @@ class Inspeccion_model extends CI_Model
 
 	public function obtenerHerramientas($idInspeccion, $id_usuario)
 	{
-		$this->db->select('ic.id, ic.id_inspeccion, ic.id_herramienta, ic.respuesta, ic.orden');
+		$this->db->select('ic.id, ic.id_inspeccion, ic.id_herramienta, ic.respuesta, ic.orden, h.codigo, h.nombre, h.observaciones, h.estado, h.created_at, h.updated_at, h.id_usuario');
 		$this->db->from('inspecciones_herramientas ic');
+		$this->db->join('herramientas h', 'ic.id_herramienta = h.id', 'LEFT');
 		$this->db->where('ic.id_estado', 1);
 		$this->db->where('ic.id_inspeccion', $idInspeccion);
+		$this->db->order_by('ic.orden');
 		$inspeccion = $this->db->get();
 		return $inspeccion->result_array();
 	}
@@ -129,6 +136,27 @@ class Inspeccion_model extends CI_Model
 		$this->db->from('inspecciones i');
 		$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion', 'LEFT');
 		$this->db->join('inspecciones_checklists_respuestas icr', 'ic.id = icr.id_inspecciones_checklists', 'LEFT');
+		$this->db->join('archivos a', 'icr.id = a.inspeccion_checklist_resp_id', 'LEFT');
+		$this->db->where('i.id', $idInspeccion);
+		$this->db->where('i.id_estado', 1);
+		$this->db->where('ic.id_estado', 1);
+		$this->db->where('icr.id_estado', 1);
+		$inspeccion = $this->db->get();
+		return $inspeccion->result_array();
+	}
+
+	public function obtenerRespuestasInspeccionReporte($idInspeccion, $id_usuario)
+	{
+		$this->db->select('icr.id, icr.id_inspecciones_checklists, icr.id_categoria, icr.id_pregunta, icr.id_pregunta, icr.respuesta, icr.observaciones, icr.orden, icr.id_respuesta, icr.id_estado, icr.created_at, icr.updated_at, 
+		a.id as archivo_id, a.file_name, a.file_type, a.file_path, a.full_path, a.raw_name, a.orig_name, a.client_name, a.file_ext, a.file_size, a.is_image, a.image_width, a.image_height, a.image_type, a.image_size_str, 
+		a.id_estado as id_estado_a, a.inspeccion_checklist_resp_id, a.inspeccion_checklist_obs_id, a.id_categoria as id_categoria_a, a.id_pregunta as id_pregunta_a, a.orden as orden_a, a.id_usuario as id_usuario_a, a.create_at as create_at_a, a.updated_at as updated_at_a,
+        p.codigo as codigo_pregunta, p.nombre as pregunta, p.filtro, p.observaciones as pregunta_obs,
+        r.orden as orden_respuesta, r.nombre as respuesta, r.observaciones as respuesta_obs');
+		$this->db->from('inspecciones i');
+		$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion', 'LEFT');
+		$this->db->join('inspecciones_checklists_respuestas icr', 'ic.id = icr.id_inspecciones_checklists', 'LEFT');
+		$this->db->join('preguntas p', 'icr.id_pregunta = p.id', 'LEFT');
+		$this->db->join('respuestas r', 'icr.id_respuesta = r.id', 'LEFT');
 		$this->db->join('archivos a', 'icr.id = a.inspeccion_checklist_resp_id', 'LEFT');
 		$this->db->where('i.id', $idInspeccion);
 		$this->db->where('i.id_estado', 1);
@@ -268,11 +296,10 @@ class Inspeccion_model extends CI_Model
 	    return $resultado;
 	}
 
-	public function agregarInspeccion($idInspeccion, $tecnico, $nombreE, $direccionE, $rutE, $idE, $nombreA, $rutA, $emailA, $idEmpresaM, $nombreRM, $fechaUM, $marca, $idUso, $capacidad, $capacidadKG, $idSuspension, $salaMaquina, $velocidad, $recorrido, $paradas, $idTipoTraccion, $cantidad, $diamTraccion, $enclavamientoE, $enclavamientoM, $diamCableL, $idNorma, $id_usuario, $es_temporal = 0){
+	public function agregarInspeccion($idInspeccion, $tecnico, $cantidad_ascensor, $nombreE, $direccionE, $rutE, $idE, $nombreA, $rutA, $emailA, $idEmpresaM, $nombreRM, $fechaUM, $marca, $idUso, $capacidad, $capacidadKG, $idSuspension, $salaMaquina, $velocidad, $recorrido, $paradas, $idTipoTraccion, $cantidad, $diamTraccion, $enclavamientoE, $enclavamientoM, $diamCableL, $idNorma, $id_usuario, $es_temporal = 0){
 		try{
 			$this->db->db_debug = FALSE;
 			$id_edificio = null;
-
 			$respuesta = array('resultado' => null, 
 				'mensaje' => null,
 				'id_inspeccion' => null);
@@ -358,6 +385,7 @@ class Inspeccion_model extends CI_Model
 			$data = array(
 		        'id_edificio' => $id_edificio,
 				'nombre_tecnico' => $tecnico,
+				'cantidad_ascensor' => $cantidad_ascensor,
 				'rut_admin' => $rutA,
 				'nombre_admin' => $nombreA,
 				'email_admin' => $emailA,

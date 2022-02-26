@@ -1,6 +1,11 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use PhpOffice\PhpWord\Element\Table;
+use PhpOffice\PhpWord\Element\Field;
+use PhpOffice\PhpWord\Element\TextRun;
+use PhpOffice\PhpWord\SimpleType\TblWidth;
+
 class Inspeccion extends CI_Controller {
 
 	public function __construct()
@@ -17,7 +22,7 @@ class Inspeccion extends CI_Controller {
 		$this->load->model('suspension_model');
 		$this->load->model('uso_model');
 		$this->load->model('traccion_model');
-		//$this->load->library('pdf');
+		$this->load->library('pdf');
 		//$this->load->library('word');
 	}
 
@@ -44,11 +49,14 @@ class Inspeccion extends CI_Controller {
 			if($this->input->GET('idInspeccion') && $this->input->GET('idInspeccion'))
 			{
 				$id_inspeccion = $this->input->GET('idInspeccion');
-
+				$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccionReporte($id_inspeccion, $usuario['id_usuario']);
+				#var_dump($respuestas_inspeccion);
+				#exit();
 				$inspeccion =  $this->inspeccion_model->obtenerInspeccion($id_inspeccion ,$usuario["id_usuario"]);
 				if (sizeof($inspeccion) > 0) {
 
 					$this->load->library('PHPWord');
+
 					$nombre_plantilla = base_url().'assets/doc/plantilla_reporte.docx';
 					$template = new \PhpOffice\PhpWord\TemplateProcessor($nombre_plantilla);
 
@@ -59,14 +67,16 @@ class Inspeccion extends CI_Controller {
 
 
 					$nombre_usuario = 'Eduardo Lopez';
-					$fecha_i = date("d/m/Y", strtotime($inspeccion[0]['created_at']));
+					$fecha_i = date("d-m-Y", strtotime($inspeccion[0]['created_at']));
+					$cantidad_ascensor = $inspeccion[0]['cantidad_ascensor'];
 					$nombre_tecnico = $inspeccion[0]['nombre_tecnico'];
 					$rol = $inspeccion[0]['rol'];
 					$nombre_admin = $inspeccion[0]['nombre_admin'];
 					$rut_admin = $inspeccion[0]['rut_admin'];
 					$edificio = $inspeccion[0]['edificio'];
 					$rut_e = $inspeccion[0]['rut_e'];
-					$direccion = $inspeccion[0]['direccion'];
+					#$direccion = $inspeccion[0]['direccion_em'];
+					$domicilio = $inspeccion[0]['domicilio'];
 					$cantidad = $inspeccion[0]['cantidad'];
 					$email_admin = $inspeccion[0]['email_admin'];
 
@@ -75,6 +85,7 @@ class Inspeccion extends CI_Controller {
 					$direccion_em = $inspeccion[0]['direccion_em'];
 					$rut_em = $inspeccion[0]['rut_em'];
 					$nombre_mant_2 = $inspeccion[0]['nombre_mant_2'];
+					$fecha_um = date("d-m-Y", strtotime($inspeccion[0]['fecha_ultima_mant']));
 					
 					$marca_ascensor = $inspeccion[0]['marca_ascensor'];
 					$capacidad_personas = $inspeccion[0]['capacidad_personas'];
@@ -83,6 +94,9 @@ class Inspeccion extends CI_Controller {
 					$recorrido = $inspeccion[0]['recorrido'];
 					$suspension = $inspeccion[0]['suspension'];
 					$paradas = $inspeccion[0]['paradas'];
+					$id_uso = $inspeccion[0]['id_uso'];
+					$uso = $inspeccion[0]['uso'];
+					$norma = $inspeccion[0]['norma'];
 
 					$texto_sala_maquina = '';
 
@@ -92,6 +106,8 @@ class Inspeccion extends CI_Controller {
 					$enclavamiento_electrico = $inspeccion[0]['enclavamiento_electrico'];
 
 					
+					$template->setValue('cantidad_ascensor', $cantidad_ascensor);
+
 					$template->setValue('nombre_cont_1', $nombre_cont_1);
 					$template->setValue('num_cont_1', $num_cont_1);
 					$template->setValue('nombre_cont_2', $nombre_cont_2);
@@ -105,7 +121,8 @@ class Inspeccion extends CI_Controller {
 					$template->setValue('rut_admin', $rut_admin);
 					$template->setValue('edificio', $edificio);
 					$template->setValue('rut_e', $rut_e);
-					$template->setValue('direccion', $direccion);
+					#$template->setValue('direccion', $direccion);
+					$template->setValue('domicilio', $domicilio);
 					$template->setValue('cantidad', $cantidad);
 					$template->setValue('email_admin', $email_admin);
 
@@ -114,6 +131,7 @@ class Inspeccion extends CI_Controller {
 					$template->setValue('direccion_em', $direccion_em);
 					$template->setValue('rut_em', $rut_em);
 					$template->setValue('nombre_mant_2', $nombre_mant_2);
+					$template->setValue('fecha_um', $fecha_um);
 
 					$template->setValue('marca_ascensor', $marca_ascensor);
 					$template->setValue('capacidad_personas', $capacidad_personas);
@@ -122,44 +140,368 @@ class Inspeccion extends CI_Controller {
 					$template->setValue('recorrido', $recorrido);
 					$template->setValue('suspension', $suspension);
 					$template->setValue('paradas', $paradas);
-
+					$template->setValue('id_uso', $id_uso);
+					$template->setValue('uso', $uso);
+					$template->setValue('norma', $norma);
 					$template->setValue('texto_sala_maquina', $texto_sala_maquina);
-
 					$template->setValue('diametro_cable', $diametro_cable);
 					$template->setValue('diametro_traccion', $diametro_traccion);
 					$template->setValue('enclavamiento_mecanico', $enclavamiento_mecanico);
 					$template->setValue('enclavamiento_electrico', $enclavamiento_electrico);
 
+					$estilo_herramientas_titulo = array('bold'=>true, 'size'=>10, 'name'=>'Arial');
+					$estilo_herramientas = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
 
-					/*$get_education = $this->db->query("SELECT * FROM `member_edu` WHERE Memberid='".$user_id."' ORDER BY `member_edu`.`edu_id` DESC");
-					$document->cloneRow('rowEdu', $get_education->num_rows());
-					$i=1;
+					$table = new Table(array('borderSize' => 2, 'borderColor' => 'black', 'width' => 9500, 'unit' => TblWidth::TWIP, 'align' => 'center'));
+					$table->addRow();
+					$table->addCell(150)->addText('Herramienta', $estilo_herramientas_titulo, array('align' => 'center'));
+					$table->addCell(150)->addText('Código', $estilo_herramientas_titulo, array('align' => 'center'));
+					$table->addCell(150)->addText('Incertidumbre', $estilo_herramientas_titulo, array('align' => 'center'));
 
-					foreach ($get_education->result() as $edu_row){
-					  $edu_json    = json_decode($edu_row->edu_details);
-					  // Values for loop in .docx file
-					  $document->setValue('rowEdu#'.$i, $edu_json->College_name);
-					  $document->setValue('rowUniversity#'.$i, $edu_json->University_name);
-					  $document->setValue('rowDegree#'.$i, $edu_json->Degree_name);
-					  $document->setValue('rowGrade#'.$i, $edu_json->Grade);
-					  $document->setValue('rowSpeciality#'.$i, $edu_json->Speciality);
-					  foreach ($countries as $key => $country) {
-					    if ($key == $edu_json->Cuntry){
-					      $document->setValue('rowCountry#'.$i,$country);
-					    }
-					  }
-					  $document->setValue('rowEdufrom#'.$i, $edu_json->From);
-					  $document->setValue('rowEduto#'.$i, $edu_json->To);
-					  $i++;
-					}*/
+					$respuesta_herramientas =  $this->inspeccion_model->obtenerHerramientas($id_inspeccion ,$usuario["id_usuario"]);
+					if (sizeof($respuesta_herramientas) > 0) {
+						foreach ($respuesta_herramientas as $herramienta) {
+							$codigo = $herramienta["codigo"];
+							$nombre_herramienta = $herramienta["nombre"];
+							$observacion = $herramienta["observaciones"];
 
+							$table->addRow();
+							$table->addCell(150)->addText($nombre_herramienta, $estilo_herramientas, array('align' => 'center'));
+							$table->addCell(150)->addText($codigo, $estilo_herramientas, array('align' => 'center'));
+							$table->addCell(150)->addText($observacion, $estilo_herramientas, array('align' => 'center'));
+						}
+					}
+
+					$template->setComplexBlock('table_herramientas', $table);
+					#$estilo_obs = array('bold'=>false, 'size'=>10, 'name'=>'Arial', 'valign'=>'center');
+					#$table_obs = new Table(array('align' => 'center', 'position' => 'horzAnchor', 'borderSize' => 2, 'borderColor' => 'black', 'width' => 9500, 'unit' => TblWidth::TWIP));
+					#$table_obs->addRow();
+					#$table_obs->addCell(50)->addText('N°', $estilo_herramientas_titulo, array('align' => 'center'));
+					#$table_obs->addCell(150)->addText('OBSERVACION', $estilo_herramientas_titulo, array('align' => 'center'));
+					#$table_obs->addCell(150)->addText('REGISTRO FOTOGRAFICO', $estilo_herramientas_titulo, array('align' => 'center'));
+					#$table_obs->addCell(150)->addText('PRUEBA', $estilo_herramientas_titulo, array('align' => 'center'));
+
+					$observaciones = array();
+					$observaciones_generales =  $this->inspeccion_model->obtenerObservacionesInspeccion($id_inspeccion ,$usuario["id_usuario"]);
+					if (sizeof($observaciones_generales) > 0) {
+						#var_dump($observaciones_generales);
+						$cant = 1;
+						
+						#$template->cloneBlock('block_obs', sizeof($observaciones_generales), true, true);
+						$template->cloneRow('id_observacion', sizeof($observaciones_generales));
+
+
+						foreach ($observaciones_generales as $observacion) {
+							$id_categoria = null;
+							$codigo_c = null;
+							$categoria = null;
+							$obs_categoria = null;
+							$archivo_id = null;
+							$file_name = null;
+							$inspeccion_checklist_obs_id = null;
+							$observacion_item = null;
+							$orden_r = null;
+
+							$id_categoria = $observacion['id_categoria'];
+	                     	$codigo_c = $observacion['codigo_categoria'];
+	                     	$categoria = $observacion['categoria'];
+	                     	$obs_categoria = $observacion['obs_categorias'];
+	                     	$archivo_id = $observacion['archivo_id'];
+	                     	$file_name_imagen = $observacion['file_name'];
+	                     	$full_path = $observacion['full_path'];
+	                     	$inspeccion_checklist_obs_id = $observacion['inspeccion_checklist_obs_id'];
+	                     	$observacion_item = $observacion['observaciones'];
+	                     	$orden_r = $observacion['orden'];
+	                    	
+	                    	#$id_obs = $orden_r.'.- "'.$id_categoria.'_'.$categoria.'"';
+	                    	$id_obs = $orden_r;
+	                    	#var_dump($observacion);
+
+
+	                    	#$path = realpath(__DIR__.'/../../assets/files/image/'.$file_name_imagen);
+							#$portada->addImage($path);
+
+	                    	$url_imagen = base_url().'assets/files/image/'.$file_name_imagen;
+	                    	#$src = base_url().'assets/files/image/531_261_6_1.png';
+
+	                    	#$template->setValue('id_obs#'.$cant, $orden_r);
+	                    	#$template->setValue('obs#'.$cant, $observacion_item);
+				    		#$template->setImageValue('image_obs#'.$cant, array('path' => $url_imagen, 'width' => 200, 'height' => 200, 'ratio' => false));
+				    		
+
+				    		$template->setValue('id_observacion#'.$cant, $orden_r);
+	                    	$template->setValue('observacion#'.$cant, $observacion_item);
+				    		$template->setImageValue('image_observacion#'.$cant, array('path' => $url_imagen, 'width' => 200, 'height' => 200, 'ratio' => TRUE,'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER));
+
+
+#				    		$templateProcessor->cloneRow('userId', 2);
+
+				    		$cant++;
+
+
+	                    	#$table_obs->addRow();
+							#table_obs->addCell(50)->addText($orden_r, /*$estilo_obs*/array('alignment' => 'center'), array('valign' => 'center'));
+							#$table_obs->addCell(150)->addText(/*$observacion_item*/$path, $estilo_obs, array('valign' => 'center'));
+							/*$table_obs->addCell()->addImage(#$url_imagen, array(
+								   # 	'unit' => 'pct', 
+								   # 	'align' => 'center',
+								    #    'width'         => 100,
+								    #    'height'        => 100,
+								    #    'marginTop'     => 50,
+								    #    'marginLeft'    => 50,
+								    #    'wrappingStyle' => 'behind'
+								    #)
+
+								    #$src, array('path' => $src, 'width' => 100, 'height' => 100, 'ratio' => false)
+								    );*/
+
+
+
+							/*$table_obs->addCell()->addImage($path, array(
+								    	'unit' => 'pct', 
+								    	'align' => 'center',
+								        'width'         => 100,
+								        'height'        => 100,
+								        'marginTop'     => 50,
+								        'marginLeft'    => 50,
+								        'wrappingStyle' => 'behind'
+								    ));*/
+
+							#$table_obs->addRow();
+
+							/*try {
+								$table_obs->addCell(150)->addImage(base_url().'assets/files/image/'.$file_name_imagen ,
+								    array(
+								    	'unit' => 'pct', 
+								    	'align' => 'center',
+								        'width'         => 100,
+								        'height'        => 100,
+								        'marginTop'     => 50,
+								        'marginLeft'    => 50,
+								        'wrappingStyle' => 'behind'
+								    )
+								);
+							} catch (Exception $e) {
+								var_dump($e);
+							}*/
+							
+							#$table_obs->addCell(150)->addText($observacion, $estilo_herramientas, array('align' => 'center'));
+
+	                    	/*$phpWord = new \PhpOffice\PhpWord\PhpWord();
+	                    	#$section = $phpWord->createSection();   
+							#$section->addImage($full_path, array('width'=>210, 'height'=>210, 'align'=>'center'));
+
+
+
+							$section = $phpWord->addSection();
+							$section->addImage(
+							    $full_path,
+							    array(
+							        'width'         => 100,
+							        'height'        => 100,
+							        'marginTop'     => -1,
+							        'marginLeft'    => -1,
+							        'wrappingStyle' => 'behind'
+							    )
+							);
+							$textrun = $section->addTextRun();
+							$textrun->addImage('http://php.net/logo.jpg');
+							$source = file_get_contents();
+							$textrun->addImage($source);
+
+							$table->addRow();
+							$table->addCell()->addText("test");
+							$table->addCell()->addImage("test.png");
+
+
+
+	                     	$observaciones[] = array(
+							        'id_obs'        => $id_obs,
+							        'observaciones' => $observacion_item,
+							        'imagen'      => $section
+							    );*/
+
+
+		                }
+		               # var_dump($observaciones);
+		                #$template->cloneRowAndSetValues('id_obs', $observaciones);
+					}
+
+
+					$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccionReporte($id_inspeccion, $usuario['id_usuario']);
+					#var_dump($respuestas_inspeccion);
+					#exit();
+
+					if (sizeof($respuestas_inspeccion) > 0) {
+						$cant_1 = 1;
+						$template->cloneRow('id_punto_1', sizeof($respuestas_inspeccion));
+						foreach ($respuestas_inspeccion as $pregunta) {
+							#var_dump($pregunta);
+							#exit();
+							$codigo_pregunta = $pregunta["codigo_pregunta"];
+							$pregunta_obs = $pregunta["pregunta_obs"];
+							$orig_name = $pregunta["orig_name"];
+
+							$url_imagen = base_url().'assets/files/image/'.$orig_name;
+	                    	#$src = base_url().'assets/files/image/531_261_6_1.png';
+
+	                    	#$template->setValue('id_obs#'.$cant, $orden_r);
+	                    	#$template->setValue('obs#'.$cant, $observacion_item);
+				    		#$template->setImageValue('image_obs#'.$cant, array('path' => $url_imagen, 'width' => 200, 'height' => 200, 'ratio' => false));
+				    		
+
+				    		$template->setValue('id_punto_1#'.$cant, $orden_r);
+	                    	$template->setValue('generalidad_1#'.$cant, $pregunta_obs);
+				    		$template->setImageValue('comentario_1#'.$cant, array('path' => $url_imagen, 'width' => 200, 'height' => 200, 'ratio' => TRUE,'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER));
+
+
+#				    		$templateProcessor->cloneRow('userId', 2);
+
+				    		$cant++;
+							#${id_punto_1}	${generalidad_1}	${comentario_1 }
+
+						}
+					}
+
+					#$template->setComplexBlock('table_obs', $table_obs);
+
+
+
+					#$template->cloneRowAndSetValues('userId', $values);
+
+
+					
+
+
+					#$phpWord = new \PhpOffice\PhpWord\PhpWord();
+					#$section1 = $phpWord->createSection();
+					#$section1->addImage($src, $style);
+
+					#$template->setValue('image', $section1);
+					#$template->setValue('image', $section1);
+
+
+					#$template->setImageValue('image_prueba', $src);
+					
+
+					#$template->setImageValue('image_prueba', array('path' => $src, 'width' => 100, 'height' => 100, 'ratio' => false));
+
+					/*$template->setImageValue('image_prueba', function () {
+					    // Closure will only be executed if the replacement tag is found in the template
+
+					    return array('path' => SlowFeatureImageGenerator::make(), 'width' => 100, 'height' => 100, 'ratio' => false);
+					});*/
+
+
+					#$templateProcessor->setImageValue('UserLogo', array('path' => 'path/to/logo.png', 'width' => 100, 'height' => 100, 'ratio' => false));
+					
+
+
+
+				    #$template->cloneBlock('block_obs', 3, true, true);
+				    #$template->setImageValue('image_obs#3', array('path' => $src, 'width' => 100, 'height' => 100, 'ratio' => false));
 
 
 					$file_name = 'Informe_norma.docx';
 					$template->saveAs($file_name);
 
-				    header('Content-Disposition: attachment; filename='.$file_name.';charset=iso-8859-1');
-				    echo file_get_contents($file_name);
+
+					/*$PHPWord = new \PhpOffice\PhpWord\PhpWord();
+					$document = $PHPWord->loadTemplate('C:/Proyectos/eleve/assets/doc/plantilla_reporte.docx');
+
+
+					$pathToSave = 'C:/Proyectos/eleve/assets/doc/file.docx';
+					$template->saveAs($pathToSave);
+
+					$pathToSave2 = 'C:/Proyectos/eleve/assets/doc/file.PDF';
+					 $phpWord2 = \PhpOffice\PhpWord\IOFactory::load($pathToSave);
+					 //var_dump($phpWord2);
+
+
+					$rendererName = PDF_RENDERER_DOMPDF;
+			        $rendererLibraryPath = realpath('/../libraries/dompdf');
+			        setPdfRenderer($rendererName, $rendererLibraryPath);
+
+        			$phpWord2->save($pathToSave2,'PDF');*/
+
+
+
+					#$objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($PHPWord, 'Word2007');
+    				#$objWriter->save('helloWorld.docx');
+
+					#$direccion_archivo = site_url().'assets/doc/plantilla_reporte.docx';
+
+					/*
+
+					$tmpFile = storage_path()."/contracts/output.pdf";
+
+			        $phpWord = IOFactory::load($file_name);
+			        $phpWord->save($tmpFile,'PDF');        
+
+			        return Response::make("OK");
+				    
+				    $src = 'C:/Proyectos/eleve/assets/files/image/531_261_6_1.png';
+					$style = array(
+				        'width'         => 100,
+				        'height'        => 100,
+				        'marginTop'     => -1,
+				        'marginLeft'    => -1,
+				        'wrappingStyle' => 'behind'
+				    );
+
+
+
+					$phpWord = new \PhpOffice\PhpWord\PhpWord();
+					$section1 = $phpWord->createSection();
+					$section1->addImage($src, $style);*/
+
+					#$template->setValue('image',$section1);
+					#$phpWord = new \PhpOffice\PhpWord\IOFactory::load($file_name);
+					#var_dump($guardado);
+
+				    #header('Content-Disposition: attachment; filename='.$file_name.';charset=iso-8859-1');
+				    #echo file_get_contents($file_name);
+
+
+					//Load temp file
+					#$phpWord = \PhpOffice\PhpWord\IOFactory::load(PATH_site.$file_name); 
+
+					//Save it
+					#$xmlWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord , 'PDF');
+					#$xmlWriter->save('result.pdf');
+
+					#$rendererName = \PhpOffice\PhpWord\Settings::PDF_RENDERER_MPDF; //PDF_RENDERER_DOMPDF   PDF_RENDERER_TCPDF
+					#$rendererLibraryPath = PATH_site . $generationConf['handleLib.']['rendererLibrary.']['path'];
+					#\PhpOffice\PhpWord\Settings::setPdfRenderer($rendererName, $rendererLibraryPath);
+					#$objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'PDF');
+					#$objWriter->save('Sample_07_TemplateCloneRow.pdf');
+
+
+
+					#$template = $phpWord->loadTemplate($nombre_plantilla);
+					#$template->save('helloWorld.docx');
+					#var_dump($template);
+
+
+					#$objWriter = PHPWord_IOFactory::createWriter($phpWord, 'Word2007');
+					#$objWriter->save('helloWorld.docx');
+
+				    
+				    header('Content-Description: File Transfer');
+					header('Content-Type: application/octet-stream');
+					header('Content-Disposition: attachment; filename='.$file_name);
+					header('Content-Transfer-Encoding: binary');
+					header('Expires: 0');
+					header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+					header('Pragma: public');
+					header('Content-Length: ' . filesize($file_name));
+					flush();
+					readfile($file_name);
+					unlink($file_name);
+					exit();
+
+					#$objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+					#$objWriter->save('php://output');
 				}
 
 			}
@@ -205,6 +547,7 @@ class Inspeccion extends CI_Controller {
 					$accion = 'agregado';
 					$idInspeccion = null;
 					$tecnico = null;
+					$cantidad_ascensor = null;
 					$nombreE = null;
 					$direccionE = null;
 					$rutE = null;
@@ -242,6 +585,9 @@ class Inspeccion extends CI_Controller {
 
 					if(!is_null($this->input->POST('inputTecnico')) && trim($this->input->POST('inputTecnico')) != "")
 						$tecnico = trim($this->input->POST('inputTecnico'));
+
+					if(!is_null($this->input->POST('inputCantAscensor')) && trim($this->input->POST('inputCantAscensor')) != "")
+						$cantidad_ascensor = trim($this->input->POST('inputCantAscensor'));
 
 					if(!is_null($this->input->POST('inputNombreE')) && trim($this->input->POST('inputNombreE')) != "")
 						$nombreE = trim($this->input->POST('inputNombreE'));
@@ -571,7 +917,7 @@ class Inspeccion extends CI_Controller {
 					$respuesta = 0;
 					$mensaje = '';
 
-					$resultado = $this->inspeccion_model->agregarInspeccion($idInspeccion, $tecnico, $nombreE, $direccionE, $rutE, $idE, $nombreA, $rutA, $emailA, $idEmpresaM, $nombreRM, $fechaUM, $marca, $idUso, $capacidad, $capacidadKG, $idSuspension, $salaMaquina, $velocidad, $recorrido, $paradas, $idTipoTraccion, $cantidad, $diamTraccion, $enclavamientoE, $enclavamientoM, $diamCableL, $idNorma, $usuario["id_usuario"], $es_temporal);
+					$resultado = $this->inspeccion_model->agregarInspeccion($idInspeccion, $tecnico, $cantidad_ascensor, $nombreE, $direccionE, $rutE, $idE, $nombreA, $rutA, $emailA, $idEmpresaM, $nombreRM, $fechaUM, $marca, $idUso, $capacidad, $capacidadKG, $idSuspension, $salaMaquina, $velocidad, $recorrido, $paradas, $idTipoTraccion, $cantidad, $diamTraccion, $enclavamientoE, $enclavamientoM, $diamCableL, $idNorma, $usuario["id_usuario"], $es_temporal);
 
 					if($resultado && $resultado["resultado"] > 0)
 					{
@@ -765,11 +1111,11 @@ class Inspeccion extends CI_Controller {
 											$this->load->library('upload', $config);
 											$this->upload->initialize($config);
 
-											var_dump($nombre_original);
-											var_dump($config);
+											#var_dump($nombre_original);
+											#var_dump($config);
 
 											$archivo_cargado = $this->upload->do_upload($nombre_original);
-											var_dump($archivo_cargado);
+											#var_dump($archivo_cargado);
 
 											
 											
