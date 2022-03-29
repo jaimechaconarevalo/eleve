@@ -636,6 +636,48 @@ window.onload = function () {
                                 lengthMenu: [[20], [20]]
                             });
                             feather.replace();
+                        }else{
+                            $('#tListaCategoriasReporte').DataTable({
+                                "fnDrawCallback": function( oSettings ) {
+                                    feather.replace();
+                                    loader.setAttribute('hidden', '');
+                                    $('[data-toggle="tooltip"]').tooltip();
+                                },
+                                "preDrawCallback": function( settings ) {
+                                    var loader = document.getElementById("loader");
+                                    loader.removeAttribute('hidden');
+                                },
+                                "processing": false,
+                                searching: true,
+                                paging:         true,
+                                ordering:       true,
+                                info:           true,
+                                "order": [[ 1, "asc" ]],
+                                "aoColumnDefs" :  [
+                                            {'visible': false, 'targets': [0] },
+                                            {"aTargets" : [0,1,2,3,4], "sClass":  "text-center align-middle registro"},
+                                            {"aTargets" : [5], "sClass":  "text-center align-middle registro botonTabla paginate_button"},
+                                          ],
+                                "oLanguage": {
+                                    "sProcessing":     function(){
+                                        let timerInterval
+                                    },
+                                    "sLengthMenu": "_MENU_ Registros por p&aacute;gina",
+                                    "sZeroRecords": "No se encontraron registros",
+                                    "sInfo": "Mostrando del _START_ al _END_ de _TOTAL_ registros",
+                                    "sInfoEmpty": "Mostrando 0 de 0 registros",
+                                    "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                                    "sSearch":        "Buscar:",
+                                    "oPaginate": {
+                                        "sFirst":    "Primero",
+                                        "sLast":    "Último",
+                                        "sNext":    "Siguiente",
+                                        "sPrevious": "Anterior"
+                                    }
+                                },
+                                lengthMenu: [[20], [20]]
+                            });
+                            feather.replace();
                         }
                     }
                 });
