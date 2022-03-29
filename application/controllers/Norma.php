@@ -39,6 +39,7 @@ class Norma extends CI_Controller {
 				$nombre = null;
 				$observacion = null;
 				$preguntas_seleccionadas = null;
+				$categorias_reporte = null;
 
 				if(!is_null($this->input->POST('inputCodigo')) && trim($this->input->POST('inputCodigo')) != "")
 					$codigo = trim($this->input->POST('inputCodigo'));
@@ -51,6 +52,9 @@ class Norma extends CI_Controller {
 
 				if(!is_null($this->input->POST('preguntas_seleccionadas')) && trim($this->input->POST('preguntas_seleccionadas')) != "")
 					$preguntas_seleccionadas = json_decode($this->input->POST('preguntas_seleccionadas'), true);
+
+				if(!is_null($this->input->POST('categorias_reporte')) && trim($this->input->POST('categorias_reporte')) != "")
+					$categorias_reporte = json_decode($this->input->POST('categorias_reporte'), true);
 
 				if(!is_null($this->input->POST('inputIdNorma')) && is_numeric($this->input->POST('inputIdNorma')))
 				{
@@ -84,7 +88,29 @@ class Norma extends CI_Controller {
 									$mensaje .= ' Se han agregado '.$contador_p.' Preguntas a la Norma.</br></br>';
 							}
 
+							$resultado_erp = $this->norma_model->eliminarCategoriasReporte($idNorma, $usuario["id_usuario"]);
+
+							$contador = 0;
+							if (isset($resultado_erp) && $resultado_erp["resultado"] > 0) {
+
+								if (sizeof($categorias_reporte) > 0) {
+									foreach ($categorias_reporte as $respuesta) {
+										$id = $respuesta[0];
+										$orden = $respuesta[1];
+										$titulo = $respuesta[2];
+										$nombre = $respuesta[3];
+										$iniciales = $respuesta[4];
+
+										$resultado_acr = $this->norma_model->agregarCategoriaReporte($id, $orden, $titulo, $nombre, $iniciales, $idNorma, $usuario["id_usuario"]);
+										if (isset($resultado_acr) && $resultado_acr["resultado"] == 1)
+											$contador++;
+									}
+								}
+							}
 							
+							if ($contador > 0) {
+								$mensaje .= ' Se han agregado '.$contador.' Categoria Reporte a la Norma.</br></br>';
+							}							
 						}else{
 							if (isset($resultado_an) && $resultado_an["resultado"] > 0) {
 								$resultado = 1;
@@ -108,6 +134,30 @@ class Norma extends CI_Controller {
 								}else{
 									$mensaje = 'Ha ocurrido un error al '.$accion.' la Norma, '.$resultado_ecp["mensaje"];
 								}
+
+								$resultado_erp = $this->norma_model->eliminarCategoriasReporte($idNorma, $usuario["id_usuario"]);
+
+								$contador = 0;
+								if (isset($resultado_erp) && $resultado_erp["resultado"] > 0) {
+
+									if (sizeof($categorias_reporte) > 0) {
+										foreach ($categorias_reporte as $respuesta) {
+											$id = $respuesta[0];
+											$orden = $respuesta[1];
+											$titulo = $respuesta[2];
+											$nombre = $respuesta[3];
+											$iniciales = $respuesta[4];
+
+											$resultado_acr = $this->norma_model->agregarCategoriaReporte($id, $orden, $titulo, $nombre, $iniciales, $idNorma, $usuario["id_usuario"]);
+											if (isset($resultado_acr) && $resultado_acr["resultado"] == 1)
+												$contador++;
+										}
+									}
+								}
+								
+								if ($contador > 0) {
+									$mensaje .= ' Se han agregado '.$contador.' Categoria Reporte a la Norma.</br></br>';
+								}	
 
 							}else{
 								$mensaje = 'Ha ocurrido un error al '.$accion.' la Norma, '.$resultado_an["mensaje"];
@@ -498,6 +548,46 @@ class Norma extends CI_Controller {
 			if($resultado > 0)
 				$respuesta = 1;
 			echo json_encode($respuesta);
+		}
+	}
+
+	public function json_listarCategoriasReporteNorma()
+	{
+		$usuario = $this->session->userdata();
+		if($usuario["id_usuario"]){
+
+			$idNorma = null;
+			$categorias_norma = array();
+			$data = array();
+
+			if(!is_null($this->input->post('idNorma')) && $this->input->post('idNorma') != "-1"  && $this->input->post('idNorma') != "")
+				$idNorma = $this->input->post('idNorma');
+
+			if (isset($idNorma)) {
+				$categorias_reporte_norma = $this->norma_model->listarCategoriasNorma($idNorma, $usuario['id_usuario']);
+				if (sizeof($categorias_reporte_norma) > 0) {
+					foreach ($categorias_reporte_norma as $categoria_norma) {
+						$row_cp_n = array();
+						$row_cp_n[] = '<p class="texto-pequenio">'.$categoria_norma['id'].'</p>';
+						$row_cp_n[] = '<p class="texto-pequenio">'.$categoria_norma['orden'].'</p>';
+						#$row_cp_n[] = '<p class="texto-pequenio">'.$categoria_norma['codigo'].'</p>';
+						$row_cp_n[] = '<p class="texto-pequenio">'.$categoria_norma['nombre'].'</p>';
+						$row_cp_n[] = '<p class="texto-pequenio">'.$categoria_norma['observaciones'].'</p>';
+						$row_cp_n[] = '<p class="texto-pequenio">'.$categoria_norma['iniciales'].'</p>';
+						$row_cp_n[] = '<p class="texto-pequenio">'.$categoria_norma['created_at'].'</p>';
+						$row_cp_n[] = '<a class="trash eliminarCategoriaReporte" href="#" data-id="'.$categoria_norma['orden'].'" ><i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="eliminar"></i></a>';
+						$categorias_norma[] = $row_cp_n;
+					}
+				}
+			}
+			
+			$output = array(
+				'categorias_norma' => $categorias_norma
+			);
+			echo json_encode($output);
+		}else
+		{
+			redirect('Inicio');
 		}
 	}
 }

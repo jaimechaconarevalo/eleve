@@ -2,6 +2,71 @@
     $('[data-toggle="tooltip"]').tooltip();
     feather.replace();
 
+    $('#tListaCategoriasReporte').on('click', '.eliminarCategoriaReporte', function(e) {
+
+        var ordenEdificio = $(e.currentTarget).data('id');
+        var tabla_A = $(document.getElementById("tListaCategoriasReporte")).dataTable();
+        var categorias_reporte = tabla_A.fnGetData();
+
+        var encontrado = categorias_reporte.findIndex(item => $(item[1]).text() === ordenEdificio.toString());
+        if (encontrado != -1) {
+            delete categorias_reporte.splice(encontrado, 1);
+            for (var i = 0; i < categorias_reporte.length; i++) {
+                categorias_reporte[i][1] = '<p class="texto-pequenio">'.concat((i+1), '</p>');
+                categorias_reporte[i][6] = '<a class="trash eliminarCategoriaReporte" href="#" data-id="'.concat((i+1), '" ><i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="eliminar"></i></a>');
+            }
+
+            $(".tooltip").tooltip("hide");
+            var table = $('#tListaCategoriasReporte').DataTable();
+            table.destroy();
+            $('#tListaCategoriasReporte').DataTable({
+                "fnDrawCallback": function( oSettings ) {
+                    feather.replace();
+                    loader.setAttribute('hidden', '');
+                    $('[data-toggle="tooltip"]').tooltip();
+                },
+                "preDrawCallback": function( settings ) {
+                    var loader = document.getElementById("loader");
+                    loader.removeAttribute('hidden');
+                },
+                "processing": false,
+                "data":  categorias_reporte,
+                searching: true,
+                paging:         true,
+                ordering:       true,
+                info:           true,
+                "order": [[ 1, "asc" ]],
+                "aoColumnDefs" :  [
+                            { 'visible': false, 'targets': [0] },
+                            {"aTargets" : [0,1,2,3,4], "sClass":  "text-center align-middle registro"},
+                            {"aTargets" : [5], "sClass":  "text-center align-middle registro botonTabla paginate_button"},
+                          ],
+                "oLanguage": {
+                    "sProcessing":     function(){
+                        let timerInterval
+                    },
+                    "sLengthMenu": "_MENU_ Registros por p&aacute;gina",
+                    "sZeroRecords": "No se encontraron registros",
+                    "sInfo": "Mostrando del _START_ al _END_ de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 de 0 registros",
+                    "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "sSearch":        "Buscar:",
+                    "oPaginate": {
+                        "sFirst":    "Primero",
+                        "sLast":    "Último",
+                        "sNext":    "Siguiente",
+                        "sPrevious": "Anterior"
+                    }
+                },
+                lengthMenu: [[20], [20]]
+            });
+
+        }
+        feather.replace();
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+
     $('#tListaCategorias').on('click', '.seleccionarCategoria', function(e) {
         
         var id = e.currentTarget.dataset.id;
@@ -124,6 +189,91 @@
     $('[data-toggle="tooltip"]').tooltip();
 
   }); 
+
+    $("#modalAgregarCategoriaReporte").on("show.bs.modal", function () {
+         document.getElementById("formAgregarCategoriaReporte").reset();
+    });
+
+    $("#formAgregarCategoriaReporte").on("submit", function(e){
+        var loader = document.getElementById("loader");
+        loader.removeAttribute('hidden');
+        var validacion = $("#formAgregarCategoriaReporte").validate();
+        if ($("#formAgregarCategoriaReporte").valid()) {
+            if(validacion.numberOfInvalids() == 0)
+            {
+                e.preventDefault();
+                var form = document.getElementById("formAgregarCategoriaReporte");
+                var formData = new FormData(form);
+
+                var tabla_A = $(document.getElementById("tListaCategoriasReporte")).dataTable();
+                var categorias_reporte = tabla_A.fnGetData();
+                var id = '<p class="texto-pequenio"></p>';
+                var orden = '<p class="texto-pequenio">'.concat((categorias_reporte.length+1), '</p>');
+                var titulo = '<p class="texto-pequenio">'.concat(formData.get('inputTituloCR'), '</p>');
+                var nombre = '<p class="texto-pequenio">'.concat(formData.get('inputNombreCR'), '</p>');
+                var iniciales = '<p class="texto-pequenio">'.concat(formData.get('inputInicialesCR'), '</p>');
+                var fecha_creacion = '<p class="texto-pequenio">'.concat(new Date().toLocaleString(), '</p>');
+                var boton = '<a class="trash eliminarCategoriaReporte" href="#" data-id="'.concat((categorias_reporte.length+1), '" ><i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="eliminar"></i></a>');
+
+                categorias_reporte.push([id, orden, titulo, nombre, iniciales, fecha_creacion, boton]);
+                tabla_A.fnDestroy();
+
+                $('#tListaCategoriasReporte').DataTable({
+                    "fnDrawCallback": function( oSettings ) {
+                        feather.replace();
+                        loader.setAttribute('hidden', '');
+                        $('[data-toggle="tooltip"]').tooltip();
+                    },
+                    "preDrawCallback": function( settings ) {
+                        var loader = document.getElementById("loader");
+                        loader.removeAttribute('hidden');
+                    },
+                    "processing": false,
+                    "data":  categorias_reporte,
+                    searching: true,
+                    paging:         true,
+                    ordering:       true,
+                    info:           true,
+                    "order": [[ 1, "asc" ]],
+                    "aoColumnDefs" :  [
+                                {'visible': false, 'targets': [0] },
+                                {"aTargets" : [0,1,2,3,4], "sClass":  "text-center align-middle registro"},
+                                {"aTargets" : [5], "sClass":  "text-center align-middle registro botonTabla paginate_button"},
+                              ],
+                    "oLanguage": {
+                        "sProcessing":     function(){
+                            let timerInterval
+                        },
+                        "sLengthMenu": "_MENU_ Registros por p&aacute;gina",
+                        "sZeroRecords": "No se encontraron registros",
+                        "sInfo": "Mostrando del _START_ al _END_ de _TOTAL_ registros",
+                        "sInfoEmpty": "Mostrando 0 de 0 registros",
+                        "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                        "sSearch":        "Buscar:",
+                        "oPaginate": {
+                            "sFirst":    "Primero",
+                            "sLast":    "Último",
+                            "sNext":    "Siguiente",
+                            "sPrevious": "Anterior"
+                        }
+                    },
+                    lengthMenu: [[20], [20]]
+                });
+                $('#modalAgregarCategoriaReporte').modal('hide');
+                feather.replace();
+                $('[data-toggle="tooltip"]').tooltip();               
+            }else{
+                var loader = document.getElementById("loader");
+                loader.setAttribute('hidden', '');
+            }
+        }else{
+            var loader = document.getElementById("loader");
+            loader.setAttribute('hidden', '');
+        }
+        loader.setAttribute('hidden', '');
+        feather.replace();
+    });
+
   
 
   $("#agregarNorma").on("submit", function(e){
@@ -136,6 +286,25 @@
                 e.preventDefault();
                 var form = document.getElementById("agregarNorma");
                 var formData = new FormData(form);
+
+                var tabla_rp = $(document.getElementById('tListaCategoriasReporte')).dataTable();
+                var categorias_reporte = tabla_rp.fnGetData();
+
+                var categorias_reporte_a = [];
+
+                for (var i = 0; i < categorias_reporte.length; i++) {
+
+                    /*respuestas_preguntas_a[i][0] = $(respuestas_preguntas[i][0])[0].innerText;
+                    respuestas_preguntas_a[i][1] = $(respuestas_preguntas[i][1])[0].innerText;
+                    respuestas_preguntas_a[i][2] = $(respuestas_preguntas[i][2])[0].innerText;
+                    respuestas_preguntas_a[i][3] = $(respuestas_preguntas[i][3])[0].innerText;
+                    respuestas_preguntas_a[i][4] = $(respuestas_preguntas[i][4])[0].innerText;*/
+                    categorias_reporte_a[i] = [$(categorias_reporte[i][0])[0].innerText, $(categorias_reporte[i][1])[0].innerText, $(categorias_reporte[i][2])[0].innerText, $(categorias_reporte[i][3])[0].innerText, $(categorias_reporte[i][4])[0].innerText]
+                }
+
+                formData.append("categorias_reporte", JSON.stringify(categorias_reporte_a));
+
+
 
 
                 var preguntas_seleccionadas = JSON.parse(localStorage.getItem("preguntas_seleccionadas"));
@@ -166,6 +335,8 @@
                             $('[data-toggle="tooltip"]').tooltip();
                             document.getElementById("agregarNorma").reset();
                             
+                            var table = $('#tListaCategoriasReporte').DataTable();
+                            table.clear().draw();
                             var acordeon = document.getElementById('acordionCategorias');
                             acordeon.innerHTML = '';
                             localStorage.myPageDataArr = undefined;
@@ -247,6 +418,8 @@
             location.reload();
         }
     });
+
+
 
 
     $('#eliminarNorma').click(function(e){
@@ -405,6 +578,70 @@ window.onload = function () {
 
     if(window.location.pathname.split('/')[2].toLowerCase() == 'agregarNorma'.toLowerCase() || window.location.pathname.split('/')[2].toLowerCase() == 'modificarNorma'.toLowerCase())
     {
+
+
+        if(window.location.pathname.split('/')[2].toLowerCase()  == 'modificarNorma'.toLowerCase())
+        {
+
+            var idNorma = document.getElementById('inputIdNorma').value;
+            if (idNorma) {
+                var baseurl =  window.origin + '/Norma/json_listarCategoriasReporteNorma';
+                jQuery.ajax({
+                    type: "POST",
+                    url: baseurl,
+                    dataType: 'json',
+                    data: {idNorma: idNorma},
+                    success: function(data) {
+                        if (data) {
+
+                            $('#tListaCategoriasReporte').DataTable({
+                                "fnDrawCallback": function( oSettings ) {
+                                    feather.replace();
+                                    loader.setAttribute('hidden', '');
+                                    $('[data-toggle="tooltip"]').tooltip();
+                                },
+                                "preDrawCallback": function( settings ) {
+                                    var loader = document.getElementById("loader");
+                                    loader.removeAttribute('hidden');
+                                },
+                                "processing": false,
+                                "data":  data.categorias_norma,
+                                searching: true,
+                                paging:         true,
+                                ordering:       true,
+                                info:           true,
+                                "order": [[ 1, "asc" ]],
+                                "aoColumnDefs" :  [
+                                            {'visible': false, 'targets': [0] },
+                                            {"aTargets" : [0,1,2,3,4], "sClass":  "text-center align-middle registro"},
+                                            {"aTargets" : [5], "sClass":  "text-center align-middle registro botonTabla paginate_button"},
+                                          ],
+                                "oLanguage": {
+                                    "sProcessing":     function(){
+                                        let timerInterval
+                                    },
+                                    "sLengthMenu": "_MENU_ Registros por p&aacute;gina",
+                                    "sZeroRecords": "No se encontraron registros",
+                                    "sInfo": "Mostrando del _START_ al _END_ de _TOTAL_ registros",
+                                    "sInfoEmpty": "Mostrando 0 de 0 registros",
+                                    "sInfoFiltered": "(filtrado de _MAX_ registros totales)",
+                                    "sSearch":        "Buscar:",
+                                    "oPaginate": {
+                                        "sFirst":    "Primero",
+                                        "sLast":    "Último",
+                                        "sNext":    "Siguiente",
+                                        "sPrevious": "Anterior"
+                                    }
+                                },
+                                lengthMenu: [[20], [20]]
+                            });
+                            feather.replace();
+                        }
+                    }
+                });
+            }
+        }
+
         $('#tListaCategorias').dataTable({
             searching: true,
             paging:         true,

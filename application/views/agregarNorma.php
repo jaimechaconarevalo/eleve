@@ -39,20 +39,46 @@
 					</div>
 				</div>
 
+				<div class="col-sm-12">
+					<hr class="my-3">
+					<h5><i class="mb-2" data-feather="archive" ></i> Categorias Reporte</h5>
+				</div>
+				
+				<div id="dAgregarCategoriaReporte" class="col-sm-12 text-right">
+					<a id="linkAgregarCategoriaReporte" href="" class="btn btn-link" data-toggle="modal" data-target="#modalAgregarCategoriaReporte"><i stop-color data-feather="plus" class="pb-1"></i>Agregar Categoria Reporte</a>
+				</div>
+				<div class="row">
+					<div class="col-sm-12 mt-3">
+						<table id="tListaCategoriasReporte" class="table table-sm table-hover table-bordered">
+							<thead class="thead-dark">
+								<tr>
+									<th scope="col" class="texto-pequenio text-center align-middle registro"># ID</th>
+									<th scope="col" class="texto-pequenio text-center align-middle registro">Orden</th>
+									<!--<th scope="col" class="texto-pequenio text-center align-middle registro">C&oacute;digo</th>-->
+									<th scope="col" class="texto-pequenio text-center align-middle registro">Titulo</th>
+									<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre</th>
+									<th scope="col" class="texto-pequenio text-center align-middle registro">Iniciales</th>
+									<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
+									<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
+								</tr>
+							</thead>
+							<tbody id="tbodyCategoriasReporte">
+							</tbody>
+						</table>
+					</div>
+				</div>
+
 				<div class="col-sm-12 mb-5">
 					<hr class="my-3">
 					<h5><i class="mb-2" data-feather="check-square" ></i> Configuraci&oacute;n de Norma</h5>
 				</div>
+
 
 				<div id="agregarCategoria" class="col-sm-12 text-right">
 					<a id="btnAgregarCategoria" class="btn btn-link" data-toggle="modal" data-target="#modalAgregarCategoria"><i stop-color data-feather="plus" class="pb-1"></i>Agregar Categoría</a>
 				</div>
 
 				<div class="accordion" id="acordionCategorias">
-				</div>
-
-				<div class="col-sm-12 mb-5">
-					<hr class="my-3">
 				</div>
 
 				<div id="botones" class="row m-3">
@@ -190,6 +216,46 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
       </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="modalAgregarCategoriaReporte" tabindex="-1" role="dialog" aria-labelledby="agregarRespuesta" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+      	<i class="plusTitulo mb-2" data-feather="plus"></i>
+        <h5 class="modal-title" id="tituloAE" name="tituloAE" data-idherramienta="" data-herramienta=""> Agregar Categor&iacute;a Reporte</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="formAgregarCategoriaReporte" action="" method="POST">
+	      <div class="modal-body">
+						<div class="row">
+							<div class="form-group col-sm-6">
+								<label for="inputTituloCR">T&iacute;tulo</label>
+								<input type="text" class="form-control  form-control-sm" id="inputTituloCR" minlength="1" placeholder="Ingrese un T&iacute;tulo" name="inputTituloCR" value="">
+							</div>
+							<div class="form-group col-sm-6">
+								<label for="inputNombreCR">Nombre</label>
+								<input type="text" class="form-control  form-control-sm" id="inputNombreCR" minlength="1" placeholder="Ingrese un Nombre de la Categor&iacute;a" name="inputNombreCR" value="">
+							</div>
+						</div>
+						<div class="row">
+							<div class="form-group col-sm-6">
+								<label for="inputInicialesCR">Iniciales</label>
+								<input type="text" class="form-control  form-control-sm" id="inputInicialesCR" minlength="1" placeholder="Ingrese una Inicial" name="inputInicialesCR" value="">
+							</div>
+						</div>
+
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
+	        <button id="agregarCategoriaReporte" type="submit" class="btn btn-success">Agregar Respuesta</button>
+	      </div>
+      </form>
     </div>
   </div>
 </div>

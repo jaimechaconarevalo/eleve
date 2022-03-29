@@ -72,11 +72,11 @@ class Inspeccion_model extends CI_Model
 		$this->db->join('edificios e', 'i.id_edificio = e.id', 'LEFT');
 		$this->db->join('empresas_mantenedoras em', 'i.id_empresa_mantenedora = em.id_empresa', 'LEFT');
 		$this->db->join('suspensiones s', 'i.id_suspension = s.id', 'LEFT');
-		$this->db->join('inspecciones_normas ino', 'i.id = ino.id_inspeccion', 'LEFT');
-		$this->db->join('normas n', 'ino.id_norma = n.id', 'LEFT');
+		$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion', 'LEFT');
+		$this->db->join('normas n', 'ic.id_norma = n.id', 'LEFT');
 		$this->db->join('usos us', 'i.id_uso = us.id', 'LEFT');
 		$this->db->where('i.id_estado', 1);
-		$this->db->where('ino.id_estado', 1);
+		$this->db->where('ic.id_estado', 1);
 		$this->db->where('i.id', $idInspeccion);
 		$inspeccion = $this->db->get();
 		return $inspeccion->result_array();
@@ -151,7 +151,8 @@ class Inspeccion_model extends CI_Model
 		a.id as archivo_id, a.file_name, a.file_type, a.file_path, a.full_path, a.raw_name, a.orig_name, a.client_name, a.file_ext, a.file_size, a.is_image, a.image_width, a.image_height, a.image_type, a.image_size_str, 
 		a.id_estado as id_estado_a, a.inspeccion_checklist_resp_id, a.inspeccion_checklist_obs_id, a.id_categoria as id_categoria_a, a.id_pregunta as id_pregunta_a, a.orden as orden_a, a.id_usuario as id_usuario_a, a.create_at as create_at_a, a.updated_at as updated_at_a,
         p.codigo as codigo_pregunta, p.nombre as pregunta, p.filtro, p.observaciones as pregunta_obs,
-        r.orden as orden_respuesta, r.nombre as respuesta, r.observaciones as respuesta_obs');
+        r.orden as orden_respuesta, r.nombre as respuesta, r.observaciones as respuesta_obs,
+        (select count(iicr.id) as cantidad from inspecciones ii inner join inspecciones_checklists iic on ii.id = iic.id_inspeccion inner join inspecciones_checklists_respuestas iicr on iic.id = iicr.id_inspecciones_checklists inner join archivos aa on iicr.id = aa.inspeccion_checklist_resp_id where ii.id = i.id and iicr.id_pregunta = icr.id_pregunta) as cantidad_fotos');
 		$this->db->from('inspecciones i');
 		$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion', 'LEFT');
 		$this->db->join('inspecciones_checklists_respuestas icr', 'ic.id = icr.id_inspecciones_checklists', 'LEFT');
@@ -1554,6 +1555,17 @@ class Inspeccion_model extends CI_Model
 		$this->db->where('i.id', $idInspeccion);
 		$this->db->where('i.id_estado', 1);
 		$this->db->where('ic.id_estado', 1);
+		$inspeccion = $this->db->get();
+		return $inspeccion->result_array();
+	}
+
+	public function obtenerOrdenNorma($id_norma, $id_usuario)
+	{
+		$this->db->select('cr.id, cr.codigo, cr.nombre, cr.observaciones, cr.iniciales, cr.orden, cr.id_estado, cr.created_at, cr.updated_at, cr.id_usuario, cr.id_norma');
+		$this->db->from('categoria_reporte cr');
+		$this->db->where('cr.id_norma', $id_norma);
+		$this->db->where('cr.id_estado', 1);
+		$this->db->order_by('cr.orden');
 		$inspeccion = $this->db->get();
 		return $inspeccion->result_array();
 	}

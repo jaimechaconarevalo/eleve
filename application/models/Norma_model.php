@@ -446,4 +446,129 @@ class Norma_model extends CI_Model
 		}
 		return $respuesta;
 	}
+
+	public function listarCategoriasNorma($idNorma, $idUsuario)
+	{	
+		try{   
+		    $this->db->select('cr.id, cr.codigo, cr.nombre, cr.observaciones, cr.iniciales, cr.orden, cr.created_at, cr.id_norma, n.codigo as codigo_norma, n.nombre as norma, n.observaciones as obs_norma');
+			$this->db->from('categoria_reporte cr');
+			$this->db->join('normas n', 'cr.id_norma = n.id', 'LEFT');
+			$this->db->where('cr.id_estado', 1);
+			$this->db->where('cr.id_norma', $idNorma);
+			$resultado = $this->db->get();
+			return $resultado->result_array();
+		}catch(Exception $e){
+			$respuesta['resultado'] = -1;
+		    $respuesta['mensaje'] = $e;
+		    $respuesta['id_norma'] = -1;
+		}
+	}
+
+	public function eliminarCategoriasReporte($idNorma, $id_usuario){
+		try{
+			$respuestas = $this->db->get_where('categoria_reporte', array('id_norma' => $idNorma, 'id_estado' => 1))->result();
+			$respuesta = array('resultado' => null,
+						'mensaje' => null,
+						'id_norma' => null
+					  );
+
+			$data = array(
+				'id_estado' => -1,
+				'id_usuario' => $id_usuario
+			);
+
+			if (sizeof($respuestas) > 0) {
+				$this->db->set('updated_at', 'NOW()', FALSE);
+			    $this->db->where('id_norma', $idNorma);
+				$this->db->update('categoria_reporte', $data);
+
+			    if ($this->db->affected_rows() >= 1) {
+					$respuesta['id_norma'] = $idNorma;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = "Se ha eliminado correctamente las Categorias Reporte a la Norma.";
+				}else{
+					$respuesta['id_norma'] = -1;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = $this->db->error();
+				}
+			}else{
+				$respuesta['id_norma'] = $idNorma;
+				$respuesta['resultado'] = 1;
+				$respuesta['mensaje'] = "La Pregunta no posee Respuestas Asociadas.";
+			}
+		}catch(Exception $e){
+			$respuesta['resultado'] = -1;
+		    $respuesta['mensaje'] = $e["code"].", Mensaje: ".$e["message"];
+		    $respuesta['id_norma'] = -1;
+		}
+
+		return $respuesta;
+	}
+
+	public function agregarCategoriaReporte($id, $orden, $titulo, $nombre, $iniciales, $idNorma, $id_usuario){
+		try{
+			$this->db->db_debug = FALSE; 
+			$respuesta = array('resultado' => null, 
+				'mensaje' => null,
+				'id_categoria_reporte' => null);
+
+			if (isset($id)) {
+				$id_categoria_reporte = null;
+				$this->db->select('cr.id, cr.codigo, cr.nombre, cr.observaciones, cr.iniciales, cr.orden, cr.created_at, cr.id_norma');
+				$this->db->from('categoria_reporte cr');
+				$this->db->join('normas n', 'cr.id_norma = n.id', 'LEFT');
+				#$this->db->where('cr.id_estado', 1);
+				$this->db->where('cr.id_norma', $idNorma);
+				$this->db->where('cr.id', $id);
+				$empresa_cc = $this->db->get();
+				$empresa_cc = $empresa_cc->result_array();
+
+				if (sizeof($empresa_cc) > 0)
+					$id_categoria_reporte = $empresa_cc[0]["id"];
+			}
+
+			$data = array(
+				'orden' => $orden,
+				'nombre' => $titulo,
+				'observaciones' => $nombre,
+				'iniciales' => $iniciales,
+				'id_norma' => $idNorma,
+				'id_usuario' => $id_usuario,
+				'id_estado' => 1
+			);
+
+			if ($id_categoria_reporte && !is_null($id_categoria_reporte) ) {
+				$this->db->set('updated_at', 'NOW()', FALSE);
+				$this->db->where('id', $id_categoria_reporte);
+				$this->db->update('categoria_reporte', $data);
+
+				if ($this->db->affected_rows() >= 1) {
+					$respuesta['id_categoria_reporte'] = $id_categoria_reporte;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = "Se ha actualizado correctamente la Categoria Reporte a la Norma.";
+				}else{
+					$respuesta['id_categoria_reporte'] = -1;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = $this->db->error();
+				}
+			}else{
+				$this->db->insert('categoria_reporte', $data);
+				if ($this->db->affected_rows() >= 1) {
+					$id_categoria_reporte = $this->db->insert_id();
+					$respuesta['id_categoria_reporte'] = $id_categoria_reporte;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = "Se ha insertado correctamente la Categoria Reporte a la Norma.";
+				}else{
+					$respuesta['id_categoria_reporte'] = -1;
+					$respuesta['resultado'] = $this->db->affected_rows();
+					$respuesta['mensaje'] = $this->db->error();
+				}
+			}
+		}catch(Exception $e){
+			$respuesta['resultado'] = -1;
+		    $respuesta['mensaje'] = $e["code"].", Mensaje: ".$e["message"];
+		    $respuesta['id_categoria_reporte'] = -1;
+		}
+		return $respuesta;
+	}
 }
