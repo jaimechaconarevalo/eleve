@@ -175,6 +175,54 @@ class Inspeccion extends CI_Controller {
 
 					$template->setComplexBlock('table_herramientas', $table);
 
+
+
+					$estilo_carpetas_titulo = array('bold'=>true, 'size'=>10, 'name'=>'Arial');
+					$estilo_carpetas = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
+					$table_carpetas = new Table(array('borderSize' => 2, 'borderColor' => 'black', 'width' => 9500, 'unit' => TblWidth::TWIP, 'align' => 'center'));
+					$table_carpetas->addRow();
+					$table_carpetas->addCell(30)->addText('Cumple', $estilo_carpetas_titulo, array('align' => 'center'));
+					$table_carpetas->addCell(150)->addText('Documento', $estilo_carpetas_titulo, array('align' => 'center'));
+
+					$carpetas =  $this->carpeta_model->listarCarpetas($usuario["id_usuario"]);
+					if (sizeof($carpetas) > 0) {
+						$respuesta_carpetas =  $this->inspeccion_model->obtenerCarpetas($id_inspeccion ,$usuario["id_usuario"]);
+						#var_dump($respuesta_carpetas);
+						#exit();
+						foreach ($carpetas as $carpeta) {
+							$cumple = "";
+							$id_carpeta = $carpeta["id"];
+							$nombre_carpeta = $carpeta["nombre"];
+							$observacion_carpeta = $carpeta["observaciones"];
+
+							if (sizeof($respuesta_carpetas) > 0) {
+								$index_encontrado = array_search($id_carpeta, array_column($respuesta_carpetas, 'id_carpeta'));
+								if ($index_encontrado !== false && $index_encontrado > 0){
+									$cumple = "SI";
+								}else{
+									$cumple = "NO";
+								}
+
+
+							}else{
+								$cumple = "NO";
+							}
+
+							
+							
+
+							$table_carpetas->addRow();
+							$table_carpetas->addCell(10)->addText($cumple, $estilo_carpetas, array('align' => 'center'));
+							$table_carpetas->addCell(180)->addText($observacion_carpeta, $estilo_carpetas, array('align' => 'center'));
+						}
+					}
+
+					$template->setComplexBlock('table_carpetas', $table_carpetas);
+
+
+
+
+
 					$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccionReporte($id_inspeccion, $usuario['id_usuario']);
 					$id_pregunta = null;
 					if (sizeof($respuestas_inspeccion) > 0) {

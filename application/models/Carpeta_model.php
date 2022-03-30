@@ -77,7 +77,7 @@ class Carpeta_model extends CI_Model
 
 	public function listarCarpetas($id_usuario)
 	{
-		$this->db->select('h.id, h.codigo, h.nombre, h.estado, h.created_at, h.updated_at');
+		$this->db->select('h.id, h.codigo, h.nombre, h.observaciones, h.estado, h.created_at, h.updated_at');
 		$this->db->from('carpetas h');
 		$this->db->where('h.estado', 1);
 		$carpeta = $this->db->get();

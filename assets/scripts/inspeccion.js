@@ -4,7 +4,7 @@
 
     function listarInspecciones() {
         var temporal = document.getElementById('inspeccionesTemporales').value;
-        var baseurl = window.origin + '/eleve/Inspeccion/listarInspecciones';
+        var baseurl = window.origin + '/Inspeccion/listarInspecciones';
         jQuery.ajax({
         type: "POST",
         url: baseurl,
@@ -66,7 +66,7 @@
             //form.preventDefault();
             var formData = new FormData(form);
             formData.append("es_temporal", es_temporal);
-            var baseurl = (window.origin + '/eleve/Inspeccion/agregarInspeccion');
+            var baseurl = (window.origin + '/Inspeccion/agregarInspeccion');
             jQuery.ajax({
             type: form.getAttribute('method'),
             url: baseurl,
@@ -176,11 +176,11 @@
 
                 if (id_elemento.includes("picture_")) {
 
-                    var baseurl = (window.origin + '/eleve/Inspeccion/agregarInspeccionTemporal');
+                    var baseurl = (window.origin + '/Inspeccion/agregarInspeccionTemporal');
 
                     var form = document.createElement("form");
                     form.setAttribute("method", 'POST');
-                    form.setAttribute("action", (window.origin + '/eleve/Inspeccion/agregarInspeccionTemporal'));
+                    form.setAttribute("action", (window.origin + '/Inspeccion/agregarInspeccionTemporal'));
                     form.setAttribute('enctype', 'multipart/form-data');
                     form.appendChild(element);
 
@@ -249,7 +249,7 @@
                 }else{
                     var id_inspeccion = document.getElementById('inputIdInspeccion').value;
 
-                    var baseurl = (window.origin + '/eleve/Inspeccion/agregarInspeccionTemporal');
+                    var baseurl = (window.origin + '/Inspeccion/agregarInspeccionTemporal');
                     jQuery.ajax({
                     type: 'POST',
                     url: baseurl,
@@ -508,7 +508,7 @@
     $('#modalBuscarEmpresa').on('shown.bs.modal', function () {
     //$('#tListaNormas').on('click', '.seleccionNorma', function(e) {
         
-        var baseurl =  window.origin + '/eleve/Empresa/json_listarEmpresas';
+        var baseurl =  window.origin + '/Empresa/json_listarEmpresas';
         jQuery.ajax({
             type: "POST",
             url: baseurl,
@@ -672,7 +672,7 @@
 
 
 
-                var baseurl = (window.origin + '/eleve/Inspeccion/agregarInspeccion');
+                var baseurl = (window.origin + '/Inspeccion/agregarInspeccion');
                 jQuery.ajax({
                 type: form.getAttribute('method'),
                 url: baseurl,
@@ -764,7 +764,7 @@
     });
 
     $("#modalMensajeInspeccion").on("hidden.bs.modal", function () {
-        var pagina = window.location.pathname.split('/')[3].toLowerCase();
+        var pagina = window.location.pathname.split('/')[2].toLowerCase();
         if (pagina == "modificarinspeccion") {
             location.reload();
         }
@@ -773,7 +773,7 @@
     $('#eliminarInspeccion').click(function(e){
         idInspeccion = $('#tituloEP').data('idinspeccion');
         //var nombreEquipo = $('#tituloEE').data('nombreequipo');
-        var baseurl = window.origin + '/eleve/Inspeccion/eliminarInspeccion';
+        var baseurl = window.origin + '/Inspeccion/eliminarInspeccion';
 
         jQuery.ajax({
         type: "POST",
@@ -1018,7 +1018,7 @@
                 e.preventDefault();
                 var form = document.getElementById("agregarEmpresa");
                 var formData = new FormData(form);
-                var baseurl = (window.origin + '/eleve/Empresa/agregarEmpresa');
+                var baseurl = (window.origin + '/Empresa/agregarEmpresa');
                 jQuery.ajax({
                 type: form.getAttribute('method'),
                 url: baseurl,
@@ -1569,7 +1569,7 @@
             $('#idNorma').val(idNorma);
             $('#modalBuscarNorma').modal('hide');
             if (idNorma) {
-                var baseurl =  window.origin + '/eleve/Norma/json_listarCategoriasPreguntas';
+                var baseurl =  window.origin + '/Norma/json_listarCategoriasPreguntas';
                 jQuery.ajax({
                     type: "POST",
                     url: baseurl,
@@ -1802,7 +1802,7 @@
 
 
 window.onload = function () {
-    if(window.location.pathname.split('/')[3].toLowerCase() == 'listarInspecciones'.toLowerCase())
+    if(window.location.pathname.split('/')[2].toLowerCase() == 'listarInspecciones'.toLowerCase())
     {
         $('#tListaInspecciones').dataTable({
             searching: true,
@@ -1837,13 +1837,13 @@ window.onload = function () {
         feather.replace();
     }
 
-    if(window.location.pathname.split('/')[3].toLowerCase() == 'agregarInspeccion'.toLowerCase() || window.location.pathname.split('/')[3].toLowerCase() == 'modificarInspeccion'.toLowerCase())
+    if(window.location.pathname.split('/')[2].toLowerCase() == 'agregarInspeccion'.toLowerCase() || window.location.pathname.split('/')[2].toLowerCase() == 'modificarInspeccion'.toLowerCase())
     {
         var idInspeccion = document.getElementById('inputIdInspeccion').value;
         var idNorma = document.getElementById('idNorma').value;
         
         if (idInspeccion != "" && idNorma != "") {
-            var baseurl =  window.origin + '/eleve/Inspeccion/json_listarCategoriasPreguntasRespuestaInspeccion';
+            var baseurl =  window.origin + '/Inspeccion/json_listarCategoriasPreguntasRespuestaInspeccion';
             jQuery.ajax({
                 type: "POST",
                 url: baseurl,
@@ -2040,7 +2040,7 @@ window.onload = function () {
                                                     div = div.concat('<button type="button" class="close" aria-label="Close">');
                                                     div = div.concat('<span class="close quitarImagen" aria-hidden="true" id="close_',imagen.id_imagen,'" data-id="',imagen.id_imagen,'" data-id_div="',categoria.id_categoria,'_',pregunta.id_pregunta,'">×</span>');
                                                     div = div.concat('</button>');
-                                                    div = div.concat('<img alt="Alt information for image" class="img-fluid rounded float-left" src="',window.origin + '/eleve/assets/files/image/',imagen.file_name,'" width="150" id="',imagen.id_imagen,'">');
+                                                    div = div.concat('<img alt="Alt information for image" class="img-fluid rounded float-left" src="',window.origin + '/assets/files/image/',imagen.file_name,'" width="150" id="',imagen.id_imagen,'">');
                                                     div = div.concat('<input type="file" id="picture_',imagen.archivo_id,'_',imagen.id_imagen,'" name="picture_',imagen.archivo_id,'_',imagen.id_imagen,'" data-origen="1" data-archivo_id="',imagen.archivo_id,'" hidden="true">');
                                                     div = div.concat('</div>');
                                                 });
@@ -2078,7 +2078,7 @@ window.onload = function () {
 
 
 
-            var baseurl =  window.origin + '/eleve/Inspeccion/json_listarObservacionesInspeccion';
+            var baseurl =  window.origin + '/Inspeccion/json_listarObservacionesInspeccion';
             jQuery.ajax({
                 type: "POST",
                 url: baseurl,
@@ -2095,7 +2095,7 @@ window.onload = function () {
                                 $.each(data.data_obs_generales, function(index_i, imagen) {
                                     div = div.concat('<div class="float-sm-left m-3" id="div_contenedor_',imagen.orden_r,'">');
                                     div = div.concat('<div class="card border-secondary" style="width: 18rem;">');
-                                    div = div.concat('<img alt="Alt information for image" class="img-fluid rounded float-left" src="',window.origin + '/eleve/assets/files/image/',imagen.file_name,'" id="imagen_',imagen.orden_r,'">');
+                                    div = div.concat('<img alt="Alt information for image" class="img-fluid rounded float-left" src="',window.origin + '/assets/files/image/',imagen.file_name,'" id="imagen_',imagen.orden_r,'">');
                                     div = div.concat('<div class="card-body text-secondary">');
                                     div = div.concat('<input type="text" class="form-control  form-control-sm" id="input_obs_',imagen.id_categoria,'-',imagen.archivo_id,'_',imagen.orden_r,'" name="input_obs_',imagen.id_categoria,'-',imagen.archivo_id,'_',imagen.orden_r,'" value="',imagen.observacion_item,'" hidden="true">');
                                     div = div.concat('<h5 class="card-title">',imagen.orden_r,'.- "',imagen.codigo_c,'_',imagen.categoria,'"</h5>');
