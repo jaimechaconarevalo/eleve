@@ -417,7 +417,7 @@ class Inspeccion extends CI_Controller {
 					}
 
 
-					$file_name = 'Informe_norma.docx';
+					/*$file_name = 'Informe_norma.docx';
 					$template->saveAs($file_name);
 				    
 				    header('Content-Description: File Transfer');
@@ -431,7 +431,7 @@ class Inspeccion extends CI_Controller {
 					flush();
 					readfile($file_name);
 					unlink($file_name);
-					exit();
+					exit();*/
 				}
 
 			}
