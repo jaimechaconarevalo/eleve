@@ -50,8 +50,8 @@ class Inspeccion extends CI_Controller {
 			{
 				$id_inspeccion = $this->input->GET('idInspeccion');
 				$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccionReporte($id_inspeccion, $usuario['id_usuario']);
-				#var_dump($respuestas_inspeccion);
-				#exit();
+				var_dump($respuestas_inspeccion);
+				exit();
 				$inspeccion =  $this->inspeccion_model->obtenerInspeccion($id_inspeccion ,$usuario["id_usuario"]);
 				if (sizeof($inspeccion) > 0) {
 
