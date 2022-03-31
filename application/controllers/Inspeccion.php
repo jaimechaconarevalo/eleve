@@ -159,7 +159,7 @@ class Inspeccion extends CI_Controller {
 					$table->addCell(150)->addText('Código', $estilo_herramientas_titulo, array('align' => 'center'));
 					$table->addCell(150)->addText('Incertidumbre', $estilo_herramientas_titulo, array('align' => 'center'));
 
-					$respuesta_herramientas =  $this->inspeccion_model->obtenerHerramientas($id_inspeccion ,$usuario["id_usuario"]);
+					/*$respuesta_herramientas =  $this->inspeccion_model->obtenerHerramientas($id_inspeccion ,$usuario["id_usuario"]);
 					if (sizeof($respuesta_herramientas) > 0) {
 						foreach ($respuesta_herramientas as $herramienta) {
 							$codigo = $herramienta["codigo"];
@@ -177,7 +177,7 @@ class Inspeccion extends CI_Controller {
 
 
 
-/*					$estilo_carpetas_titulo = array('bold'=>true, 'size'=>10, 'name'=>'Arial');
+					$estilo_carpetas_titulo = array('bold'=>true, 'size'=>10, 'name'=>'Arial');
 					$estilo_carpetas = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
 					$table_carpetas = new Table(array('borderSize' => 2, 'borderColor' => 'black', 'width' => 9500, 'unit' => TblWidth::TWIP, 'align' => 'center'));
 					$table_carpetas->addRow();
