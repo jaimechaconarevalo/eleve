@@ -150,6 +150,13 @@ class Inspeccion extends CI_Controller {
 					$template->setValue('enclavamiento_mecanico', $enclavamiento_mecanico);
 					$template->setValue('enclavamiento_electrico', $enclavamiento_electrico);
 
+					$file_name = 'Informe_norma.docx';
+					$template->saveAs($file_name);
+
+				    header('Content-Disposition: attachment; filename='.$file_name.';charset=iso-8859-1');
+				    echo file_get_contents($file_name);
+				    exit();
+
 					$estilo_herramientas_titulo = array('bold'=>true, 'size'=>10, 'name'=>'Arial');
 					$estilo_herramientas = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
 					#$template->cloneBlock('block_numero_1', 13, true, true);
