@@ -177,7 +177,7 @@ class Inspeccion extends CI_Controller {
 
 
 
-					$estilo_carpetas_titulo = array('bold'=>true, 'size'=>10, 'name'=>'Arial');
+/*					$estilo_carpetas_titulo = array('bold'=>true, 'size'=>10, 'name'=>'Arial');
 					$estilo_carpetas = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
 					$table_carpetas = new Table(array('borderSize' => 2, 'borderColor' => 'black', 'width' => 9500, 'unit' => TblWidth::TWIP, 'align' => 'center'));
 					$table_carpetas->addRow();
@@ -219,7 +219,7 @@ class Inspeccion extends CI_Controller {
 
 					$template->setComplexBlock('table_carpetas', $table_carpetas);
 
-
+*/
 
 
 
