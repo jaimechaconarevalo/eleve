@@ -46,27 +46,95 @@ class Inspeccion extends CI_Controller {
 		$usuario = $this->session->userdata();
 		if ($this->session->userdata('id_usuario')) {
 			$this->load->library('PHPWord');
+			if($this->input->GET('idInspeccion') && $this->input->GET('idInspeccion'))
+			{
+				$id_inspeccion = $this->input->GET('idInspeccion');
+				$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccionReporte($id_inspeccion, $usuario['id_usuario']);
+				#var_dump($respuestas_inspeccion);
+				#exit();
+				$inspeccion =  $this->inspeccion_model->obtenerInspeccion($id_inspeccion ,$usuario["id_usuario"]);
+				if (sizeof($inspeccion) > 0) {
 
-			$nombre_plantilla = base_url().'assets/doc/prueba.docx';
-			$template = new \PhpOffice\PhpWord\TemplateProcessor($nombre_plantilla);
-			#$template->cloneBlock('block_numero_1', 13, true, true);
+					$this->load->library('PHPWord');
 
-			$nombre_cont_1 = 'Eduardo Lopez';
-			$num_cont_1 = '8437 0668';
-			$nombre_cont_2 = 'Daniel Bravo';
-			$num_cont_2 = '8966 7141';
+					$nombre_plantilla = base_url().'assets/doc/plantilla_reporte_inspeccion.docx';
+					$template = new \PhpOffice\PhpWord\TemplateProcessor($nombre_plantilla);
+					#$template->cloneBlock('block_numero_1', 13, true, true);
+
+					$nombre_cont_1 = 'Eduardo Lopez';
+					$num_cont_1 = '8437 0668';
+					$nombre_cont_2 = 'Daniel Bravo';
+					$num_cont_2 = '8966 7141';
 
 
-			$nombre_usuario = 'Eduardo Lopez';
+					$nombre_usuario = 'Eduardo Lopez';
+					$fecha_i = date("d-m-Y", strtotime($inspeccion[0]['created_at']));
+					$cantidad_ascensor = $inspeccion[0]['cantidad_ascensor'];
+					$nombre_tecnico = $inspeccion[0]['nombre_tecnico'];
+					$rol = $inspeccion[0]['rol'];
+					$nombre_admin = $inspeccion[0]['nombre_admin'];
+					$rut_admin = $inspeccion[0]['rut_admin'];
+					$edificio = $inspeccion[0]['edificio'];
+					$rut_e = $inspeccion[0]['rut_e'];
+					#$direccion = $inspeccion[0]['direccion_em'];
+					$domicilio = $inspeccion[0]['domicilio'];
+					$cantidad = $inspeccion[0]['cantidad'];
+					$email_admin = $inspeccion[0]['email_admin'];
 
-			$template->setValue('prueba', $nombre_cont_1);
+					$razon_social = $inspeccion[0]['razon_social'];
+					$num_registro = $inspeccion[0]['num_registro'];
+					$direccion_em = $inspeccion[0]['direccion_em'];
+					$rut_em = $inspeccion[0]['rut_em'];
+					$nombre_mant_2 = $inspeccion[0]['nombre_mant_2'];
+					$fecha_um = date("d-m-Y", strtotime($inspeccion[0]['fecha_ultima_mant']));
+					
+					$marca_ascensor = $inspeccion[0]['marca_ascensor'];
+					$capacidad_personas = $inspeccion[0]['capacidad_personas'];
+					$velocidad = $inspeccion[0]['velocidad'];
+					$capacidad_kg = $inspeccion[0]['capacidad_kg'];
+					$recorrido = $inspeccion[0]['recorrido'];
+					$suspension = $inspeccion[0]['suspension'];
+					$paradas = $inspeccion[0]['paradas'];
+					$id_uso = $inspeccion[0]['id_uso'];
+					$uso = $inspeccion[0]['uso'];
+					$norma = $inspeccion[0]['norma'];
 
-			$file_name = 'Informe_norma.docx';
-			$template->saveAs($file_name);
+					$texto_sala_maquina = '';
 
-		    header('Content-Disposition: attachment; filename='.$file_name.';charset=iso-8859-1');
-		    echo file_get_contents($file_name);
-		    exit();
+					$diametro_cable = $inspeccion[0]['diametro_cable'];
+					$diametro_traccion = $inspeccion[0]['diametro_traccion'];
+					$enclavamiento_mecanico = $inspeccion[0]['enclavamiento_mecanico'];
+					$enclavamiento_electrico = $inspeccion[0]['enclavamiento_electrico'];
+
+					
+					#$template->setValue('cantidad_ascensor', $cantidad_ascensor);
+
+					$template->setValue('nombre_cont_1', $nombre_cont_1);
+					$template->setValue('num_cont_1', $num_cont_1);
+					$template->setValue('nombre_cont_2', $nombre_cont_2);
+					$template->setValue('num_cont_2', $num_cont_2);
+
+					$template->setValue('nombre_usuario', $nombre_usuario);
+					$template->setValue('fecha_i', $fecha_i);
+					$template->setValue('nombre_tecnico', $nombre_tecnico);
+					$template->setValue('rol', $rol);
+					#$template->setValue('nombre_admin', $nombre_admin);
+					#$template->setValue('rut_admin', $rut_admin);
+					#$template->setValue('edificio', $edificio);
+					#$template->setValue('rut_e', $rut_e);
+					#$template->setValue('direccion', $direccion);
+					#$template->setValue('domicilio', $domicilio);
+					#$template->setValue('cantidad', $cantidad);
+					#$template->setValue('email_admin', $email_admin);
+				}
+
+				$file_name = 'Informe_norma.docx';
+				$template->saveAs($file_name);
+
+			    header('Content-Disposition: attachment; filename='.$file_name.';charset=iso-8859-1');
+			    echo file_get_contents($file_name);
+			    exit();
+			}
 		}
 	}
 	public function revisarInspeccion()
