@@ -447,12 +447,12 @@ class Inspeccion extends CI_Controller {
 
 					$file_name = 'Informe_norma.docx';
 
-					$nombre_reporte = $_SERVER['DOCUMENT_ROOT'].'/assets/doc/plantilla_reporte.docx';
+					$nombre_reporte = $_SERVER['DOCUMENT_ROOT'].'/assets/doc/Informe_norma.docx';
 
 					
 					var_dump(file_exists($nombre_reporte));
 					var_dump(unlink($nombre_reporte));
-					$template->saveAs($file_name);
+					$template->saveAs($nombre_reporte);
 					var_dump("llego acá");
 				    /*
 				    header('Content-Description: File Transfer');
