@@ -59,6 +59,7 @@ class Inspeccion extends CI_Controller {
 
 					$nombre_plantilla = base_url().'assets/doc/plantilla_reporte_inspeccion.docx';
 					$template = new \PhpOffice\PhpWord\TemplateProcessor($nombre_plantilla);
+					chmod($nombre_plantilla, 0644);
 					#$template->cloneBlock('block_numero_1', 13, true, true);
 					var_dump($nombre_plantilla);
 					$nombre_cont_1 = 'Eduardo Lopez';
