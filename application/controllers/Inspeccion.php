@@ -451,7 +451,7 @@ class Inspeccion extends CI_Controller {
 
 					
 					var_dump(file_exists($nombre_reporte));
-					var_dump(unlink($file_name));
+					var_dump(unlink($nombre_reporte));
 					$template->saveAs($file_name);
 					var_dump("llego acá");
 				    /*
