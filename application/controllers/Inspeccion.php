@@ -41,6 +41,35 @@ class Inspeccion extends CI_Controller {
 		}
 	}
 
+	public function pruebaReporte()
+	{
+		$usuario = $this->session->userdata();
+		if ($this->session->userdata('id_usuario')) {
+			$this->load->library('PHPWord');
+
+			$nombre_plantilla = base_url().'assets/doc/prueba.docx';
+			$template = new \PhpOffice\PhpWord\TemplateProcessor($nombre_plantilla);
+			#$template->cloneBlock('block_numero_1', 13, true, true);
+
+			$nombre_cont_1 = 'Eduardo Lopez';
+			$num_cont_1 = '8437 0668';
+			$nombre_cont_2 = 'Daniel Bravo';
+			$num_cont_2 = '8966 7141';
+
+
+			$nombre_usuario = 'Eduardo Lopez';
+
+			$template->setValue('prueba', $nombre_cont_1);
+
+			$file_name = 'Informe_norma.docx';
+			$template->saveAs($file_name);
+
+		    header('Content-Disposition: attachment; filename='.$file_name.';charset=iso-8859-1');
+		    echo file_get_contents($file_name);
+		    exit();
+
+		}
+	}
 	public function revisarInspeccion()
 	{
 		$usuario = $this->session->userdata();
@@ -149,13 +178,6 @@ class Inspeccion extends CI_Controller {
 					$template->setValue('diametro_traccion', $diametro_traccion);
 					$template->setValue('enclavamiento_mecanico', $enclavamiento_mecanico);
 					$template->setValue('enclavamiento_electrico', $enclavamiento_electrico);
-
-					$file_name = 'Informe_norma.docx';
-					$template->saveAs($file_name);
-
-				    header('Content-Disposition: attachment; filename='.$file_name.';charset=iso-8859-1');
-				    echo file_get_contents($file_name);
-				    exit();
 
 					$estilo_herramientas_titulo = array('bold'=>true, 'size'=>10, 'name'=>'Arial');
 					$estilo_herramientas = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
