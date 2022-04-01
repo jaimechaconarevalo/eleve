@@ -446,7 +446,8 @@ class Inspeccion extends CI_Controller {
 
 
 					$file_name = 'Informe_norma.docx';
-					chmod($nombre_plantilla, 0777);
+
+					var_dump($_SERVER['DOCUMENT_ROOT']);
 
 					$template->saveAs($file_name);
 					var_dump("llego acá");
