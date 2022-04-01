@@ -953,7 +953,7 @@ class TemplateProcessor
         $tempFileName = $this->save();
 
         if (file_exists($fileName)) {
-            unlink($fileName);
+            unlink($fileName, 0777);
         }
 
         rename($tempFileName, $fileName);
