@@ -450,8 +450,8 @@ class Inspeccion extends CI_Controller {
 					$nombre_reporte = $_SERVER['DOCUMENT_ROOT'].'/assets/doc/Informe_norma.docx';
 
 					
-					var_dump(file_exists($nombre_reporte));
-					var_dump(unlink($nombre_reporte));
+					#var_dump(file_exists($nombre_reporte));
+					#var_dump(unlink($nombre_reporte));
 					$template->saveAs($nombre_plantilla);
 					var_dump("llego acá");
 				    /*
