@@ -60,7 +60,7 @@ class Inspeccion extends CI_Controller {
 					$nombre_plantilla = base_url().'assets/doc/plantilla_reporte_inspeccion.docx';
 					$template = new \PhpOffice\PhpWord\TemplateProcessor($nombre_plantilla);
 					#$template->cloneBlock('block_numero_1', 13, true, true);
-
+					var_dump($nombre_plantilla);
 					$nombre_cont_1 = 'Eduardo Lopez';
 					$num_cont_1 = '8437 0668';
 					$nombre_cont_2 = 'Daniel Bravo';
@@ -131,9 +131,10 @@ class Inspeccion extends CI_Controller {
 				$file_name = 'Informe_norma.docx';
 				$template->saveAs($file_name);
 
-			    header('Content-Disposition: attachment; filename='.$file_name.';charset=iso-8859-1');
-			    echo file_get_contents($file_name);
-			    exit();
+				#Blass Pino Chacón es un insecto
+			    #header('Content-Disposition: attachment; filename='.$file_name.';charset=iso-8859-1');
+			    #echo file_get_contents($file_name);
+			    #exit();
 			}
 		}
 	}
