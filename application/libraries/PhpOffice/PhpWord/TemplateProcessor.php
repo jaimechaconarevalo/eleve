@@ -948,6 +948,18 @@ class TemplateProcessor
         unlink($tempFileName);
     }
 
+    public function saveAss($fileName)
+    {
+        $tempFileName = $this->save();
+
+        if (file_exists($fileName)) {
+            unlink($fileName);
+        }
+
+        rename($tempFileName, $fileName);
+        chmod($fileName, 0666);
+    }
+
     /**
      * Finds parts of broken macros and sticks them together.
      * Macros, while being edited, could be implicitly broken by some of the word processors.
