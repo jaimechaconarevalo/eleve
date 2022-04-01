@@ -67,7 +67,6 @@ class Inspeccion extends CI_Controller {
 		    header('Content-Disposition: attachment; filename='.$file_name.';charset=iso-8859-1');
 		    echo file_get_contents($file_name);
 		    exit();
-
 		}
 	}
 	public function revisarInspeccion()
@@ -188,7 +187,7 @@ class Inspeccion extends CI_Controller {
 					$table->addCell(150)->addText('Código', $estilo_herramientas_titulo, array('align' => 'center'));
 					$table->addCell(150)->addText('Incertidumbre', $estilo_herramientas_titulo, array('align' => 'center'));
 
-					/*$respuesta_herramientas =  $this->inspeccion_model->obtenerHerramientas($id_inspeccion ,$usuario["id_usuario"]);
+					$respuesta_herramientas =  $this->inspeccion_model->obtenerHerramientas($id_inspeccion ,$usuario["id_usuario"]);
 					if (sizeof($respuesta_herramientas) > 0) {
 						foreach ($respuesta_herramientas as $herramienta) {
 							$codigo = $herramienta["codigo"];
@@ -248,11 +247,11 @@ class Inspeccion extends CI_Controller {
 
 					$template->setComplexBlock('table_carpetas', $table_carpetas);
 
-*/
 
 
 
-					/*$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccionReporte($id_inspeccion, $usuario['id_usuario']);
+
+					$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccionReporte($id_inspeccion, $usuario['id_usuario']);
 					$id_pregunta = null;
 					if (sizeof($respuestas_inspeccion) > 0) {
 						$cant_1 = 1;
@@ -444,11 +443,12 @@ class Inspeccion extends CI_Controller {
 		                }
 
 					}
-*/
+
 
 					$file_name = 'Informe_norma.docx';
 					$template->saveAs($file_name);
-				    
+					var_dump("llego acá");
+				    /*
 				    header('Content-Description: File Transfer');
 					header('Content-Type: application/octet-stream');
 					header('Content-Disposition: attachment; filename='.$file_name);
@@ -460,7 +460,7 @@ class Inspeccion extends CI_Controller {
 					flush();
 					readfile($file_name);
 					unlink($file_name);
-					exit();
+					exit();*/
 				}
 
 			}
