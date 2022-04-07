@@ -525,10 +525,10 @@ class Inspeccion extends CI_Controller {
 					#var_dump(unlink($nombre_reporte));
 
 					$filepath = $template->save();
-					var_dump($filepath);
+					
 
-					$template->saveAs("plantilla_reporte.docx");
-					var_dump("llego acá");
+					$template->saveAs($filepath);
+					#var_dump("llego acá");
 				    /*
 				    header('Content-Description: File Transfer');
 					header('Content-Type: application/octet-stream');
