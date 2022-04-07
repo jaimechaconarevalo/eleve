@@ -526,9 +526,11 @@ class Inspeccion extends CI_Controller {
 
 					$filepath = $template->save();
 					
-					download_file($filepath);
-					#$template->saveAs($filepath);
 					
+					rename($filepath, "plantilla_reporte.docx");
+					#$template->saveAs($filepath);
+
+
 					#var_dump("llego acá");
 				    /*
 				    header('Content-Description: File Transfer');
