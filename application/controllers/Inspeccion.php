@@ -158,7 +158,7 @@ class Inspeccion extends CI_Controller {
 					$nombre_plantilla = base_url().'assets/doc/plantilla_reporte.docx';
 					$template = new \PhpOffice\PhpWord\TemplateProcessor($nombre_plantilla);
 					#$template->cloneBlock('block_numero_1', 13, true, true);
-
+					var_dump($template);
 					$nombre_cont_1 = 'Eduardo Lopez';
 					$num_cont_1 = '8437 0668';
 					$nombre_cont_2 = 'Daniel Bravo';
@@ -517,7 +517,8 @@ class Inspeccion extends CI_Controller {
 
 					$file_name = 'Informe_norma.docx';
 
-					$nombre_reporte = $_SERVER['DOCUMENT_ROOT'].'/assets/doc/Informe_norma.docx';
+					#$nombre_reporte = $_SERVER['DOCUMENT_ROOT'].'/assets/doc/Informe_norma.docx';
+					#$nombre_reporte = $_SERVER['DOCUMENT_ROOT'].'/assets/doc/Informe_norma.docx';
 
 					
 					#var_dump(file_exists($nombre_reporte));
