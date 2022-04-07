@@ -526,25 +526,25 @@ class Inspeccion extends CI_Controller {
 
 					$filepath = $template->save();
 					
-					
-					rename($filepath, "plantilla_reporte.docx");
+					var_dump($filepath);
+					#rename($filepath, "plantilla_reporte.docx");
 					#$template->saveAs($filepath);
 
 
 					#var_dump("llego acá");
-				    /*
+				    
 				    header('Content-Description: File Transfer');
 					header('Content-Type: application/octet-stream');
-					header('Content-Disposition: attachment; filename='.$file_name);
+					header('Content-Disposition: attachment; filename='."reporte.docx");#.$filepath);
 					header('Content-Transfer-Encoding: binary');
 					header('Expires: 0');
 					header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 					header('Pragma: public');
-					header('Content-Length: ' . filesize($file_name));
+					header('Content-Length: ' . filesize($filepath));
 					flush();
-					readfile($file_name);
-					unlink($file_name);
-					exit();*/
+					readfile($filepath);
+					unlink($filepath);
+					exit();
 				}
 
 			}
