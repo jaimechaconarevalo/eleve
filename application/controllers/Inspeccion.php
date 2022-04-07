@@ -534,7 +534,7 @@ class Inspeccion extends CI_Controller {
 				    
 				    header('Content-Description: File Transfer');
 					header('Content-Type: application/octet-stream');
-					header('Content-Disposition: attachment; filename='."reporte_".$id_inspeccion."docx");#.$filepath);
+					header('Content-Disposition: attachment; filename='."reporte_".$id_inspeccion.".docx");#.$filepath);
 					header('Content-Transfer-Encoding: binary');
 					header('Expires: 0');
 					header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
