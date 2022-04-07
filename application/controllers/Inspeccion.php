@@ -525,8 +525,7 @@ class Inspeccion extends CI_Controller {
 					#var_dump(unlink($nombre_reporte));
 
 					$filepath = $template->save();
-					
-					var_dump($filepath);
+					#var_dump($filepath);
 					#rename($filepath, "plantilla_reporte.docx");
 					#$template->saveAs($filepath);
 
@@ -535,7 +534,7 @@ class Inspeccion extends CI_Controller {
 				    
 				    header('Content-Description: File Transfer');
 					header('Content-Type: application/octet-stream');
-					header('Content-Disposition: attachment; filename='."reporte.docx");#.$filepath);
+					header('Content-Disposition: attachment; filename='."reporte_".$id_inspeccion."docx");#.$filepath);
 					header('Content-Transfer-Encoding: binary');
 					header('Expires: 0');
 					header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
