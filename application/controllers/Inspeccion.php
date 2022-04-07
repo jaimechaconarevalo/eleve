@@ -526,8 +526,9 @@ class Inspeccion extends CI_Controller {
 
 					$filepath = $template->save();
 					
-
-					$template->saveAs($filepath);
+					download_file($filepath);
+					#$template->saveAs($filepath);
+					
 					#var_dump("llego acá");
 				    /*
 				    header('Content-Description: File Transfer');
