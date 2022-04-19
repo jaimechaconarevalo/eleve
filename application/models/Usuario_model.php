@@ -131,8 +131,12 @@ class Usuario_model extends CI_Model
 
 	public function obtenerEmpresasUsu($id_usuario)
 	{
-		$query = $this->db->query('call `institucionminsal`.`obtenerEmpresasUsu`('.$id_usuario.');');
-		return $query->result_array();
+		$this->db->select('e.id_empresa, e.e_titulo');
+        $this->db->from('usuarios usu');
+        $this->db->join('empresas e','usu.id_empresa = e.id_empresa');
+        $this->db->where('usu.id_usuario = ', $id_usuario);
+        $empresas = $this->db->get();
+        return $empresas->result_array();
 	}
 
 	public function listarAnalistaUsu()

@@ -174,6 +174,13 @@
                     //total_preguntas = document.getElementById('inputTotalPreguntas_'.concat())
                 }
 
+                if (id_elemento.includes("TipoRespuesta")) {
+                    total_categorias = document.getElementById('inputTotalCategorias').value;
+                    id_categoria = element.currentTarget.dataset.id_categoria;
+                    id_pregunta = element.currentTarget.dataset.id_pregunta;
+                    //total_preguntas = document.getElementById('inputTotalPreguntas_'.concat())
+                }
+
                 if (id_elemento.includes("picture_")) {
 
                     var baseurl = (window.origin + '/Inspeccion/agregarInspeccionTemporal');
@@ -448,6 +455,10 @@
     });
 
     $('#acordionCategorias').on('change', '.respuestas_checklist', function(e) {
+        guardar_elemento(e);
+    });
+
+    $('#acordionCategorias').on('change', '.tipo_respuesta', function(e) {
         guardar_elemento(e);
     });
 
@@ -2006,6 +2017,19 @@ window.onload = function () {
                                                         div = div.concat('</div>');
                                                     div = div.concat('</div>');
                                                 div = div.concat('</div>');
+
+
+                                                div = div.concat('<div class="form-group col-sm-6">');
+                                                div = div.concat('<label for="sTipoRespuesta_',contador,'">Severidad</label>');
+                                                div = div.concat('<select id="sTipoRespuesta_',contador,'" name="sTipoRespuesta_',contador,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" class="form-control form-control-sm tipo_respuesta">');
+                                                div = div.concat('<option value="-1" selected>Seleccione una Severidad</option>');
+
+                                                $.each(data.severidad, function(index_s, severidad) {
+                                                    div = div.concat('<option value="',severidad['id'],'" ',(pregunta.id_severidad_respuesta == severidad['id'] ? 'selected' : ''),'>',severidad['nombre'],'</option>');
+                                                });
+                                                div = div.concat('</select>');
+                                                div = div.concat('</div>');
+
                                             }else{
                                                 div = div.concat('<div class="col-sm-6">');
                                                 div = div.concat('<label for="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'">Nueva Respuesta</label>');

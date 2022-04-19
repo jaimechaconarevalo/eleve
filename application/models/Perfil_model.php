@@ -14,18 +14,6 @@ class Perfil_model extends CI_Model
 		return $perfiles->result_array();
 	}
 
-	public function agregarPerfil()
-	{		
-        $query = $this->db->get('campanias');
-        return $query->result_array();
-	}
-
-	public function listarPerfilUsuario($idUsuario)
-	{
-		$query = $this->db->query("call `institucionminsal`.`listarPerfilUsuario`(".$idUsuario.");");
-		return $query->result_array();
-	}
-
 	public function obtenerPerfiles($idUsuario)
 	{
 		$query = $this->db->get('perfiles'); 

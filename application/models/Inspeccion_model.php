@@ -132,7 +132,7 @@ class Inspeccion_model extends CI_Model
 
 	public function obtenerRespuestasInspeccion($idInspeccion, $id_usuario)
 	{
-		$this->db->select('icr.id, icr.id_inspecciones_checklists, icr.id_categoria, icr.id_pregunta, icr.id_pregunta, icr.respuesta, icr.observaciones, icr.orden, icr.id_respuesta, icr.id_estado, icr.created_at, icr.updated_at, a.id as archivo_id, a.file_name, a.file_type, a.file_path, a.full_path, a.raw_name, a.orig_name, a.client_name, a.file_ext, a.file_size, a.is_image, a.image_width, a.image_height, a.image_type, a.image_size_str, a.id_estado as id_estado_a, a.inspeccion_checklist_resp_id, a.inspeccion_checklist_obs_id, a.id_categoria as id_categoria_a, a.id_pregunta as id_pregunta_a, a.orden as orden_a, a.id_usuario as id_usuario_a, a.create_at as create_at_a, a.updated_at as updated_at_a');
+		$this->db->select('icr.id, icr.id_inspecciones_checklists, icr.id_categoria, icr.id_pregunta, icr.id_pregunta, icr.respuesta, icr.observaciones, icr.orden, icr.id_respuesta, icr.id_estado, icr.created_at, icr.updated_at, icr.id_severidad_respuesta, a.id as archivo_id, a.file_name, a.file_type, a.file_path, a.full_path, a.raw_name, a.orig_name, a.client_name, a.file_ext, a.file_size, a.is_image, a.image_width, a.image_height, a.image_type, a.image_size_str, a.id_estado as id_estado_a, a.inspeccion_checklist_resp_id, a.inspeccion_checklist_obs_id, a.id_categoria as id_categoria_a, a.id_pregunta as id_pregunta_a, a.orden as orden_a, a.id_usuario as id_usuario_a, a.create_at as create_at_a, a.updated_at as updated_at_a');
 		$this->db->from('inspecciones i');
 		$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion', 'LEFT');
 		$this->db->join('inspecciones_checklists_respuestas icr', 'ic.id = icr.id_inspecciones_checklists', 'LEFT');
@@ -148,6 +148,7 @@ class Inspeccion_model extends CI_Model
 	public function obtenerRespuestasInspeccionReporte($idInspeccion, $id_usuario)
 	{
 		$this->db->select('icr.id, icr.id_inspecciones_checklists, icr.id_categoria, icr.id_pregunta, icr.id_pregunta, icr.respuesta, icr.observaciones, icr.orden, icr.id_respuesta, icr.id_estado, icr.created_at, icr.updated_at, 
+		sr.id as id_severidad_respuesta, sr.orden as orden_severidad, sr.nombre as severidad,
 		a.id as archivo_id, a.file_name, a.file_type, a.file_path, a.full_path, a.raw_name, a.orig_name, a.client_name, a.file_ext, a.file_size, a.is_image, a.image_width, a.image_height, a.image_type, a.image_size_str, 
 		a.id_estado as id_estado_a, a.inspeccion_checklist_resp_id, a.inspeccion_checklist_obs_id, a.id_categoria as id_categoria_a, a.id_pregunta as id_pregunta_a, a.orden as orden_a, a.id_usuario as id_usuario_a, a.create_at as create_at_a, a.updated_at as updated_at_a,
         p.codigo as codigo_pregunta, p.nombre as pregunta, p.filtro, p.observaciones as pregunta_obs,
@@ -156,6 +157,7 @@ class Inspeccion_model extends CI_Model
 		$this->db->from('inspecciones i');
 		$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion', 'LEFT');
 		$this->db->join('inspecciones_checklists_respuestas icr', 'ic.id = icr.id_inspecciones_checklists', 'LEFT');
+		$this->db->join('severidad_respuesta sr', 'icr.id_severidad_respuesta = sr.id', 'LEFT');
 		$this->db->join('preguntas p', 'icr.id_pregunta = p.id', 'LEFT');
 		$this->db->join('respuestas r', 'icr.id_respuesta = r.id', 'LEFT');
 		$this->db->join('archivos a', 'icr.id = a.inspeccion_checklist_resp_id', 'LEFT');
@@ -1097,7 +1099,7 @@ class Inspeccion_model extends CI_Model
 	}
 
 
-	public function agregarRespuestaCheckTemporal($id_categoria, $id_pregunta, $respuesta_check, $observacion, $orden, $id_respuesta, $id_inspeccion, $id_usuario, $solo_respuesta = false, $solo_observacion = false){
+	public function agregarRespuestaCheckTemporal($id_categoria, $id_pregunta, $respuesta_check, $observacion, $orden, $id_respuesta, $id_inspeccion, $id_usuario, $solo_respuesta = false, $solo_observacion = false, $solo_severidad = false){
 		try{
 			$this->db->db_debug = FALSE;
 			$idRespuesta = null;
@@ -1235,8 +1237,12 @@ class Inspeccion_model extends CI_Model
 					    $respuesta['mensaje'] = $this->db->error();
 					    $respuesta['id_inspeccion_checklist_resp'] = -1;
 					}
+				}elseif ($solo_severidad) {
+					$data = array(
+				        #'id_inspecciones_checklists' => $id_inspeccion_checklist,
+						'id_severidad_respuesta' => $id_respuesta
+					);
 				}
-
 
 				$this->db->set('updated_at', 'NOW()', FALSE);
 				$this->db->where('id', $id_inspeccion_checklist_resp);
@@ -1570,5 +1576,14 @@ class Inspeccion_model extends CI_Model
 		return $inspeccion->result_array();
 	}
 
+	public function obtenerSeveridadRespuestas($id_usuario)
+	{
+		$this->db->select('sr.id, sr.nombre, sr.observaciones, sr.orden, sr.id_estado, sr.created_at, sr.updated_at, sr.id_usuario');
+		$this->db->from('severidad_respuesta sr');
+		$this->db->where('sr.id_estado', 1);
+		$this->db->order_by('sr.orden');
+		$inspeccion = $this->db->get();
+		return $inspeccion->result_array();
+	}
 
 }
