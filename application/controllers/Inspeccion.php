@@ -433,7 +433,6 @@ class Inspeccion extends CI_Controller {
 										if (isset($pregunta_respuesta["imagenes"][$i])) {
 											$url_imagen = null;
 
-
 											if ($i > 0) {
 												if (isset($pregunta_respuesta["imagenes"][$i][0]["url_imagen"])) {
 													$url_imagen = $pregunta_respuesta["imagenes"][$i][0]["url_imagen"];
@@ -443,8 +442,12 @@ class Inspeccion extends CI_Controller {
 													$url_imagen = $pregunta_respuesta["imagenes"][$i]["url_imagen"];
 												}
 											}
+											
 
-											$template->setImageValue('imagen_resp_'.($i+1).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, array('path' => $url_imagen, 'width' => 200, 'height' => 200, 'ratio' => TRUE,'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER));
+											if (file_exists($url_imagen)) {
+												$template->setImageValue('imagen_resp_'.($i+1).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, array('path' => $url_imagen, 'width' => 200, 'height' => 200, 'ratio' => TRUE,'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER));
+									        }
+											
 											$cant_imagen++;
 										}else{
 											$template->setValue('imagen_resp_'.($i+1).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, '');
