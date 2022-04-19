@@ -283,6 +283,11 @@ class Inspeccion extends CI_Controller {
 					$table_carpetas->addCell(150)->addText('Documento', $estilo_carpetas_titulo, array('align' => 'center'));
 
 					$carpetas =  $this->carpeta_model->listarCarpetas($usuario["id_usuario"]);
+					#var_dump($carpetas);
+					#var_dump('</br>');
+					#var_dump('</br>');
+					#var_dump('</br>');
+					#exit();
 					if (sizeof($carpetas) > 0) {
 						$respuesta_carpetas =  $this->inspeccion_model->obtenerCarpetas($id_inspeccion ,$usuario["id_usuario"]);
 						#var_dump($respuesta_carpetas);
@@ -295,19 +300,18 @@ class Inspeccion extends CI_Controller {
 
 							if (sizeof($respuesta_carpetas) > 0) {
 								$index_encontrado = array_search($id_carpeta, array_column($respuesta_carpetas, 'id_carpeta'));
-								if ($index_encontrado !== false && $index_encontrado > 0){
-									$cumple = "SI";
+								if ($index_encontrado !== false){
+									if ($respuesta_carpetas[$index_encontrado]["respuesta"] == "1"){
+										$cumple = "SI";
+									}else{
+										$cumple = "NO";
+									}
 								}else{
 									$cumple = "NO";
 								}
-
-
 							}else{
 								$cumple = "NO";
 							}
-
-							
-							
 
 							$table_carpetas->addRow();
 							$table_carpetas->addCell(10)->addText($cumple, $estilo_carpetas, array('align' => 'center'));
