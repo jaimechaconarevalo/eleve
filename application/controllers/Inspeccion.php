@@ -359,23 +359,25 @@ class Inspeccion extends CI_Controller {
 					       		$index_encontrado = array_search($filtro["id_pregunta"], array_column($group, 'id_pregunta'));
 					       		$contador_filtro++;
 					       		$orig_name = $filtro["orig_name"];
+					       		$file_path = $filtro["file_path"];
+					       		$full_path = $filtro["full_path"];
 
 								if ($index_encontrado !== false){
 									$imagenes = array();	
 
 									if ($filtro["cantidad_fotos"] > 0) {
 										$url_imagen = base_url().'assets/files/image/'.$orig_name;
-										$imagenes[] = array("url_imagen" => $url_imagen);
+										$imagenes[] = array("url_imagen" => $url_imagen, 'file_path' => $file_path, 'full_path' => $full_path);
 									}
-
-									$group[$index_encontrado]["imagenes"][] = $imagenes;
-
+									if ($filtro["file_type"] === "image/png") {
+										$group[$index_encontrado]["imagenes"][] = $imagenes;
+									}
 								}else{
 
 									$imagenes = array();
 									if ($filtro["cantidad_fotos"] > 0) {
 										$url_imagen = base_url().'assets/files/image/'.$orig_name;
-										$imagenes[] = array("url_imagen" => $url_imagen);
+										$imagenes[] = array("url_imagen" => $url_imagen, 'file_path' => $file_path, 'full_path' => $full_path);
 									}
 
 									$group[] = array("id_pregunta" => $filtro["id_pregunta"],
@@ -429,22 +431,26 @@ class Inspeccion extends CI_Controller {
 								if (sizeof($pregunta_respuesta["imagenes"]) > 0) {
 
 									for ($i=0; $i < 5 ; $i++) {
-
+										#var_dump($pregunta_respuesta["imagenes"]);
+										#exit();
 										if (isset($pregunta_respuesta["imagenes"][$i])) {
 											$url_imagen = null;
+											$full_path = null;
 
 											if ($i > 0) {
 												if (isset($pregunta_respuesta["imagenes"][$i][0]["url_imagen"])) {
 													$url_imagen = $pregunta_respuesta["imagenes"][$i][0]["url_imagen"];
+													$full_path = $pregunta_respuesta["imagenes"][$i][0]["full_path"];
 												}
 											}else{
 												if (isset($pregunta_respuesta["imagenes"][$i]["url_imagen"])) {
 													$url_imagen = $pregunta_respuesta["imagenes"][$i]["url_imagen"];
+													$full_path = $pregunta_respuesta["imagenes"][$i]["full_path"];
 												}
 											}
 											
-
-											if (file_exists($url_imagen)) {
+											if (file_exists($full_path)) {
+									            
 												$template->setImageValue('imagen_resp_'.($i+1).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, array('path' => $url_imagen, 'width' => 200, 'height' => 200, 'ratio' => TRUE,'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER));
 									        }
 											
