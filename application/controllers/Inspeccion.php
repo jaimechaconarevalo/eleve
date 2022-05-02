@@ -170,6 +170,69 @@ class Inspeccion extends CI_Controller {
 					$cantidad_ascensor = $inspeccion[0]['cantidad_ascensor'];
 					$nombre_tecnico = $inspeccion[0]['nombre_tecnico'];
 					$rol = $inspeccion[0]['rol'];
+
+
+					$largo_rol = strlen($rol);
+					$cant_caracteres = 3;
+					
+					/*echo "rol: ".($rol);
+					echo "</br>";
+					echo "largo caracteres rol: ".($largo_rol);
+					echo "</br>";
+					echo "cant_caracteres a tomar: ".($cant_caracteres);
+					echo "</br>";
+					
+					$cant_ascensores_rol = explode(";", $rol);
+					echo "cant de ascensores ingresados por ';': ".(sizeof($cant_ascensores_rol));
+					echo "</br>";
+					echo "matriz";
+					echo "</br>";
+					var_dump($cant_ascensores_rol);
+
+
+					exit();*/
+
+
+					$cant_ascensores_rol = explode(";", $rol);
+					$rol_modificado = "";
+					$abreviacion_titulo = "";
+					$abreviacion = "";
+					$plural = "";
+
+					if (sizeof($cant_ascensores_rol) > 1) {
+						$plural = "es";
+					}
+
+					$template->setValue('plural', $plural);
+
+
+					for ($i=0; $i < sizeof($cant_ascensores_rol); $i++) { 
+						if ($rol_modificado != "") {
+							$rol_modificado = $rol_modificado.'</w:t><w:br/><w:t>'.$cant_ascensores_rol[$i];
+
+							$abreviacion_ascensor = substr($cant_ascensores_rol[$i], -3, 3);
+							if ($i == (sizeof($cant_ascensores_rol)-1)) {								
+								$abreviacion_titulo = $abreviacion_titulo.' y '.$abreviacion_ascensor;
+							}else{
+								$abreviacion_titulo = $abreviacion_titulo.', '.$abreviacion_ascensor;
+							}
+
+							$abreviacion = $abreviacion.';'.$abreviacion_ascensor;
+						}else{
+							$abreviacion_ascensor = substr($cant_ascensores_rol[$i], -3, 3);
+
+							$abreviacion = $abreviacion_ascensor;
+							$abreviacion_titulo = $abreviacion_ascensor;
+							$rol_modificado = $cant_ascensores_rol[$i];
+						}
+					}
+
+					#var_dump($rol_modificado);
+					#exit();
+					$template->setValue('abreviacion_titulo', $abreviacion_titulo);
+					$template->setValue('abreviacion', $abreviacion);
+
+
 					$nombre_admin = $inspeccion[0]['nombre_admin'];
 					$rut_admin = $inspeccion[0]['rut_admin'];
 					$edificio = $inspeccion[0]['edificio'];
@@ -215,7 +278,9 @@ class Inspeccion extends CI_Controller {
 					$template->setValue('nombre_usuario', $nombre_usuario);
 					$template->setValue('fecha_i', $fecha_i);
 					$template->setValue('nombre_tecnico', $nombre_tecnico);
-					$template->setValue('rol', $rol);
+
+					$template->setValue('rol', $rol_modificado);
+
 					$template->setValue('nombre_admin', $nombre_admin);
 					$template->setValue('rut_admin', $rut_admin);
 					$template->setValue('edificio', $edificio);
@@ -265,7 +330,7 @@ class Inspeccion extends CI_Controller {
 							$observacion = $herramienta["observaciones"];
 
 							$table->addRow();
-							$table->addCell(150)->addText($nombre_herramienta, $estilo_herramientas, array('align' => 'center'));
+							$table->addCell(150)->addText($nombre_herramienta, $estilo_herramientas, array('align' => 'center', 'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::LEFT));
 							$table->addCell(150)->addText($codigo, $estilo_herramientas, array('align' => 'center'));
 							$table->addCell(150)->addText($observacion, $estilo_herramientas, array('align' => 'center'));
 						}
@@ -275,20 +340,71 @@ class Inspeccion extends CI_Controller {
 
 
 
+
+
+					$estilo_normas_titulo = array('bold'=>true, 'size'=>10, 'name'=>'Arial');
+					$estilo_normas = array('bold'=>true, 'size'=>10, 'name'=>'Arial');
+					$estilo_normas_obs = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
+					$table = new Table(array('borderSize' => 2, 'borderColor' => 'black', 'width' => 9500, 'unit' => TblWidth::TWIP, 'align' => 'center'));
+					$table->addRow();
+					$table->addCell(10)->addText('Aplica', $estilo_normas_titulo, array('align' => 'center'));
+					$table->addCell(150)->addText('Normas o Referencias utilizadas en la inspección', $estilo_normas_titulo, array('align' => 'center'));
+
+					$respuesta_normas =  $this->norma_model->obtenerNormasReporte($usuario["id_usuario"]);
+
+					$normas_inspeccion =  $this->inspeccion_model->obtenerNormas($id_inspeccion, $usuario["id_usuario"]);
+					
+
+					$cant_normas_reporte = sizeof($respuesta_normas);
+					$template->cloneRow('se_encuentra_norma', $cant_normas_reporte);
+					$contador_norma = 1;
+					if (sizeof($respuesta_normas) > 0) {
+						foreach ($respuesta_normas as $norma) {
+							
+							$codigo = $norma["codigo"];
+							$nombre_norma = $norma["nombre"];
+							$observacion = $norma["observaciones"];
+							$id_norma_b = $norma["id"];
+							
+							$array_filtrado_norma = array_filter($normas_inspeccion, function($val) use($id_norma_b){
+											            return ($val['id_norma']==$id_norma_b and $val['respuesta']== 1);
+											        });
+							if (isset($array_filtrado_norma) && sizeof($array_filtrado_norma) > 0) {
+								$se_encuentra = "SI";
+							}else{
+								$se_encuentra = "NO";
+							}
+
+							$template->setValue('se_encuentra_norma#'.$contador_norma, strtoupper($se_encuentra));
+							$template->setValue('nombre_norma#'.$contador_norma, $nombre_norma);
+							$template->setValue('obs_norma#'.$contador_norma, $observacion);
+							$contador_norma++;
+						}
+					}else{
+						$template->setValue('se_encuentra_norma', "");
+						$template->setValue('nombre_norma', "");
+						$template->setValue('obs_norma', "");
+					}
+
+					/*$fancyTableStyle = array('borderSize' => 6, 'borderColor' => '999999');
+					$cellRowSpan = array('vMerge' => 'restart', 'valign' => 'center', 'bgColor' => 'FFFF00');
+					$cellRowContinue = array('vMerge' => 'continue');
+					$cellColSpan = array('gridSpan' => 2, 'valign' => 'center');
+					$cellHCentered = array('alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER);
+					$cellVCentered = array('valign' => 'center');
+					$cellVHCentered = array('valign' => 'center', 'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER);*/
+
 					$estilo_carpetas_titulo = array('bold'=>true, 'size'=>10, 'name'=>'Arial');
 					$estilo_carpetas = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
 					$table_carpetas = new Table(array('borderSize' => 2, 'borderColor' => 'black', 'width' => 9500, 'unit' => TblWidth::TWIP, 'align' => 'center'));
 					$table_carpetas->addRow();
-					$table_carpetas->addCell(30)->addText('Cumple', $estilo_carpetas_titulo, array('align' => 'center'));
+					$table_carpetas->addCell(20)->addText('Cumple', $estilo_carpetas_titulo, array('align' => 'center'));
 					$table_carpetas->addCell(150)->addText('Documento', $estilo_carpetas_titulo, array('align' => 'center'));
 
 					$carpetas =  $this->carpeta_model->listarCarpetas($usuario["id_usuario"]);
-					#var_dump($carpetas);
-					#var_dump('</br>');
-					#var_dump('</br>');
-					#var_dump('</br>');
-					#exit();
-					if (sizeof($carpetas) > 0) {
+					
+
+					/*if (sizeof($carpetas) > 0) {
 						$respuesta_carpetas =  $this->inspeccion_model->obtenerCarpetas($id_inspeccion ,$usuario["id_usuario"]);
 						#var_dump($respuesta_carpetas);
 						#exit();
@@ -315,17 +431,185 @@ class Inspeccion extends CI_Controller {
 
 							$table_carpetas->addRow();
 							$table_carpetas->addCell(10)->addText($cumple, $estilo_carpetas, array('align' => 'center'));
-							$table_carpetas->addCell(180)->addText($observacion_carpeta, $estilo_carpetas, array('align' => 'center'));
+							$table_carpetas->addCell(150)->addText($observacion_carpeta, $estilo_carpetas, array('align' => 'center', 'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::LEFT));
 						}
+					}*/
+
+					$cant_carpetas_reporte = sizeof($carpetas);
+					$template->cloneRow('cumple', $cant_carpetas_reporte);
+					$contador_carpeta = 1;
+
+					$respuesta_carpetas =  $this->inspeccion_model->obtenerCarpetas($id_inspeccion ,$usuario["id_usuario"]);
+					if (sizeof($carpetas) > 0) {
+						foreach ($carpetas as $carpeta) {
+							$se_encuentra = "NO";
+							$id_carpeta = $carpeta["id"];
+							$nombre_carpeta = $carpeta["nombre"];
+							$observacion_carpeta = $carpeta["observaciones"];
+
+							$array_filtrado_carpeta = array_filter($respuesta_carpetas, function($val) use($id_carpeta){
+											            return ($val['id_carpeta']==$id_carpeta);
+											        });
+							reset($array_filtrado_carpeta);
+							$first_key = key($array_filtrado_carpeta);
+
+							if (isset($array_filtrado_carpeta) && sizeof($array_filtrado_carpeta) > 0 && isset($array_filtrado_carpeta[$first_key]["respuesta"]) && $array_filtrado_carpeta[$first_key]["respuesta"] == "1") {
+								$se_encuentra = "SI";
+							}else{
+								$se_encuentra = "NO";
+							}
+
+							$template->setValue('cumple#'.$contador_carpeta, strtoupper($se_encuentra));
+							$nombre_block = 'block_negrita#'.$contador_carpeta;
+							if (strpos($observacion_carpeta, '<negrita>') > 0) {
+								
+								$obs_carpeta = $observacion_carpeta;
+								$cant_negritas = substr_count($obs_carpeta, '<negrita>');
+								$template->cloneBlock($nombre_block, $cant_negritas, true, true);
+
+								$inicio_min = 0;
+								$inline = new TextRun();
+
+								$contador_negrita_carpeta = 1;
+								$inicio_texto = "";
+								$texto_negrita = "";
+
+								#$explode_negrita = str_replace("<negrita>", "&", $obs_carpeta);
+								$explode_negrita = explode("<negrita>", $obs_carpeta);
+
+								#var_dump(sizeof($explode_negrita));
+
+
+								if (sizeof($explode_negrita) > 1) {
+									for ($i=0; $i < sizeof($explode_negrita); $i++) {
+									#}
+									#foreach ($explode_negrita as $texto) {
+										$texto = $explode_negrita[$i];
+										#echo ($texto);
+										#echo ('</br></br>');
+										if (strpos($texto, '</negrita>') > 0){
+											$explode_negrita_2 = explode("</negrita>", $texto);
+											#var_dump($explode_negrita_2);
+											#echo ('</br>');
+											#var_dump(sizeof($explode_negrita_2));
+											#echo ('</br></br>');
+											if (sizeof($explode_negrita_2) > 1) {
+												$texto_negrita = $explode_negrita_2[0];
+												$template->setValue('negrita_carpeta#'.$contador_carpeta."#".strval($i), $texto_negrita);
+												#echo "texto en negrita: ".$texto_negrita;
+												#echo ('</br>Posicion: '.$i);
+												#if (trim($explode_negrita_2[1]) != "") {
+													#echo ('</br>');
+													#echo "texto de negrita: ".$explode_negrita_2[1];
+													#echo ('</br>Posicion: '.strval($i+1));
+													#echo ('</br></br>');
+													$template->setValue('obs_carpeta#'.$contador_carpeta."#".strval($i+1), $explode_negrita_2[1]);
+												#}
+												
+											}
+										}else{
+											if (sizeof($explode_negrita) == ($i+1)) {
+												$texto_negrita = $explode_negrita[$i];
+												#var_dump('negrita_carpeta#'.$contador_carpeta."#".strval($i));
+												#exit();
+												$template->setValue('negrita_carpeta#'.$contador_carpeta."#".strval($i), $texto_negrita);
+											}else{
+												$texto = $texto." ";
+												$template->setValue('obs_carpeta#'.$contador_carpeta."#".strval($i+1), $texto);
+											}
+										}
+									}
+								}
+								#exit();
+								#$explode_negrita = explode("</negrita>", $obs_carpeta);
+
+								#var_dump($explode_negrita);
+								#var_dump($explode_negrita);
+								#exit();
+
+								/*for ($i=0; $i < $cant_negritas; $i++) {
+
+									$inicio = strpos($obs_carpeta, '<negrita>');
+									$fin = strpos($obs_carpeta, '</negrita>');
+
+									if (is_null($fin) || $fin == false) {
+										$fin = strlen($observacion_carpeta);
+									}
+
+									$largo_negrita = $fin - $inicio;
+
+
+									echo ($inicio_texto);
+									echo ("</br></br>");
+									echo ($texto_negrita);
+
+									$inicio_texto = substr($obs_carpeta, 0, $inicio); 
+									$texto_negrita = substr($obs_carpeta, $inicio, $largo_negrita);
+
+									$texto_negrita = str_replace("<negrita>", " ", $texto_negrita);
+									$texto_negrita = str_replace("</negrita>", "", $texto_negrita);
+
+									if ($i == 1) {
+
+										echo ($inicio_texto);
+										echo ("</br></br>");
+										echo ($texto_negrita);
+										#var_dump($obs_carpeta);
+										#var_dump("</br></br>");
+										#var_dump($inicio_texto);
+										#var_dump("</br></br>");
+										#var_dump($texto_negrita);
+										#var_dump("</br></br>");
+										#var_dump($cant_negritas);
+										#var_dump("</br></br>");
+										exit();
+									}
+
+									$template->setValue('obs_carpeta#'.$contador_carpeta."#".$contador_negrita_carpeta, $inicio_texto);
+									$template->setValue('negrita_carpeta#'.$contador_carpeta."#".$contador_negrita_carpeta, $texto_negrita);
+
+									$largo_restante = (strlen($obs_carpeta)-$fin);
+									$obs_carpeta = substr($obs_carpeta, $fin, $largo_restante);
+									$contador_negrita_carpeta++;
+								}*/
+
+							}else{
+								$template->cloneBlock($nombre_block, 1, true, true);
+								$template->setValue('obs_carpeta#'.$contador_carpeta."#1", $observacion_carpeta);
+								$template->setValue('negrita_carpeta#'.$contador_carpeta."#1", "");
+								#$template->replaceBlock($nombre_block, $observacion_carpeta);
+								#$template->setValue('obs_carpeta#'.$contador_carpeta, $observacion_carpeta);
+								#$template->setValue('negrita_carpeta#'.$contador_carpeta, "");
+							}
+							
+							$contador_carpeta++;
+						}
+					}else{
+						$template->setValue('cumple', "");
+						$template->replaceBlock('block_negrita', "");
+						#$template->setValue('obs_carpeta', "");
+						#$template->setValue('negrita_carpeta', "");
 					}
 
-					$template->setComplexBlock('table_carpetas', $table_carpetas);
+					
+
+					/*private function makeWordBold($str, $hex=null, $style='b'): string
+				    {
+				        $cor = $hex ? "<w:color w:val='".$hex."'/>" : "";
+				        $before="/w:t/w:r<w:r><w:rPr>".$cor."<w:".$style."/>/w:rPr<w:t xml:space='preserve'>";
+				        $after='/w:t/w:r<w:r><w:t>';
+				        return $before.$str.$after;
+				    }*/
+
+				    #$palabra = "<w:color w:val='".$value."'/>";
+
+					#$template->setComplexBlock('table_carpetas', $table_carpetas);
 
 
 
 
 
-					$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccionReporte($id_inspeccion, $usuario['id_usuario']);
+					$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccionReporte($id_inspeccion, $usuario['id_usuario'], true);
 					$id_pregunta = null;
 					if (sizeof($respuestas_inspeccion) > 0) {
 						$cant_1 = 1;
@@ -1493,7 +1777,7 @@ class Inspeccion extends CI_Controller {
 				$checklists =  $this->checklist_model->listarCheckLists($usuario["id_usuario"]);
 				$usuario['checklists'] = $checklists;
 
-				$normas =  $this->norma_model->listarNormas($usuario["id_usuario"]);
+				$normas =  $this->norma_model->obtenerNormasReporte($usuario["id_usuario"]);
 				$usuario['normas'] = $normas;
 
 				$herramientas =  $this->herramienta_model->listarHerramientas($usuario["id_usuario"]);
@@ -2928,7 +3212,8 @@ class Inspeccion extends CI_Controller {
 				$checklists =  $this->checklist_model->listarCheckLists($usuario["id_usuario"]);
 				$usuario['checklists'] = $checklists;
 
-				$normas =  $this->norma_model->listarNormas($usuario["id_usuario"]);
+				$visible = true;
+				$normas =  $this->norma_model->listarNormas($visible, $usuario["id_usuario"]);
 				$usuario['normas'] = $normas;
 
 				$herramientas =  $this->herramienta_model->listarHerramientas($usuario["id_usuario"]);
@@ -2976,6 +3261,84 @@ class Inspeccion extends CI_Controller {
 			$this->load->view('temp/header');
 			$this->load->view('temp/menu', $usuario);
 			$this->load->view('agregarInspeccion', $usuario);
+			$this->load->view('temp/footer');
+		}else
+		{
+			//$data['message'] = 'Verifique su email y contrase&ntilde;a.';
+			redirect('Inicio');
+		}
+	}
+
+
+	public function reInspeccion()
+	{
+		$usuario = $this->session->userdata();
+		if($this->session->userdata('id_usuario')){
+			$usuario['titulo'] = 'Re-Inspeccion';
+			$usuario['controller'] = 'inspeccion';
+
+			if($this->input->GET('idInspeccion') && $this->input->GET('idInspeccion'))
+			{
+				$id_inspeccion = $this->input->GET('idInspeccion');
+
+				$categorias =  $this->categoria_model->listarCategorias($usuario["id_usuario"]);
+				$usuario['categorias'] = $categorias;
+
+				$preguntas =  $this->pregunta_model->listarPreguntas($usuario["id_usuario"]);
+				$usuario['preguntas'] = $preguntas;
+
+				$checklists =  $this->checklist_model->listarCheckLists($usuario["id_usuario"]);
+				$usuario['checklists'] = $checklists;
+
+				$visible = true;
+				$normas =  $this->norma_model->listarNormas($visible, $usuario["id_usuario"]);
+				$usuario['normas'] = $normas;
+
+				$herramientas =  $this->herramienta_model->listarHerramientas($usuario["id_usuario"]);
+				$usuario['herramientas'] = $herramientas;
+
+				$carpetas =  $this->carpeta_model->listarCarpetas($usuario["id_usuario"]);
+				$usuario['carpetas'] = $carpetas;
+
+				$suspensiones =  $this->suspension_model->listarSuspensiones($usuario["id_usuario"]);
+				$usuario['suspensiones'] = $suspensiones;
+
+				$usos =  $this->uso_model->listarUsos($usuario["id_usuario"]);
+				$usuario['usos'] = $usos;
+
+				$inspeccion =  $this->inspeccion_model->obtenerInspeccion($id_inspeccion ,$usuario["id_usuario"]);
+				if (sizeof($inspeccion) > 0) {
+					$usuario['inspeccion'] = $inspeccion[0];
+					#var_dump($inspeccion[0]);
+				}
+				
+				$respuesta_carpetas =  $this->inspeccion_model->obtenerCarpetas($id_inspeccion ,$usuario["id_usuario"]);
+				$usuario['respuesta_carpetas'] = $respuesta_carpetas;
+
+				$respuesta_normas =  $this->inspeccion_model->obtenerNormas($id_inspeccion ,$usuario["id_usuario"]);
+				$usuario['respuesta_normas'] = $respuesta_normas;
+
+				$respuesta_herramientas =  $this->inspeccion_model->obtenerHerramientas($id_inspeccion ,$usuario["id_usuario"]);
+				$usuario['respuesta_herramientas'] = $respuesta_herramientas;
+
+				$respuesta_norma_respuesta =  $this->inspeccion_model->obtenerNormasRespuesta($id_inspeccion ,$usuario["id_usuario"]);
+				$usuario['respuesta_norma_respuesta'] = $respuesta_norma_respuesta;
+
+				$tipos_traccion =  $this->traccion_model->listarTipoTracciones($usuario["id_usuario"]);
+				$usuario['tipos_traccion'] = $tipos_traccion;
+
+				#$observaciones_generales =  $this->inspeccion_model->obtenerObservacionesInspeccion($id_inspeccion ,$usuario["id_usuario"]);
+				#$usuario['observaciones_generales'] = $observaciones_generales;
+
+				#var_dump($observaciones_generales);
+				
+
+				
+			}
+
+			$this->load->view('temp/header');
+			$this->load->view('temp/menu', $usuario);
+			$this->load->view('reInspeccion', $usuario);
 			$this->load->view('temp/footer');
 		}else
 		{
@@ -3198,6 +3561,7 @@ class Inspeccion extends CI_Controller {
 			$idCategoria = null;
 			$idPregunta = null;
 			$respuestas_inspeccion = null;
+			$reinspeccion = null;
 
 			$categorias = array();
 			$preguntas = array();
@@ -3208,6 +3572,9 @@ class Inspeccion extends CI_Controller {
 
 			if(!is_null($this->input->post('idInspeccion')) && $this->input->post('idInspeccion') != "-1"  && $this->input->post('idInspeccion') != "")
 				$idInspeccion = $this->input->post('idInspeccion');
+
+			if(!is_null($this->input->post('reinspeccion')) && $this->input->post('reinspeccion') != "-1"  && $this->input->post('reinspeccion') != "")
+				$reinspeccion = $this->input->post('reinspeccion');
 
 			if (isset($idNorma)) {
 				$categorias_preguntas_norma = $this->norma_model->listarCategoriasPreguntasNorma($idNorma, $usuario['id_usuario']);
@@ -3238,6 +3605,8 @@ class Inspeccion extends CI_Controller {
 						$orden_r = null;
 						$respuesta = null;
 						$obs_respuesta = null;
+
+						$tiene_no = false;
 
 						#var_dump($idCategoria);
 						#var_dump($pregunta['id_categoria']);
@@ -3272,6 +3641,13 @@ class Inspeccion extends CI_Controller {
 	                     	$respuesta = $pregunta['respuesta'];
 	                     	$obs_respuesta = $pregunta['obs_respuesta'];
 
+	                     	#var_dump("es diferente la categoria");
+                 			#var_dump($idCategoria);
+                 			#var_dump("</br>");
+                 			#var_dump($pregunta['id_categoria']);
+                 			#var_dump("</br></br></br>");
+                 			#var_dump($respuestas_inspeccion);
+
 	                     	if (is_null($idCategoria)) {
 	                     		$idCategoria = $pregunta['id_categoria'];
 	                     		$idPregunta = $id_pregunta;
@@ -3280,6 +3656,7 @@ class Inspeccion extends CI_Controller {
 	                     		$id_respuesta_pregunta = null;
 	                     		$imagenes = array();
 	                     		if (isset($respuestas_inspeccion) && !is_null($respuestas_inspeccion) && sizeof($respuestas_inspeccion) > 0) {
+
 	                     			$array_filtrado = array_filter($respuestas_inspeccion, function($val) use($idCategoria, $id_pregunta){
 							              return ($val['id_categoria']==$idCategoria and $val['id_pregunta']==$id_pregunta);
 							         });
@@ -3289,24 +3666,56 @@ class Inspeccion extends CI_Controller {
 	                     				$respuesta_pregunta = $array_filtrado[$first_key]["respuesta"];
 	                     				$id_respuesta_pregunta = $array_filtrado[$first_key]["id_respuesta"];
 	                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
-	                     				#var_dump($idCategoria);var_dump($id_pregunta);
-	                     				if ($respuesta_pregunta == 2 && !is_null($respuesta_pregunta)) {
+	                     				#var_dump($idCategoria);
+	                     				#var_dump($id_pregunta);
+	                     				
+	                     				/*if ($respuesta_pregunta == 2) {
+	                     					var_dump($respuesta_pregunta);
+	                     					exit();	
+	                     				}else{
+	                     					var_dump($array_filtrado);
+	                     					var_dump('</br></br>');
+	                     				}*/
+	                     				
+	                     				if (!is_null($respuesta_pregunta) && $respuesta_pregunta == 2) {
+	                     					#var_dump($array_filtrado);
+	                     					$tiene_no = true;
 	                     					foreach ($array_filtrado as $key => $value) {
 	                     						if (isset($value["file_name"]) && !is_null($value["file_name"]) && $value["file_name"] != "") {
 	                     							$imagenes[] = array('id_imagen' => ($value["id_categoria"].'_'.$value["id_pregunta"].'_'.$value["orden_a"]), 'file_name' => $value["file_name"], 'orden' => $value["orden_a"], 'archivo_id' => $value["archivo_id"]);	
 	                     						}
 		                     				}
+
+		                     				if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
+				                     			$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
+				                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);	
+				                     		}
+
+
 	                     				}
 	                     			}
 	                     		}
 
-	                     		$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
-	                     		$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+	                     		if (!isset($reinspeccion) && is_null($reinspeccion)) {
+	                     			$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
+
+	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+	                     		}
 
 		                     	if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
 		                     		$respuestas[] = array("id_respuesta" => $id_respuesta, "orden_r" => $orden_r, "respuesta" => $respuesta, "obs_respuesta" => $obs_respuesta);
 		                     	}
+
+		                     	#var_dump($categorias);
+		                     	#var_dump('</br></br>');
+		                     	#var_dump($preguntas);
+		                     	#var_dump('</br></br>');
+		                     	#var_dump($respuestas);
+		                     	#var_dump('</br></br>');
+		                     	#var_dump($imagenes);
+		                     	#exit();
 	                     	}else{
+
 	                     			$idCategoria = $pregunta['id_categoria'];
 	                     		#if (sizeof($respuestas) > 0) {
 	                     			$preguntas[(sizeof($preguntas)-1)]["respuestas"] = $respuestas;
@@ -3333,6 +3742,7 @@ class Inspeccion extends CI_Controller {
 		                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
 
 		                     				if ($respuesta_pregunta == 2 && !is_null($respuesta_pregunta)) {
+		                     					$tiene_no = true;
 		                     					foreach ($array_filtrado as $key => $value) {
 		                     						if (isset($value["file_name"]) && !is_null($value["file_name"]) && $value["file_name"] != "") {
 		                     							$imagenes[] = array('id_imagen' => ($value["id_categoria"].'_'.$value["id_pregunta"].'_'.$value["orden_a"]), 'file_name' => $value["file_name"], 'orden' => $value["orden_a"], 'archivo_id' => $value["archivo_id"]);	
@@ -3342,7 +3752,13 @@ class Inspeccion extends CI_Controller {
 		                     			}
 		                     		}
 
-	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+		                     		#var_dump($reinspeccion);
+		                     		#var_dump($tiene_no);
+		                     		if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
+		                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+		                     		}elseif (!isset($reinspeccion) && is_null($reinspeccion)) {
+		                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+		                     		}
 
 	                     			if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
 			                     		$respuestas[] = array("id_respuesta" => $id_respuesta, "orden_r" => $orden_r, "respuesta" => $respuesta, "obs_respuesta" => $obs_respuesta);
@@ -3394,6 +3810,7 @@ class Inspeccion extends CI_Controller {
 	                     				#var_dump($idCategoria);var_dump($id_pregunta);
 	                     				#var_dump($array_filtrado);
 	                     				if ($respuesta_pregunta == 2 && !is_null($respuesta_pregunta)) {
+	                     					$tiene_no = true;
 	                     					foreach ($array_filtrado as $key => $value) {
 	                     						if (isset($value["file_name"]) && !is_null($value["file_name"]) && $value["file_name"] != "") {
 	                     							$imagenes[] = array('id_imagen' => ($value["id_categoria"].'_'.$value["id_pregunta"].'_'.$value["orden_a"]), 'file_name' => $value["file_name"], 'orden' => $value["orden_a"], 'archivo_id' => $value["archivo_id"]);	
@@ -3403,7 +3820,11 @@ class Inspeccion extends CI_Controller {
 	                     			}
 	                     		}
 
-		                    	$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+	                     		if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
+	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+	                     		}elseif (!isset($reinspeccion) && is_null($reinspeccion)) {
+	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+	                     		}
 
 		                    	if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
 		                     		$respuestas[] = array("id_respuesta" => $id_respuesta, "orden_r" => $orden_r, "respuesta" => $respuesta, "obs_respuesta" => $obs_respuesta);
@@ -3477,6 +3898,329 @@ class Inspeccion extends CI_Controller {
 	}
 
 
+	public function json_listarCategoriasPreguntasRespuestaReInspeccion()
+	{
+		$usuario = $this->session->userdata();
+		if($usuario["id_usuario"]){
+			$idNorma = null;
+			$idInspeccion = null;
+			$categorias_preguntas = array();
+			$data = array();
+			$dataCategoria = array();
+			$cantCategoria = 0;
+			$cantCategoriaPregunta = 0;
+			$idCategoria = null;
+			$idPregunta = null;
+			$respuestas_inspeccion = null;
+			$reinspeccion = null;
+
+			$categorias = array();
+			$preguntas = array();
+			$respuestas = array();
+
+			if(!is_null($this->input->post('idNorma')) && $this->input->post('idNorma') != "-1"  && $this->input->post('idNorma') != "")
+				$idNorma = $this->input->post('idNorma');
+
+			if(!is_null($this->input->post('idInspeccion')) && $this->input->post('idInspeccion') != "-1"  && $this->input->post('idInspeccion') != "")
+				$idInspeccion = $this->input->post('idInspeccion');
+
+			if(!is_null($this->input->post('reinspeccion')) && $this->input->post('reinspeccion') != "-1"  && $this->input->post('reinspeccion') != "")
+				$reinspeccion = $this->input->post('reinspeccion');
+
+			if (isset($idNorma)) {
+				$categorias_preguntas_norma = $this->norma_model->listarCategoriasPreguntasNorma($idNorma, $usuario['id_usuario']);
+
+				$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccion($idInspeccion, $usuario['id_usuario']);
+				#var_dump($respuestas_inspeccion);
+
+				$severidad_respuestas = $this->inspeccion_model->obtenerSeveridadRespuestas($usuario["id_usuario"]);
+
+				if (sizeof($categorias_preguntas_norma) > 0) {
+					foreach ($categorias_preguntas_norma as $pregunta) {
+						$id_categoria = null;
+						$id_pregunta = null;
+						$codigo_c = null;
+						$categoria = null;
+						$codigo_p = null;
+						$pregunta_p = null;
+						$id_respuesta = null;
+						$orden_r = null;
+						$respuesta = null;
+						$obs_respuesta = null;
+						$tiene_no = false;
+
+						if ($idCategoria != $pregunta['id_categoria'])
+	                    {
+	                    	#if ($idCategoria)
+	                    	#	$dataCategoria[] = array('id_categoria' => $idCategoria, 'cantPreguntas' => $cantCategoriaPregunta);
+
+	                    	#$cantCategoriaPregunta = 0;
+	                     	#$cantCategoria++;
+	                     	#$cantCategoriaPregunta++;
+
+	                     	$id_pregunta = $pregunta['id_pregunta'];
+	                     	$codigo_c = $pregunta['codigo_c'];
+	                     	$categoria = $pregunta['categoria'];
+	                     	$codigo_p = $pregunta['codigo_p'];
+	                     	$pregunta_r = $pregunta['pregunta'];
+	                     	$id_respuesta = $pregunta['respuesta_id'];
+	                     	$orden_r = $pregunta['orden_r'];
+	                     	$respuesta = $pregunta['respuesta'];
+	                     	$obs_respuesta = $pregunta['obs_respuesta'];
+
+	                     	#var_dump("es diferente la categoria");
+                 			#var_dump($idCategoria);
+                 			#var_dump("</br>");
+                 			#var_dump($pregunta['id_categoria']);
+                 			#var_dump("</br></br></br>");
+                 			#var_dump($respuestas_inspeccion);
+
+	                     	if (is_null($idCategoria)) {
+	                     		$idCategoria = $pregunta['id_categoria'];
+	                     		$idPregunta = $id_pregunta;
+
+	                     		$respuesta_pregunta = null;
+	                     		$id_respuesta_pregunta = null;
+	                     		$imagenes = array();
+
+	                     		$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
+
+	                     		if (isset($respuestas_inspeccion) && !is_null($respuestas_inspeccion) && sizeof($respuestas_inspeccion) > 0) {
+
+	                     			$array_filtrado = array_filter($respuestas_inspeccion, function($val) use($idCategoria, $id_pregunta){
+							              return ($val['id_categoria']==$idCategoria and $val['id_pregunta']==$id_pregunta);
+							         });
+	                     			reset($array_filtrado);
+									$first_key = key($array_filtrado);#var_dump($array_filtrado);
+	                     			if (isset($array_filtrado) && !is_null($array_filtrado) && sizeof($array_filtrado) > 0 && isset($array_filtrado[$first_key]["respuesta"]) && !is_null($array_filtrado[$first_key]["respuesta"])) {
+	                     				$respuesta_pregunta = $array_filtrado[$first_key]["respuesta"];
+	                     				$id_respuesta_pregunta = $array_filtrado[$first_key]["id_respuesta"];
+	                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
+	                     				#var_dump($idCategoria);
+	                     				#var_dump($id_pregunta);
+	                     				
+	                     				/*if ($respuesta_pregunta == 2) {
+	                     					var_dump($respuesta_pregunta);
+	                     					exit();	
+	                     				}else{
+	                     					var_dump($array_filtrado);
+	                     					var_dump('</br></br>');
+	                     				}*/
+	                     				
+	                     				if (!is_null($respuesta_pregunta) && $respuesta_pregunta == 2) {
+	                     					#var_dump($array_filtrado);
+	                     					$tiene_no = true;
+	                     					foreach ($array_filtrado as $key => $value) {
+	                     						if (isset($value["file_name"]) && !is_null($value["file_name"]) && $value["file_name"] != "") {
+	                     							$imagenes[] = array('id_imagen' => ($value["id_categoria"].'_'.$value["id_pregunta"].'_'.$value["orden_a"]), 'file_name' => $value["file_name"], 'orden' => $value["orden_a"], 'archivo_id' => $value["archivo_id"]);	
+	                     						}
+		                     				}
+
+		                     				if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
+				                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);	
+				                     		
+				                     			if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
+						                     		$respuestas[] = array("id_respuesta" => $id_respuesta, "orden_r" => $orden_r, "respuesta" => $respuesta, "obs_respuesta" => $obs_respuesta);
+						                     	}
+
+				                     		}
+	                     				}else{
+	                     					$tiene_no = false;
+	                     				}
+	                     			}
+	                     		}
+
+		                     	#var_dump($categorias);
+		                     	#var_dump('</br></br>');
+		                     	#var_dump($preguntas);
+		                     	#var_dump('</br></br>');
+		                     	#var_dump($respuestas);
+		                     	#var_dump('</br></br>');
+		                     	#var_dump($imagenes);
+		                     	#exit();
+	                     	}else{
+
+                     			$idCategoria = $pregunta['id_categoria'];
+                     			$preguntas[(sizeof($preguntas)-1)]["respuestas"] = $respuestas;
+                     			$respuestas = array();
+                     			$idPregunta = $pregunta['id_pregunta'];
+                     			$categorias[(sizeof($categorias)-1)]["preguntas"] = $preguntas;
+                     			$preguntas = array();
+
+                     			$respuesta_pregunta = null;
+                     			$id_respuesta_pregunta = null;
+                     			$imagenes = array();
+
+
+                     			$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
+
+	                     		if (isset($respuestas_inspeccion) && !is_null($respuestas_inspeccion) && sizeof($respuestas_inspeccion) > 0) {
+	                     			
+	                     			
+	                     			$array_filtrado = array_filter($respuestas_inspeccion, function($val) use($idCategoria, $id_pregunta){
+							              return ($val['id_categoria']==$idCategoria and $val['id_pregunta']==$id_pregunta);
+							         });
+	                     			#var_dump($idCategoria);var_dump($id_pregunta);
+	                     			reset($array_filtrado);
+									$first_key = key($array_filtrado);
+	                     			if (isset($array_filtrado) && !is_null($array_filtrado) && sizeof($array_filtrado) > 0 && isset($array_filtrado[$first_key]["respuesta"]) && !is_null($array_filtrado[$first_key]["respuesta"])) {
+	                     				$respuesta_pregunta = $array_filtrado[$first_key]["respuesta"];
+	                     				$id_respuesta_pregunta = $array_filtrado[$first_key]["id_respuesta"];
+	                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
+
+	                     				if ($respuesta_pregunta == 2 && !is_null($respuesta_pregunta)) {
+	                     					$tiene_no = true;
+	                     					foreach ($array_filtrado as $key => $value) {
+	                     						if (isset($value["file_name"]) && !is_null($value["file_name"]) && $value["file_name"] != "") {
+	                     							$imagenes[] = array('id_imagen' => ($value["id_categoria"].'_'.$value["id_pregunta"].'_'.$value["orden_a"]), 'file_name' => $value["file_name"], 'orden' => $value["orden_a"], 'archivo_id' => $value["archivo_id"]);	
+	                     						}
+		                     				}
+
+		                     				if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
+				                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+
+				                     			if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
+						                     		$respuestas[] = array("id_respuesta" => $id_respuesta, "orden_r" => $orden_r, "respuesta" => $respuesta, "obs_respuesta" => $obs_respuesta);
+						                     	}
+				                     		}
+
+	                     				}else{
+	                     					$tiene_no = false;
+	                     				}
+	                     			}
+	                     		}
+
+	                     	}
+
+
+	                    }else{
+
+	                    	if ($idPregunta != $pregunta['id_pregunta'])
+		                    {
+		                    	$id_pregunta = $pregunta['id_pregunta'];
+		                     	$codigo_c = $pregunta['codigo_c'];
+		                     	$categoria = $pregunta['categoria'];
+		                     	$codigo_p = $pregunta['codigo_p'];
+		                     	$pregunta_r = $pregunta['pregunta'];
+		                     	$id_respuesta = $pregunta['respuesta_id'];
+		                     	$orden_r = $pregunta['orden_r'];
+		                     	$respuesta = $pregunta['respuesta'];
+		                     	$obs_respuesta = $pregunta['obs_respuesta'];
+		                    	$preguntas[(sizeof($preguntas)-1)]["respuestas"] = $respuestas;
+		                    	$respuestas = array();
+		                    	$idPregunta = $pregunta['id_pregunta'];
+
+		                    	$respuesta_pregunta = null;
+		                    	$id_respuesta_pregunta = null;
+		                    	$imagenes = array();
+	                     		if (isset($respuestas_inspeccion) && !is_null($respuestas_inspeccion) && sizeof($respuestas_inspeccion) > 0) {
+	                     			$array_filtrado = array_filter($respuestas_inspeccion, function($val) use($idCategoria, $id_pregunta){
+							              return ($val['id_categoria']==$idCategoria and $val['id_pregunta']==$id_pregunta);
+							         });
+	                     			reset($array_filtrado);
+									$first_key = key($array_filtrado);
+	                     			if (isset($array_filtrado) && !is_null($array_filtrado) && sizeof($array_filtrado) > 0 && isset($array_filtrado[$first_key]["respuesta"]) && !is_null($array_filtrado[$first_key]["respuesta"])) {
+	                     				$respuesta_pregunta = $array_filtrado[$first_key]["respuesta"];
+	                     				$id_respuesta_pregunta = $array_filtrado[$first_key]["id_respuesta"];
+	                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
+
+	                     				#var_dump($idCategoria);var_dump($id_pregunta);
+	                     				#var_dump($array_filtrado);
+	                     				if ($respuesta_pregunta == 2 && !is_null($respuesta_pregunta)) {
+	                     					$tiene_no = true;
+	                     					foreach ($array_filtrado as $key => $value) {
+	                     						if (isset($value["file_name"]) && !is_null($value["file_name"]) && $value["file_name"] != "") {
+	                     							$imagenes[] = array('id_imagen' => ($value["id_categoria"].'_'.$value["id_pregunta"].'_'.$value["orden_a"]), 'file_name' => $value["file_name"], 'orden' => $value["orden_a"], 'archivo_id' => $value["archivo_id"]);	
+	                     						}
+		                     				}
+
+		                     				if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
+				                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+
+				                     			if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
+						                     		$respuestas[] = array("id_respuesta" => $id_respuesta, "orden_r" => $orden_r, "respuesta" => $respuesta, "obs_respuesta" => $obs_respuesta);
+						                     	}
+				                     		}
+	                     				}else{
+	                     					$tiene_no = false;
+	                     				}
+	                     			}
+	                     		}
+		                    }else{
+
+		                    	$id_pregunta = $pregunta['id_pregunta'];
+		                     	$codigo_c = $pregunta['codigo_c'];
+		                     	$categoria = $pregunta['categoria'];
+		                     	$codigo_p = $pregunta['codigo_p'];
+		                     	$pregunta_r = $pregunta['pregunta'];
+		                     	$id_respuesta = $pregunta['respuesta_id'];
+		                     	$orden_r = $pregunta['orden_r'];
+		                     	$respuesta = $pregunta['respuesta'];
+		                     	$obs_respuesta = $pregunta['obs_respuesta'];
+		                    	
+		                    	if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
+			                    	if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
+			                     		$respuestas[] = array("id_respuesta" => $id_respuesta, "orden_r" => $orden_r, "respuesta" => $respuesta, "obs_respuesta" => $obs_respuesta);
+			                     	}
+			                    }
+
+		                    }
+	                    	#$cantCategoriaPregunta++;
+	                    	#var_dump($pregunta);
+
+	                    }
+
+	                }
+
+
+	                var_dump($respuestas);
+	                var_dump($preguntas);
+	                #var_dump($categorias);
+
+	                #if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
+                    	#$preguntas[(sizeof($preguntas)-1)]["respuestas"] = $respuestas;
+         				#$categorias[(sizeof($categorias)-1)]["preguntas"] = $preguntas;
+                    #}
+
+	                
+	                #var_dump($categorias);
+	                #$dataCategoria[] = array('id_categoria' => $idCategoria, 'cantPreguntas' => $cantCategoriaPregunta);
+	                	
+
+					/*foreach ($categorias_preguntas_norma as $pregunta) {
+						
+						$row_cp_n = array();
+						$row_cp_n[] = $pregunta['id'];
+						$row_cp_n[] = $pregunta['id_norma'];
+						$row_cp_n[] = $pregunta['id_categoria'];
+						$row_cp_n[] = $pregunta['id_pregunta'];
+						$row_cp_n[] = $pregunta['codigo_c'];
+						$row_cp_n[] = $pregunta['categoria'];
+						$row_cp_n[] = $pregunta['codigo_p'];
+						$row_cp_n[] = $pregunta['pregunta'];
+						$categorias_preguntas[] = $row_cp_n;
+
+						$row = array();
+						$row[] = $pregunta['id_pregunta'];
+						$row[] = $pregunta['id_categoria'];
+						$row[] = $pregunta['codigo_p'];
+						$row[] = $pregunta['pregunta'];
+						$data[] = $row;
+					}*/
+				}
+			}
+			
+			$output = array(
+				'data_cp_n' => $categorias,
+				'severidad' => $severidad_respuestas,
+				#'data_total' => $dataCategoria
+			);
+			echo json_encode($output);
+		}else
+		{
+			redirect('Inicio');
+		}
+	}
 
 
 	public function json_listarObservacionesInspeccion()

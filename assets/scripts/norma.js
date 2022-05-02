@@ -2,6 +2,11 @@
     $('[data-toggle="tooltip"]').tooltip();
     feather.replace();
 
+
+    $('#sEstadoNorma').on('change',function(e){
+        listarNormas();
+    });
+
     $('#tListaCategoriasReporte').on('click', '.eliminarCategoriaReporte', function(e) {
 
         var ordenEdificio = $(e.currentTarget).data('id');
@@ -466,12 +471,16 @@
 
     function listarNormas()
     {
+        var loader = document.getElementById("loader");
+        loader.removeAttribute('hidden');
+
+        var estado_norma = document.getElementById('sEstadoNorma').value;
         var baseurl = window.origin + '/Norma/listarNormas';
         jQuery.ajax({
         type: "POST",
         url: baseurl,
         dataType: 'json',
-        //data: {},
+        data: {estado_norma: estado_norma},
         success: function(data) {
         if (data)
         {
@@ -482,15 +491,24 @@
             $('#tListaNormas').dataTable({
                 searching: true,
                 paging:         true,
-                ordering:       true,
+                ordering:       false,
                 info:           true,
                  "scrollX": false,
                 columnDefs: [
                   { targets: 'no-sort', orderable: false }
                 ],
-                "drawCallback": function( settings ) {
+                /*"drawCallback": function( settings ) {
                     feather.replace();
                     $('[data-toggle="tooltip"]').tooltip();
+                },*/
+                "fnDrawCallback": function( oSettings ) {
+                  feather.replace();
+                  loader.setAttribute('hidden', '');
+                  $('[data-toggle="tooltip"]').tooltip();
+                },
+                "preDrawCallback": function( settings ) {
+                  var loader = document.getElementById("loader");
+                  loader.removeAttribute('hidden');
                 },
                 "oLanguage": {
                     "sLengthMenu": "_MENU_ Registros por p&aacute;gina",

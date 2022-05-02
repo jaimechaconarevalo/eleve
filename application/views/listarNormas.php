@@ -14,6 +14,26 @@
 				</h3>
 			</div>
 		</div>
+		<hr class="my-3">
+		<div class="row">
+			<div class="col-sm-12 mt-3">	
+				<div class="row ml-2">
+					<div class="col-sm-6">
+						<div class="row">
+							<div class="col-sm-3">
+								<span class="">Estados Norma</span>
+							</div>
+							<div class="col-sm-9">
+								<select id="sEstadoNorma" name="sEstadoNorma" class="custom-select custom-select-sm">
+									<option value="1" selected>Visibles</option>
+									<option value="2">No Visibles</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
 	<hr class="my-3">
 	</div>
@@ -30,8 +50,13 @@
 						<th scope="col" class="texto-pequenio text-center align-middle registro"># ID</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Codigo</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Solo Texto</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Visible</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Estado</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Orden</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Subir</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Bajar</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 					</tr>
@@ -45,8 +70,30 @@
 						        <th scope="row" class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $norma['id']; ?></th>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $norma['codigo']; ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $norma['nombre']; ?></p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo ($norma['solo_texto'] == 1 ? '<i data-feather="check" data-placement="top" class="text-success"></i>': ''); ?></p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo ($norma['visible'] == 1 ? '<i data-feather="check" data-placement="top" class="text-success"></i>': ''); ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo ($norma["estado"] == "1" ? "Activo" : "Eliminado"); ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $norma['created_at']; ?></p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $norma['orden']; ?></p></td>
+						        <td class="text-center align-middle registro botonTabla">
+						        		<?php if ($norma['orden'] > 1) {
+								      	?>
+									      	<a id="mover_<?php echo $norma['id']; ?>" class="view_convenio" style="cursor: pointer;">
+								        		<i data-feather="corner-left-up" data-toggle="tooltip" data-placement="top" title="Subir"></i>
+							        		</a>
+								      	<?php	
+								      	} ?>
+						        </td>
+							      <td class="text-center align-middle registro botonTabla">
+							      	<?php
+							      	if ($norma['orden'] < sizeof($normas)) {
+							      	?>
+								      	<a id="mover_<?php echo $norma['id']; ?>" class="view_convenio" style="cursor: pointer;">
+							        		<i data-feather="corner-left-down" data-toggle="tooltip" data-placement="top" title="Bajar" style="cursor: pointer;"></i>
+						        		</a>
+							      	<?php	
+							      	} ?>						        	
+						        </td>
 					        	<td class="text-center align-middle registro botonTabla">
 						        	<a id="edit_<?php echo $norma['id']; ?>" class="view_convenio" href="modificarNorma/?idNorma=<?php echo $norma['id']; ?>">
 						        		<i data-feather="edit-3" data-toggle="tooltip" data-placement="top" title="Modificar"></i>       		

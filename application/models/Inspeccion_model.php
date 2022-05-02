@@ -145,7 +145,7 @@ class Inspeccion_model extends CI_Model
 		return $inspeccion->result_array();
 	}
 
-	public function obtenerRespuestasInspeccionReporte($idInspeccion, $id_usuario)
+	public function obtenerRespuestasInspeccionReporte($idInspeccion, $id_usuario, $es_reinspeccion = false)
 	{
 		$this->db->select('icr.id, icr.id_inspecciones_checklists, icr.id_categoria, icr.id_pregunta, icr.id_pregunta, icr.respuesta, icr.observaciones, icr.orden, icr.id_respuesta, icr.id_estado, icr.created_at, icr.updated_at, 
 		sr.id as id_severidad_respuesta, sr.orden as orden_severidad, sr.nombre as severidad,
@@ -162,6 +162,9 @@ class Inspeccion_model extends CI_Model
 		$this->db->join('respuestas r', 'icr.id_respuesta = r.id', 'LEFT');
 		$this->db->join('archivos a', 'icr.id = a.inspeccion_checklist_resp_id', 'LEFT');
 		$this->db->where('i.id', $idInspeccion);
+		if ($es_reinspeccion = true) {
+			$this->db->where('icr.respuesta', 2);	
+		}
 		$this->db->where('i.id_estado', 1);
 		$this->db->where('ic.id_estado', 1);
 		$this->db->where('icr.id_estado', 1);

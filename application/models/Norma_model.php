@@ -19,7 +19,7 @@ class Norma_model extends CI_Model
 		$es_admin = $this->db->get()->result_array();
 
 		if (sizeof($es_admin) > 0 && isset($es_admin) && $es_admin[0]['pf_analista'] != 1) {
-			$this->db->select('normas.id, normas.codigo, normas.nombre');
+			$this->db->select('normas.id, normas.codigo, normas.nombre, normas.solo_texto, normas.visible');
 			$this->db->from('usuarios');
 			$this->db->join('usuarios_perfiles','usuarios.id_usuario = usuarios_perfiles.id_usuario');
 			$this->db->join('perfiles','usuarios_perfiles.id_perfil = perfiles.id_perfil');
@@ -67,7 +67,7 @@ class Norma_model extends CI_Model
 
 	public function obtenerNorma($idNorma, $id_usuario)
 	{
-		$this->db->select('h.id, h.codigo, h.nombre, h.observaciones, h.estado, h.created_at, h.updated_at, h.id_usuario');
+		$this->db->select('h.id, h.codigo, h.nombre, h.observaciones, h.solo_texto, h.visible, h.estado, h.created_at, h.updated_at, h.orden, h.id_usuario');
 		$this->db->from('normas h');
 		$this->db->where('h.estado', 1);
 		$this->db->where('h.id', $idNorma);
@@ -75,11 +75,23 @@ class Norma_model extends CI_Model
 		return $norma->result_array();
 	}
 
-	public function listarNormas($id_usuario)
+	public function obtenerNormasReporte($id_usuario)
 	{
-		$this->db->select('h.id, h.codigo, h.nombre, h.observaciones, h.estado, h.created_at, h.updated_at');
+		$this->db->select('h.id, h.codigo, h.nombre, h.observaciones, h.solo_texto, h.visible, h.estado, h.created_at, h.updated_at, h.orden, h.id_usuario');
 		$this->db->from('normas h');
 		$this->db->where('h.estado', 1);
+		$this->db->where('h.visible', 1);
+		$norma = $this->db->get();
+		return $norma->result_array();
+	}
+
+	public function listarNormas($visible, $id_usuario)
+	{
+		$this->db->select('h.id, h.codigo, h.nombre, h.observaciones, h.solo_texto, h.visible, h.estado, h.created_at, h.updated_at, h.orden');
+		$this->db->from('normas h');
+		$this->db->where('h.estado', 1);
+		$this->db->where('h.visible', $visible);
+
 		$norma = $this->db->get();
 		return $norma->result_array();
 	}
@@ -160,7 +172,7 @@ class Norma_model extends CI_Model
 		return $respuesta;
 	}
 
-	public function agregarNorma($idNorma, $codigo, $nombre, $observacion, $id_usuario){
+	public function agregarNorma($idNorma, $codigo, $nombre, $observacion, $solo_texto, $visible, $id_usuario){
 		try{
 			$this->db->db_debug = FALSE; 
 			$respuesta = array('resultado' => null, 
@@ -172,6 +184,8 @@ class Norma_model extends CI_Model
 				'codigo' => $codigo,
 				'nombre' => $nombre,
 				'observaciones' => $observacion,
+				'solo_texto' => $solo_texto,
+				'visible' => $visible,
 				'id_usuario' => $id_usuario
 			);
 
@@ -197,6 +211,14 @@ class Norma_model extends CI_Model
 					$respuesta['mensaje'] = "La Norma no existe.";
 				}
 			}else{
+				if ($visible == 1) {
+					$norma = $this->db->get_where('normas', array('estado' => 1, 'visible' => 1))->result();
+					$orden = (sizeof($norma) + 1);
+					$data["orden"] = $orden;
+					#var_dump($data);
+					#exit();
+				}
+
 				$this->db->insert('normas', $data);
 				if ($this->db->affected_rows() >= 1) {
 					$id_norma = $this->db->insert_id();

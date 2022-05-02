@@ -38,6 +38,8 @@ class Norma extends CI_Controller {
 				$codigo = null;
 				$nombre = null;
 				$observacion = null;
+				$solo_texto = null;
+				$visible = null;
 				$preguntas_seleccionadas = null;
 				$categorias_reporte = null;
 
@@ -49,6 +51,20 @@ class Norma extends CI_Controller {
 
 				if(!is_null($this->input->POST('inputObservaciones')) && trim($this->input->POST('inputObservaciones')) != "")
 					$observacion = trim($this->input->POST('inputObservaciones'));
+
+				if(!is_null($this->input->POST('inputSoloTexto')) && trim($this->input->POST('inputSoloTexto')) != ""){
+					$solo_texto = trim($this->input->POST('inputSoloTexto'));
+					if ($solo_texto == "on") {
+						$solo_texto = true;
+					}
+				}
+
+				if(!is_null($this->input->POST('inputVisible')) && trim($this->input->POST('inputVisible')) != ""){
+					$visible = trim($this->input->POST('inputVisible'));
+					if ($visible == "on") {
+						$visible = true;
+					}
+				}
 
 				if(!is_null($this->input->POST('preguntas_seleccionadas')) && trim($this->input->POST('preguntas_seleccionadas')) != "")
 					$preguntas_seleccionadas = json_decode($this->input->POST('preguntas_seleccionadas'), true);
@@ -64,7 +80,7 @@ class Norma extends CI_Controller {
 				;
 				$respuesta = 0;
 				$mensaje = '';
-				$resultado_an = $this->norma_model->agregarNorma($idNorma, $codigo, $nombre, $observacion, $usuario["id_usuario"]);
+				$resultado_an = $this->norma_model->agregarNorma($idNorma, $codigo, $nombre, $observacion, $solo_texto, $visible, $usuario["id_usuario"]);
 				if($resultado_an && $resultado_an["resultado"] > 0)
 				{
 					if($resultado_an['id_norma'])
@@ -240,8 +256,22 @@ class Norma extends CI_Controller {
 
 				$datos[] = array();
      			unset($datos[0]);
+     			$id_estado_norma = null;
 
-				$normas =  $this->norma_model->listarNormas($usuario["id_usuario"]);
+     			$visible = false;
+
+     			if(!is_null($this->input->post('estado_norma')) && $this->input->post('estado_norma') != "-1"  && $this->input->post('estado_norma') != "")
+					$estado_norma = $this->input->post('estado_norma');
+
+				if ($estado_norma == 1) {
+					$visible = true;
+				}elseif ($estado_norma == 2) {
+					$visible = false;
+				}else{
+					$visible = true;
+				}
+     			
+				$normas =  $this->norma_model->listarNormas($visible, $usuario["id_usuario"]);
 
 				$table_normas ='
 				<table id="tListaNormas" class="table table-sm table-hover table-bordered">
@@ -250,8 +280,11 @@ class Norma extends CI_Controller {
 						<th scope="col" class="texto-pequenio text-center align-middle registro"># ID</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Codigo</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Solo Texto</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Visible</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Estado</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Orden</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 					</tr>
@@ -266,8 +299,11 @@ class Norma extends CI_Controller {
 						        <th scope="row" class="text-center align-middle registro"><p class="texto-pequenio">'.$norma['id'].'</th>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$norma['codigo'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$norma['nombre'].'</p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.($norma['solo_texto'] == 1 ? '<i data-feather="check" data-placement="top" class="text-success"></i>': '').'</p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.($norma['visible'] == 1 ? '<i data-feather="check" data-placement="top" class="text-success"></i>': '').'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.($norma["estado"] == "1" ? "Activo" : "Desactivado").'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$norma['created_at'].'</p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$norma['orden'].'</p></td>
 					        	<td class="text-center align-middle registro botonTabla">
 						        	<a id="edit_'.$norma['id'].'" class="view_convenio" href="ModificarNorma/?idNorma='.$norma['id'].'">
 						        		<i data-feather="edit-3" data-toggle="tooltip" data-placement="top" title="Modificar"></i>       		
@@ -299,8 +335,8 @@ class Norma extends CI_Controller {
 
 				
 			}else{
-
-				$normas =  $this->norma_model->listarNormas($usuario["id_usuario"]);
+				$visible = true;
+				$normas =  $this->norma_model->listarNormas($visible, $usuario["id_usuario"]);
 				$usuario['normas'] = $normas;
 
 				$categorias =  $this->categoria_model->listarCategorias($usuario["id_usuario"]);

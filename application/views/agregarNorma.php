@@ -37,6 +37,19 @@
 						<label for="inputObservaciones">Observaciones</label>
 						<textarea class="form-control form-control-sm block" placeholder="Ingrese una Obseravaci&oacute;n" id="inputObservaciones" name="inputObservaciones" rows="2"><?php if(isset($norma['observaciones'])): echo $norma['observaciones']; endif; ?></textarea>
 					</div>
+					<div class="col-sm-6">
+						<div class="row mt-4 ml-2">
+							<div class="col-md-6 custom-control custom-switch text-left">
+							  <input type="checkbox" class="custom-control-input" id="inputSoloTexto" name="inputSoloTexto"
+							  <?php if(isset($norma['solo_texto']) && $norma['solo_texto'] == 1): echo 'checked'; endif; ?>>
+							  <label class="custom-control-label" for="inputSoloTexto">Solo Texto</label>
+							</div>
+							<div class="col-md-6 custom-control custom-switch text-left">
+							  <input type="checkbox" class="custom-control-input" id="inputVisible" name="inputVisible" <?php if(isset($norma['visible']) && $norma['visible'] == 1): echo 'checked'; endif; ?>>
+							  <label class="custom-control-label" for="inputVisible">Visible en Reporte</label>
+							</div>
+						</div>
+					</div>
 				</div>
 
 				<div class="col-sm-12">
