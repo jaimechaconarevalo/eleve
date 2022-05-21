@@ -53,6 +53,7 @@
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Edificio</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Direcci&oacute;n</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">cant. Ascensores</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Num. Informe</th>
 
 
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Tecnico</th>
@@ -62,8 +63,10 @@
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre Mant.</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Marca Ascensor</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Capacidad</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro">Tipo</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Estado</th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
+						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 						<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
@@ -79,6 +82,7 @@
 						      	<td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['edificio']; ?></p></td>
 						      	<td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['domicilio']; ?></p></td>
 						      	<td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['cantidad']; ?></p></td>
+						      	<td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['num_informe']; ?></p></td>
 
 
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['nombre_tecnico']; ?></p></td>
@@ -88,9 +92,17 @@
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['nombre_mant_2']; ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['marca_ascensor']; ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['capacidad_personas']; ?></p></td>
-
+						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo ($inspeccion["reinspeccion"] == "1" ? "Re-Inspeccion" : "Base"); ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo ($inspeccion["id_estado"] == "1" ? "Activo" : "Eliminado"); ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['created_at']; ?></p></td>
+
+						        
+						        <td class="text-center align-middle registro botonTabla">
+						        	<a id="edit_<?php echo $inspeccion['id']; ?>" class="view_convenio" href="reInspeccion/?idInspeccion=<?php echo $inspeccion['id']; ?>">
+						        		<i data-feather="check-square" data-toggle="tooltip" data-placement="top" title="Re-Inspeccion"></i>
+					        		</a>
+					        	</td>
+
 					        	<td class="text-center align-middle registro botonTabla">
 						        	<a id="edit_<?php echo $inspeccion['id']; ?>" class="view_convenio" href="revisarInspeccion/?idInspeccion=<?php echo $inspeccion['id']; ?>">
 						        		<i data-feather="file-text" data-toggle="tooltip" data-placement="top" title="Visualizar Reporte"></i>

@@ -170,6 +170,7 @@ class Inspeccion extends CI_Controller {
 					$cantidad_ascensor = $inspeccion[0]['cantidad_ascensor'];
 					$nombre_tecnico = $inspeccion[0]['nombre_tecnico'];
 					$rol = $inspeccion[0]['rol'];
+					$num_informe = $inspeccion[0]['num_informe'];
 
 
 					$largo_rol = strlen($rol);
@@ -269,6 +270,7 @@ class Inspeccion extends CI_Controller {
 
 					
 					$template->setValue('cantidad_ascensor', $cantidad_ascensor);
+					$template->setValue('num_informe', $num_informe);
 
 					$template->setValue('nombre_cont_1', $nombre_cont_1);
 					$template->setValue('num_cont_1', $num_cont_1);
@@ -461,10 +463,26 @@ class Inspeccion extends CI_Controller {
 
 							$template->setValue('cumple#'.$contador_carpeta, strtoupper($se_encuentra));
 							$nombre_block = 'block_negrita#'.$contador_carpeta;
+
+
+							#if ($id_carpeta == 1) {
+							#	var_dump ($observacion_carpeta);
+							#	exit();
+							#}
+
 							if (strpos($observacion_carpeta, '<negrita>') > 0) {
-								
 								$obs_carpeta = $observacion_carpeta;
 								$cant_negritas = substr_count($obs_carpeta, '<negrita>');
+								$cant_negritas_cerrado = substr_count($obs_carpeta, '</negrita>');
+
+								if ($cant_negritas_cerrado > 0) {
+									$explode_cerrado = explode("</negrita>", $obs_carpeta);
+									#var_dump();
+									if (strlen(trim(end($explode_cerrado))) > 0) {
+										$cant_negritas ++;
+									}
+								}
+
 								$template->cloneBlock($nombre_block, $cant_negritas, true, true);
 
 								$inicio_min = 0;
@@ -477,19 +495,31 @@ class Inspeccion extends CI_Controller {
 								#$explode_negrita = str_replace("<negrita>", "&", $obs_carpeta);
 								$explode_negrita = explode("<negrita>", $obs_carpeta);
 
+								
 								#var_dump(sizeof($explode_negrita));
 
 
 								if (sizeof($explode_negrita) > 1) {
 									for ($i=0; $i < sizeof($explode_negrita); $i++) {
+
+										#var_dump(sizeof($explode_negrita));
+										#exit();
 									#}
 									#foreach ($explode_negrita as $texto) {
+										/*if ($id_carpeta == 1) {
+											var_dump ($id_carpeta);
+											var_dump ($nombre_carpeta);
+											var_dump ($observacion_carpeta);
+											exit();
+										}*/
 										$texto = $explode_negrita[$i];
 										#echo ($texto);
 										#echo ('</br></br>');
 										if (strpos($texto, '</negrita>') > 0){
 											$explode_negrita_2 = explode("</negrita>", $texto);
 											#var_dump($explode_negrita_2);
+											#var_dump($cant_negritas);
+											#exit();
 											#echo ('</br>');
 											#var_dump(sizeof($explode_negrita_2));
 											#echo ('</br></br>');
@@ -505,7 +535,6 @@ class Inspeccion extends CI_Controller {
 													#echo ('</br></br>');
 													$template->setValue('obs_carpeta#'.$contador_carpeta."#".strval($i+1), $explode_negrita_2[1]);
 												#}
-												
 											}
 										}else{
 											if (sizeof($explode_negrita) == ($i+1)) {
@@ -520,6 +549,9 @@ class Inspeccion extends CI_Controller {
 										}
 									}
 								}
+								#if ($id_carpeta == 1) {
+								#	exit();
+								#	}
 								#exit();
 								#$explode_negrita = explode("</negrita>", $obs_carpeta);
 
@@ -1663,11 +1695,11 @@ class Inspeccion extends CI_Controller {
 
 												$this->load->library('upload', $config);
 												$this->upload->initialize($config);
-												var_dump($nombre_original);
-												var_dump($config);
+												#var_dump($nombre_original);
+												#var_dump($config);
 
 												$archivo_cargado = $this->upload->do_upload($nombre_original);
-												var_dump($archivo_cargado);
+												#var_dump($archivo_cargado);
 
 												
 												
@@ -1912,11 +1944,30 @@ class Inspeccion extends CI_Controller {
 					$idNorma = null;
 					$cant_respuestas_agregadas = null;
 					$es_temporal = 0;
+					$es_reinspeccion = false;
+					$id_reinspeccion = null;
 
 					if(!is_null($this->input->POST('id_inspeccion')) && is_numeric($this->input->POST('id_inspeccion')))
 					{
 						$idInspeccion = $this->input->POST('id_inspeccion');
 					}
+
+					if(!is_null($this->input->POST('re_inspeccion')) && trim($this->input->POST('es_temporal')) != "" && trim($this->input->POST('es_temporal')) != "-1")
+					{
+						$es_reinspeccion = $this->input->POST('re_inspeccion');
+					}
+
+					#var_dump($es_reinspeccion);
+					#exit();
+
+					if(!is_null($this->input->POST('reinspeccion')) && is_numeric($this->input->POST('reinspeccion')) && trim($this->input->POST('reinspeccion')) != "-1")
+					{
+						$id_reinspeccion = $this->input->POST('reinspeccion');
+					}
+
+					#var_dump($id_reinspeccion);
+					#exit();
+
 
 					if(!is_null($this->input->POST('es_temporal')) && trim($this->input->POST('es_temporal')) != "" && trim($this->input->POST('es_temporal')) != "-1")
 						$es_temporal = trim($this->input->POST('es_temporal'));
@@ -1963,7 +2014,17 @@ class Inspeccion extends CI_Controller {
 						}
 
 						#var_dump($respuestas_carpetas);
-						$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+
+						if ($es_reinspeccion) {
+							var_dump("entro aca 1");
+							exit();
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($id_reinspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal, $es_reinspeccion);
+							var_dump($resultado);
+							exit();
+						}else{
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						}
+						
 						#var_dump($resultado);
 						if($resultado && $resultado["resultado"] > 0)
 						{
@@ -2040,7 +2101,17 @@ class Inspeccion extends CI_Controller {
 						}
 						
 						for ($i=0; $i < 3 ; $i++) {
-							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+
+							if ($es_reinspeccion) {
+								var_dump("entro aca 2");
+								exit();
+								$resultado = $this->inspeccion_model->agregarInspeccionTemporal($id_reinspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal, $es_reinspeccion);
+								var_dump($resultado);
+								exit();
+							}else{
+								$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+							}
+							#$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
 							#var_dump($resultado);
 							if($resultado && $resultado["resultado"] > 0)
 							{
@@ -2124,7 +2195,18 @@ class Inspeccion extends CI_Controller {
 						}
 
 						for ($i=0; $i < 3 ; $i++) {
-							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+
+							#$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+							if ($es_reinspeccion) {
+								var_dump("entro aca 3");
+								exit();
+								$resultado = $this->inspeccion_model->agregarInspeccionTemporal($id_reinspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal, $es_reinspeccion);
+								var_dump($resultado);
+								exit();
+							}else{
+								$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+							}
+
 							#var_dump($resultado);
 							#$data["resultado_insert_inspec"] = $resultado;
 							if($resultado && $resultado["resultado"] > 0)
@@ -2254,7 +2336,16 @@ class Inspeccion extends CI_Controller {
 							#}
 						}
 
-						$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						#$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						if ($es_reinspeccion) {
+							#var_dump("entro aca 4");
+							#exit();
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($id_reinspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal, $es_reinspeccion);
+							#var_dump($resultado);
+							#exit();
+						}else{
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						}
 						#var_dump($resultado);
 						#$data["resultado_insert_inspec"] = $resultado;
 
@@ -2262,7 +2353,7 @@ class Inspeccion extends CI_Controller {
 						{
 							if(isset($resultado['id_inspeccion']))
 							{
-								if(is_null($idInspeccion))
+								if(is_null($idInspeccion) || $es_reinspeccion)
 									$idInspeccion = (int)$resultado['id_inspeccion'];
 
 
@@ -2356,7 +2447,16 @@ class Inspeccion extends CI_Controller {
 							}
 						}
 
-						$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						#$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						if ($es_reinspeccion) {
+							var_dump("entro aca 5");
+							exit();
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($id_reinspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal, $es_reinspeccion);
+							var_dump($resultado);
+							exit();
+						}else{
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						}
 
 						if($resultado && $resultado["resultado"] > 0)
 						{
@@ -2785,7 +2885,16 @@ class Inspeccion extends CI_Controller {
 							}
 						}
 
-						$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						#$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						if ($es_reinspeccion) {
+							var_dump("entro aca 6");
+							exit();
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($id_reinspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal, $es_reinspeccion);
+							var_dump($resultado);
+							exit();
+						}else{
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						}
 
 						if($resultado && $resultado["resultado"] > 0)
 						{
@@ -2883,7 +2992,16 @@ class Inspeccion extends CI_Controller {
 							}
 						}
 
-						$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						#$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						if ($es_reinspeccion) {
+							var_dump("entro aca 7");
+							exit();
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($id_reinspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal, $es_reinspeccion);
+							var_dump($resultado);
+							exit();
+						}else{
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						}
 
 						if($resultado && $resultado["resultado"] > 0)
 						{
@@ -3006,13 +3124,29 @@ class Inspeccion extends CI_Controller {
 							}
 						}
 
-						$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						#$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						if ($es_reinspeccion) {
+							#var_dump("entro aca XD");
+							#exit();
+							#var_dump($id_reinspeccion);
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($id_reinspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal, $es_reinspeccion);
+							#var_dump($resultado);
+							#exit();
+						}else{
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						}
 
 						if($resultado && $resultado["resultado"] > 0)
 						{
 							if(isset($resultado['id_inspeccion']))
 							{
-								if(is_null($idInspeccion))
+
+
+								#if ($es_reinspeccion) {
+								#	$idInspeccion = (int)$resultado['id_inspeccion'];
+								#}
+
+								if(is_null($idInspeccion) || $es_reinspeccion)
 									$idInspeccion = (int)$resultado['id_inspeccion'];
 
 
@@ -3101,6 +3235,7 @@ class Inspeccion extends CI_Controller {
 					$diccionario_elementos = array(array('nombre' => 'es_temporal', 'valor' => 'es_temporal'),
 						array('nombre' => 'inputTecnico', 'valor' => 'nombre_tecnico'),
 						array('nombre' => 'inputCantAscensor', 'valor' => 'cantidad_ascensor'),
+						array('nombre' => 'inputNumInforme', 'valor' => 'num_informe'),
 						array('nombre' => 'inputNombreE', 'valor' => 'nombre'),
 						array('nombre' => 'inputDireccionE', 'valor' => 'domicilio'),
 						array('nombre' => 'inputRutE', 'valor' => 'rut'),
@@ -3141,13 +3276,22 @@ class Inspeccion extends CI_Controller {
 
 
 
-						$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, $valor_elemento, $valor_campo, $usuario["id_usuario"], $es_temporal);
+						#$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, $valor_elemento, $valor_campo, $usuario["id_usuario"], $es_temporal);
+						if ($es_reinspeccion) {
+							#var_dump("entro aca 8");
+							#exit();
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($id_reinspeccion, $id_elemento, $valor_elemento, $valor_campo, $usuario["id_usuario"], $es_temporal, $es_reinspeccion);
+							#var_dump($resultado);
+							#exit();
+						}else{
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, $valor_elemento, $valor_campo, $usuario["id_usuario"], $es_temporal);
+						}
 
 						if($resultado && $resultado["resultado"] > 0)
 						{
 							if(isset($resultado['id_inspeccion']))
 							{
-								if(is_null($idInspeccion))
+								if(is_null($idInspeccion) || $es_reinspeccion)
 									$idInspeccion = (int)$resultado['id_inspeccion'];
 
 								$resultado = 1;
@@ -3331,6 +3475,19 @@ class Inspeccion extends CI_Controller {
 				#$usuario['observaciones_generales'] = $observaciones_generales;
 
 				#var_dump($observaciones_generales);
+				$respuesta_reinspeccion =  $this->inspeccion_model->obtenerReInspeccion($id_inspeccion ,$usuario["id_usuario"]);
+				#var_dump($respuesta_reinspeccion);#exit();
+				#var_dump(isset($respuesta_reinspeccion["resultado"]));
+				#var_dump(!isset($respuesta_reinspeccion["resultado"]));
+					
+				if (sizeof($respuesta_reinspeccion) > 0 && !array_key_exists('resultado', $respuesta_reinspeccion)) {
+					#var_dump($respuesta_reinspeccion[0]);
+					$usuario['reinspeccion'] = $respuesta_reinspeccion[0];
+					#var_dump("entro aca");
+					#var_dump($inspeccion[0]);
+				}
+				
+
 				
 
 				
@@ -3456,6 +3613,7 @@ class Inspeccion extends CI_Controller {
 								<th scope="col" class="texto-pequenio text-center align-middle registro">Edificio</th>
 								<th scope="col" class="texto-pequenio text-center align-middle registro">Direcci&oacute;n</th>
 								<th scope="col" class="texto-pequenio text-center align-middle registro">cant. Ascensores</th>
+								<th scope="col" class="texto-pequenio text-center align-middle registro">Num. Informe</th>
 
 
 								<th scope="col" class="texto-pequenio text-center align-middle registro">Tecnico</th>
@@ -3465,8 +3623,10 @@ class Inspeccion extends CI_Controller {
 								<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre Mant.</th>
 								<th scope="col" class="texto-pequenio text-center align-middle registro">Marca Ascensor</th>
 								<th scope="col" class="texto-pequenio text-center align-middle registro">Capacidad</th>
+								<th scope="col" class="texto-pequenio text-center align-middle registro">Tipo</th>
 								<th scope="col" class="texto-pequenio text-center align-middle registro">Estado</th>
 								<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
+								<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 								<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 								<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 								<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
@@ -3483,6 +3643,7 @@ class Inspeccion extends CI_Controller {
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$inspeccion['edificio'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$inspeccion['domicilio'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$inspeccion['cantidad'].'</p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$inspeccion['num_informe'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$inspeccion['nombre_tecnico'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$inspeccion['rut_admin'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$inspeccion['nombre_admin'].'</p></td>
@@ -3490,9 +3651,14 @@ class Inspeccion extends CI_Controller {
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$inspeccion['nombre_mant_2'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$inspeccion['marca_ascensor'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$inspeccion['capacidad_personas'].'</p></td>
-
-						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo ($inspeccion["id_estado"] == "1" ? "Activo" : "Eliminado"); ?></p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.($inspeccion["reinspeccion"] == "1" ? "Re-Inspeccion" : "Base").'</p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.($inspeccion["id_estado"] == "1" ? "Activo" : "Eliminado").'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$inspeccion['created_at'].'</p></td>
+						        <td class="text-center align-middle registro botonTabla">
+						        	<a id="edit_'.$inspeccion['id'].'" class="view_convenio" href="reInspeccion/?idInspeccion='.$inspeccion['id'].'">
+						        		<i data-feather="check-square" data-toggle="tooltip" data-placement="top" title="Re-Inspeccion"></i>
+					        		</a>
+					        	</td>
 					        	<td class="text-center align-middle registro botonTabla">
 						        	<a id="edit_'.$inspeccion['id'].'" class="view_convenio" href="revisarInspeccion/?idInspeccion='.$inspeccion['id'].'">
 						        		<i data-feather="file-text" data-toggle="tooltip" data-placement="top" title="Visualizar Reporte"></i>
@@ -3654,6 +3820,7 @@ class Inspeccion extends CI_Controller {
 
 	                     		$respuesta_pregunta = null;
 	                     		$id_respuesta_pregunta = null;
+	                     		$id_severidad_respuesta = null;
 	                     		$imagenes = array();
 	                     		if (isset($respuestas_inspeccion) && !is_null($respuestas_inspeccion) && sizeof($respuestas_inspeccion) > 0) {
 
@@ -3913,6 +4080,288 @@ class Inspeccion extends CI_Controller {
 			$idPregunta = null;
 			$respuestas_inspeccion = null;
 			$reinspeccion = null;
+			$idReInspeccion = null;
+
+			$categorias = array();
+			$preguntas = array();
+			$respuestas = array();
+
+			if(!is_null($this->input->post('idNorma')) && $this->input->post('idNorma') != "-1"  && $this->input->post('idNorma') != "")
+				$idNorma = $this->input->post('idNorma');
+
+			if(!is_null($this->input->post('idInspeccion')) && $this->input->post('idInspeccion') != "-1"  && $this->input->post('idInspeccion') != "")
+				$idInspeccion = $this->input->post('idInspeccion');
+
+			if(!is_null($this->input->post('reinspeccion')) && $this->input->post('reinspeccion') != "-1"  && $this->input->post('reinspeccion') != "")
+				$reinspeccion = $this->input->post('reinspeccion');
+
+			if(!is_null($this->input->post('idReInspeccion')) && $this->input->post('idReInspeccion') != "-1"  && $this->input->post('idReInspeccion') != "")
+				$idReInspeccion = $this->input->post('idReInspeccion');
+
+			#var_dump($idReInspeccion);
+			#exit();
+			if (isset($idNorma)) {
+				$categorias_preguntas_norma = $this->norma_model->listarCategoriasPreguntasNorma($idNorma, $usuario['id_usuario']);
+				$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccion($idReInspeccion, $usuario['id_usuario']);
+				#var_dump($respuestas_inspeccion);
+				#exit();
+				$severidad_respuestas = $this->inspeccion_model->obtenerSeveridadRespuestas($usuario["id_usuario"]);
+
+				if (sizeof($categorias_preguntas_norma) > 0) {
+
+					foreach ($categorias_preguntas_norma as $pregunta) {
+						$id_categoria = null;
+						$id_pregunta = null;
+						$codigo_c = null;
+						$categoria = null;
+						$codigo_p = null;
+						$pregunta_p = null;
+						$id_respuesta = null;
+						$orden_r = null;
+						$respuesta = null;
+						$obs_respuesta = null;
+						$tiene_no = false;
+
+						if ($idCategoria != $pregunta['id_categoria'])
+	                    {
+	                     	$id_pregunta = $pregunta['id_pregunta'];
+	                     	$codigo_c = $pregunta['codigo_c'];
+	                     	$categoria = $pregunta['categoria'];
+	                     	$codigo_p = $pregunta['codigo_p'];
+	                     	$pregunta_r = $pregunta['pregunta'];
+	                     	$id_respuesta = $pregunta['respuesta_id'];
+	                     	$orden_r = $pregunta['orden_r'];
+	                     	$respuesta = $pregunta['respuesta'];
+	                     	$obs_respuesta = $pregunta['obs_respuesta'];
+
+	                     	if (is_null($idCategoria)) {
+	                     		$idCategoria = $pregunta['id_categoria'];
+	                     		$idPregunta = $id_pregunta;
+
+	                     		$respuesta_pregunta = null;
+	                     		$id_respuesta_pregunta = null;
+	                     		$id_severidad_respuesta = null;
+	                     		$imagenes = array();
+	                     		if (isset($respuestas_inspeccion) && !is_null($respuestas_inspeccion) && sizeof($respuestas_inspeccion) > 0) {
+
+	                     			$array_filtrado = array_filter($respuestas_inspeccion, function($val) use($idCategoria, $id_pregunta){
+							              return ($val['id_categoria']==$idCategoria and $val['id_pregunta']==$id_pregunta);
+							         });
+	                     			reset($array_filtrado);
+									$first_key = key($array_filtrado);#var_dump($array_filtrado);
+	                     			if (isset($array_filtrado) && !is_null($array_filtrado) && sizeof($array_filtrado) > 0 && isset($array_filtrado[$first_key]["respuesta"]) && !is_null($array_filtrado[$first_key]["respuesta"])) {
+	                     				$respuesta_pregunta = $array_filtrado[$first_key]["respuesta"];
+	                     				$id_respuesta_pregunta = $array_filtrado[$first_key]["id_respuesta"];
+	                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
+	                     				#var_dump($id_severidad_respuesta);
+	                     				if (!is_null($respuesta_pregunta) && $respuesta_pregunta == 2) {
+	                     					#var_dump($array_filtrado);
+	                     					$tiene_no = true;
+	                     					foreach ($array_filtrado as $key => $value) {
+	                     						if (isset($value["file_name"]) && !is_null($value["file_name"]) && $value["file_name"] != "") {
+	                     							$imagenes[] = array('id_imagen' => ($value["id_categoria"].'_'.$value["id_pregunta"].'_'.$value["orden_a"]), 'file_name' => $value["file_name"], 'orden' => $value["orden_a"], 'archivo_id' => $value["archivo_id"]);	
+	                     						}
+		                     				}
+
+		                     				#if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
+				                     			#$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
+				                     			#$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);	
+				                     		#}
+
+
+	                     				}
+	                     			}
+	                     		}
+
+	                     		#if (!isset($reinspeccion) && is_null($reinspeccion)) {
+	                     			$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
+
+	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+	                     		#}
+
+		                     	if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
+		                     		$respuestas[] = array("id_respuesta" => $id_respuesta, "orden_r" => $orden_r, "respuesta" => $respuesta, "obs_respuesta" => $obs_respuesta);
+		                     	}
+	                     	}else{
+                     			$idCategoria = $pregunta['id_categoria'];
+                     			$preguntas[(sizeof($preguntas)-1)]["respuestas"] = $respuestas;
+                     			$respuestas = array();
+                     			$idPregunta = $pregunta['id_pregunta'];
+                     			$categorias[(sizeof($categorias)-1)]["preguntas"] = $preguntas;
+                     			$preguntas = array();
+
+                     			$respuesta_pregunta = null;
+                     			$id_respuesta_pregunta = null;
+                     			$imagenes = array();
+	                     		if (isset($respuestas_inspeccion) && !is_null($respuestas_inspeccion) && sizeof($respuestas_inspeccion) > 0) {
+	                     			$array_filtrado = array_filter($respuestas_inspeccion, function($val) use($idCategoria, $id_pregunta){
+							              return ($val['id_categoria']==$idCategoria and $val['id_pregunta']==$id_pregunta);
+							         });
+	                     			reset($array_filtrado);
+									$first_key = key($array_filtrado);
+	                     			if (isset($array_filtrado) && !is_null($array_filtrado) && sizeof($array_filtrado) > 0 && isset($array_filtrado[$first_key]["respuesta"]) && !is_null($array_filtrado[$first_key]["respuesta"])) {
+	                     				$respuesta_pregunta = $array_filtrado[$first_key]["respuesta"];
+	                     				$id_respuesta_pregunta = $array_filtrado[$first_key]["id_respuesta"];
+	                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
+
+	                     				if ($respuesta_pregunta == 2 && !is_null($respuesta_pregunta)) {
+	                     					$tiene_no = true;
+	                     					foreach ($array_filtrado as $key => $value) {
+	                     						if (isset($value["file_name"]) && !is_null($value["file_name"]) && $value["file_name"] != "") {
+	                     							$imagenes[] = array('id_imagen' => ($value["id_categoria"].'_'.$value["id_pregunta"].'_'.$value["orden_a"]), 'file_name' => $value["file_name"], 'orden' => $value["orden_a"], 'archivo_id' => $value["archivo_id"]);	
+	                     						}
+		                     				}
+	                     				}
+	                     			}
+	                     		}
+
+	                     		#if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
+	                     			#$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+	                     		#}elseif (!isset($reinspeccion) && is_null($reinspeccion)) {
+	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+	                     		#}
+
+                     			if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
+		                     		$respuestas[] = array("id_respuesta" => $id_respuesta, "orden_r" => $orden_r, "respuesta" => $respuesta, "obs_respuesta" => $obs_respuesta);
+		                     	}
+
+		                     	$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
+	                     	}
+	                    }else{
+	                    	if ($idPregunta != $pregunta['id_pregunta'])
+		                    {
+		                    	$id_pregunta = $pregunta['id_pregunta'];
+		                     	$codigo_c = $pregunta['codigo_c'];
+		                     	$categoria = $pregunta['categoria'];
+		                     	$codigo_p = $pregunta['codigo_p'];
+		                     	$pregunta_r = $pregunta['pregunta'];
+		                     	$id_respuesta = $pregunta['respuesta_id'];
+		                     	$orden_r = $pregunta['orden_r'];
+		                     	$respuesta = $pregunta['respuesta'];
+		                     	$obs_respuesta = $pregunta['obs_respuesta'];
+		                    	$preguntas[(sizeof($preguntas)-1)]["respuestas"] = $respuestas;
+		                    	$respuestas = array();
+		                    	$idPregunta = $pregunta['id_pregunta'];
+
+		                    	$respuesta_pregunta = null;
+		                    	$id_respuesta_pregunta = null;
+		                    	$imagenes = array();
+	                     		if (isset($respuestas_inspeccion) && !is_null($respuestas_inspeccion) && sizeof($respuestas_inspeccion) > 0) {
+	                     			$array_filtrado = array_filter($respuestas_inspeccion, function($val) use($idCategoria, $id_pregunta){
+							              return ($val['id_categoria']==$idCategoria and $val['id_pregunta']==$id_pregunta);
+							         });
+	                     			reset($array_filtrado);
+									$first_key = key($array_filtrado);
+	                     			if (isset($array_filtrado) && !is_null($array_filtrado) && sizeof($array_filtrado) > 0 && isset($array_filtrado[$first_key]["respuesta"]) && !is_null($array_filtrado[$first_key]["respuesta"])) {
+	                     				$respuesta_pregunta = $array_filtrado[$first_key]["respuesta"];
+	                     				$id_respuesta_pregunta = $array_filtrado[$first_key]["id_respuesta"];
+	                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
+
+	                     				if ($respuesta_pregunta == 2 && !is_null($respuesta_pregunta)) {
+	                     					$tiene_no = true;
+	                     					foreach ($array_filtrado as $key => $value) {
+	                     						if (isset($value["file_name"]) && !is_null($value["file_name"]) && $value["file_name"] != "") {
+	                     							$imagenes[] = array('id_imagen' => ($value["id_categoria"].'_'.$value["id_pregunta"].'_'.$value["orden_a"]), 'file_name' => $value["file_name"], 'orden' => $value["orden_a"], 'archivo_id' => $value["archivo_id"]);	
+	                     						}
+		                     				}
+	                     				}
+	                     			}
+	                     		}
+
+	                     		#if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
+	                     		#	$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+	                     		#}elseif (!isset($reinspeccion) && is_null($reinspeccion)) {
+	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+	                     		#}
+
+		                    	if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
+		                     		$respuestas[] = array("id_respuesta" => $id_respuesta, "orden_r" => $orden_r, "respuesta" => $respuesta, "obs_respuesta" => $obs_respuesta);
+		                     	}
+
+		                    }else{
+
+		                    	$id_pregunta = $pregunta['id_pregunta'];
+		                     	$codigo_c = $pregunta['codigo_c'];
+		                     	$categoria = $pregunta['categoria'];
+		                     	$codigo_p = $pregunta['codigo_p'];
+		                     	$pregunta_r = $pregunta['pregunta'];
+		                     	$id_respuesta = $pregunta['respuesta_id'];
+		                     	$orden_r = $pregunta['orden_r'];
+		                     	$respuesta = $pregunta['respuesta'];
+		                     	$obs_respuesta = $pregunta['obs_respuesta'];
+		                    	
+		                    	if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
+		                     		$respuestas[] = array("id_respuesta" => $id_respuesta, "orden_r" => $orden_r, "respuesta" => $respuesta, "obs_respuesta" => $obs_respuesta);
+		                     	}
+
+		                    }
+	                    }
+	                }
+
+	                $preguntas[(sizeof($preguntas)-1)]["respuestas"] = $respuestas;
+         			$categorias[(sizeof($categorias)-1)]["preguntas"] = $preguntas;
+				}
+			}
+
+			$categorias_no = array();
+			foreach ($categorias as $categoria) {
+				#var_dump($categoria);
+				$preguntas_no = array();
+				$tiene_no = false;
+
+
+				foreach ($categoria["preguntas"] as $pregunta) {
+					#var_dump($pregunta);
+					if ($pregunta["respuesta"] == "2") {
+						/*var_dump($categoria["id_categoria"]);
+						var_dump($categoria["codigo"]);
+						var_dump($categoria["categoria"]);
+						var_dump($pregunta);*/
+						$tiene_no = true;
+						$preguntas_no[] = $pregunta;
+						#var_dump($preguntas_no);
+					}
+				}
+
+				if ($tiene_no) {
+					$categorias_no[] = $categoria;
+					$categorias_no[(sizeof($categorias_no) - 1)]["preguntas"] = $preguntas_no;
+				}
+				#var_dump($categorias_no);
+				#exit();
+			}
+
+			#var_dump($categorias_no);
+			#exit();
+			$output = array(
+				'data_cp_n' => $categorias_no,
+				'severidad' => $severidad_respuestas
+			);
+			echo json_encode($output);
+		}else
+		{
+			redirect('Inicio');
+		}
+	}
+
+
+
+
+
+	/*{
+		$usuario = $this->session->userdata();
+		if($usuario["id_usuario"]){
+			$idNorma = null;
+			$idInspeccion = null;
+			$categorias_preguntas = array();
+			$data = array();
+			$dataCategoria = array();
+			$cantCategoria = 0;
+			$cantCategoriaPregunta = 0;
+			$idCategoria = null;
+			$idPregunta = null;
+			$respuestas_inspeccion = null;
+			$reinspeccion = null;
 
 			$categorias = array();
 			$preguntas = array();
@@ -3930,8 +4379,9 @@ class Inspeccion extends CI_Controller {
 			if (isset($idNorma)) {
 				$categorias_preguntas_norma = $this->norma_model->listarCategoriasPreguntasNorma($idNorma, $usuario['id_usuario']);
 
-				$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccion($idInspeccion, $usuario['id_usuario']);
+				$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccionReporte($idInspeccion, $usuario['id_usuario'], true);
 				#var_dump($respuestas_inspeccion);
+				#exit();
 
 				$severidad_respuestas = $this->inspeccion_model->obtenerSeveridadRespuestas($usuario["id_usuario"]);
 
@@ -3976,19 +4426,20 @@ class Inspeccion extends CI_Controller {
                  			#var_dump($respuestas_inspeccion);
 
 	                     	if (is_null($idCategoria)) {
-	                     		$idCategoria = $pregunta['id_categoria'];
+	                     		#$idCategoria = $pregunta['id_categoria'];
+	                     		$idCategoria2 = $pregunta['id_categoria'];
 	                     		$idPregunta = $id_pregunta;
 
 	                     		$respuesta_pregunta = null;
 	                     		$id_respuesta_pregunta = null;
 	                     		$imagenes = array();
 
-	                     		$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
+	                     		
 
 	                     		if (isset($respuestas_inspeccion) && !is_null($respuestas_inspeccion) && sizeof($respuestas_inspeccion) > 0) {
 
-	                     			$array_filtrado = array_filter($respuestas_inspeccion, function($val) use($idCategoria, $id_pregunta){
-							              return ($val['id_categoria']==$idCategoria and $val['id_pregunta']==$id_pregunta);
+	                     			$array_filtrado = array_filter($respuestas_inspeccion, function($val) use($idCategoria2, $id_pregunta){
+							              return ($val['id_categoria']==$idCategoria2 and $val['id_pregunta']==$id_pregunta);
 							         });
 	                     			reset($array_filtrado);
 									$first_key = key($array_filtrado);#var_dump($array_filtrado);
@@ -3996,19 +4447,20 @@ class Inspeccion extends CI_Controller {
 	                     				$respuesta_pregunta = $array_filtrado[$first_key]["respuesta"];
 	                     				$id_respuesta_pregunta = $array_filtrado[$first_key]["id_respuesta"];
 	                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
+
 	                     				#var_dump($idCategoria);
-	                     				#var_dump($id_pregunta);
+	                     				#var_dump($id_respuesta_pregunta);
+	                     				#var_dump($id_severidad_respuesta);
 	                     				
-	                     				/*if ($respuesta_pregunta == 2) {
-	                     					var_dump($respuesta_pregunta);
-	                     					exit();	
-	                     				}else{
-	                     					var_dump($array_filtrado);
-	                     					var_dump('</br></br>');
-	                     				}*/
-	                     				
+	                     				#var_dump($array_filtrado);
+	                     				#var_dump($respuesta_pregunta);
+
 	                     				if (!is_null($respuesta_pregunta) && $respuesta_pregunta == 2) {
-	                     					#var_dump($array_filtrado);
+	                     					$idCategoria = $pregunta['id_categoria'];
+	                     					$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
+
+	                     					
+	                     					#exit();
 	                     					$tiene_no = true;
 	                     					foreach ($array_filtrado as $key => $value) {
 	                     						if (isset($value["file_name"]) && !is_null($value["file_name"]) && $value["file_name"] != "") {
@@ -4040,7 +4492,8 @@ class Inspeccion extends CI_Controller {
 		                     	#exit();
 	                     	}else{
 
-                     			$idCategoria = $pregunta['id_categoria'];
+                     			#$idCategoria = $pregunta['id_categoria'];
+                     			$idCategoria2 = $pregunta['id_categoria'];
                      			$preguntas[(sizeof($preguntas)-1)]["respuestas"] = $respuestas;
                      			$respuestas = array();
                      			$idPregunta = $pregunta['id_pregunta'];
@@ -4051,14 +4504,11 @@ class Inspeccion extends CI_Controller {
                      			$id_respuesta_pregunta = null;
                      			$imagenes = array();
 
-
-                     			$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
-
 	                     		if (isset($respuestas_inspeccion) && !is_null($respuestas_inspeccion) && sizeof($respuestas_inspeccion) > 0) {
 	                     			
 	                     			
-	                     			$array_filtrado = array_filter($respuestas_inspeccion, function($val) use($idCategoria, $id_pregunta){
-							              return ($val['id_categoria']==$idCategoria and $val['id_pregunta']==$id_pregunta);
+	                     			$array_filtrado = array_filter($respuestas_inspeccion, function($val) use($idCategoria2, $id_pregunta){
+							              return ($val['id_categoria']==$idCategoria2 and $val['id_pregunta']==$id_pregunta);
 							         });
 	                     			#var_dump($idCategoria);var_dump($id_pregunta);
 	                     			reset($array_filtrado);
@@ -4069,6 +4519,12 @@ class Inspeccion extends CI_Controller {
 	                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
 
 	                     				if ($respuesta_pregunta == 2 && !is_null($respuesta_pregunta)) {
+	                     					$idCategoria = $pregunta['id_categoria'];
+	                     					$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
+
+	                     					#var_dump($array_filtrado);
+	                     					#exit();
+
 	                     					$tiene_no = true;
 	                     					foreach ($array_filtrado as $key => $value) {
 	                     						if (isset($value["file_name"]) && !is_null($value["file_name"]) && $value["file_name"] != "") {
@@ -4106,7 +4562,11 @@ class Inspeccion extends CI_Controller {
 		                     	$orden_r = $pregunta['orden_r'];
 		                     	$respuesta = $pregunta['respuesta'];
 		                     	$obs_respuesta = $pregunta['obs_respuesta'];
+
+
 		                    	$preguntas[(sizeof($preguntas)-1)]["respuestas"] = $respuestas;
+
+
 		                    	$respuestas = array();
 		                    	$idPregunta = $pregunta['id_pregunta'];
 
@@ -4124,9 +4584,21 @@ class Inspeccion extends CI_Controller {
 	                     				$id_respuesta_pregunta = $array_filtrado[$first_key]["id_respuesta"];
 	                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
 
-	                     				#var_dump($idCategoria);var_dump($id_pregunta);
-	                     				#var_dump($array_filtrado);
+	                     				
+
 	                     				if ($respuesta_pregunta == 2 && !is_null($respuesta_pregunta)) {
+
+
+	                     					
+	                     					var_dump($categorias);
+	                     					var_dump($respuestas);
+	                     					var_dump($preguntas);
+
+	                     					#var_dump($respuesta_pregunta);
+		                     				#var_dump($id_pregunta);
+		                     				#var_dump($array_filtrado);
+		                     				exit();
+
 	                     					$tiene_no = true;
 	                     					foreach ($array_filtrado as $key => $value) {
 	                     						if (isset($value["file_name"]) && !is_null($value["file_name"]) && $value["file_name"] != "") {
@@ -4141,6 +4613,29 @@ class Inspeccion extends CI_Controller {
 						                     		$respuestas[] = array("id_respuesta" => $id_respuesta, "orden_r" => $orden_r, "respuesta" => $respuesta, "obs_respuesta" => $obs_respuesta);
 						                     	}
 				                     		}
+
+				                     		$posicion_categoria = null;
+				                     		if (sizeof($categorias) > 0) {
+				                     			$index_encontrado = array_search($idCategoria, array_column($categorias, 'id_categoria'));
+					                     		if ($index_encontrado !== false){
+													$posicion_categoria = $index_encontrado;	
+												}else{
+													$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
+													$index_encontrado = array_search($idCategoria, array_column($categorias, 'id_categoria'));
+													$posicion_categoria = $index_encontrado;
+												}
+				                     		}else{
+				                     			$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
+												$index_encontrado = array_search($idCategoria, array_column($categorias, 'id_categoria'));
+												$posicion_categoria = $index_encontrado;
+				                     		}
+
+				                     		#$categorias[$posicion_categoria]["preguntas"][] = $preguntas;
+				                     		if (!is_null($posicion_categoria)) {
+				                     			var_dump($posicion_categoria);
+				                     		}
+
+
 	                     				}else{
 	                     					$tiene_no = false;
 	                     				}
@@ -4172,9 +4667,11 @@ class Inspeccion extends CI_Controller {
 
 	                }
 
+	                $preguntas[(sizeof($preguntas)-1)]["respuestas"] = $respuestas;
+         			$categorias[(sizeof($categorias)-1)]["preguntas"] = $preguntas;
 
-	                var_dump($respuestas);
-	                var_dump($preguntas);
+	                #var_dump($respuestas);
+	                #var_dump($preguntas);
 	                #var_dump($categorias);
 
 	                #if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
@@ -4185,28 +4682,6 @@ class Inspeccion extends CI_Controller {
 	                
 	                #var_dump($categorias);
 	                #$dataCategoria[] = array('id_categoria' => $idCategoria, 'cantPreguntas' => $cantCategoriaPregunta);
-	                	
-
-					/*foreach ($categorias_preguntas_norma as $pregunta) {
-						
-						$row_cp_n = array();
-						$row_cp_n[] = $pregunta['id'];
-						$row_cp_n[] = $pregunta['id_norma'];
-						$row_cp_n[] = $pregunta['id_categoria'];
-						$row_cp_n[] = $pregunta['id_pregunta'];
-						$row_cp_n[] = $pregunta['codigo_c'];
-						$row_cp_n[] = $pregunta['categoria'];
-						$row_cp_n[] = $pregunta['codigo_p'];
-						$row_cp_n[] = $pregunta['pregunta'];
-						$categorias_preguntas[] = $row_cp_n;
-
-						$row = array();
-						$row[] = $pregunta['id_pregunta'];
-						$row[] = $pregunta['id_categoria'];
-						$row[] = $pregunta['codigo_p'];
-						$row[] = $pregunta['pregunta'];
-						$data[] = $row;
-					}*/
 				}
 			}
 			
@@ -4222,7 +4697,7 @@ class Inspeccion extends CI_Controller {
 		}
 	}
 
-
+*/
 	public function json_listarObservacionesInspeccion()
 	{
 		$usuario = $this->session->userdata();

@@ -118,6 +118,7 @@
         var loader = document.getElementById("loader");
         loader.removeAttribute('hidden');
         var es_temporal = document.getElementById('inputEsTemporal').value;
+        var es_temporal = 1;
         if (es_temporal == 1) {
             //form.preventDefault();
             var id_elemento = null;
@@ -207,7 +208,12 @@
                     formData.append("id_pregunta", element.dataset.id_pregunta);
                     formData.append("observacion", element.dataset.observacion);
 
-
+                    if(window.location.pathname.split('/')[2].toLowerCase() == 'reInspeccion'.toLowerCase()) {
+                        //alert("es reinspeccion");
+                        formData.append("re_inspeccion", true);
+                        var reinspeccion = document.getElementById('inputReinspeccion').value;
+                        formData.append("id_reinspeccion", reinspeccion);
+                    }
                    
                     //formData.append('action', 'agregarInspeccionTemporal');
                     // Attach file
@@ -255,13 +261,20 @@
 
                 }else{
                     var id_inspeccion = document.getElementById('inputIdInspeccion').value;
+                    var re_inspeccion = null;
+                    var reinspeccion = null;
+
+                    if(window.location.pathname.split('/')[2].toLowerCase() == 'reInspeccion'.toLowerCase()) {
+                        re_inspeccion = true;
+                        reinspeccion = document.getElementById('inputReinspeccion').value;
+                    }
 
                     var baseurl = (window.origin + '/Inspeccion/agregarInspeccionTemporal');
                     jQuery.ajax({
                     type: 'POST',
                     url: baseurl,
                     dataType: 'json',
-                    data: {id_inspeccion: id_inspeccion, es_temporal: es_temporal, id_elemento: id_elemento, valor_elemento: valor_elemento, total_carpetas: total_carpetas, total_normas: total_normas, total_herramientas: total_herramientas,  total_categorias: total_categorias, id_categoria: id_categoria, id_pregunta: id_pregunta},
+                    data: {id_inspeccion: id_inspeccion, es_temporal: es_temporal, id_elemento: id_elemento, valor_elemento: valor_elemento, total_carpetas: total_carpetas, total_normas: total_normas, total_herramientas: total_herramientas,  total_categorias: total_categorias, id_categoria: id_categoria, id_pregunta: id_pregunta, re_inspeccion: re_inspeccion, reinspeccion: reinspeccion},
                     success: function(data) {
                         if (data) {
                             if(data['resultado'] == '1')
@@ -448,7 +461,7 @@
     });
     
 
-    $("#inputRutA, #inputTecnico, #inputCantAscensor, #inputNombreE, #inputDireccionE, #inputRutE, #inputIdE, #inputNombreA, #inputEmailA, #idEmpresaMantenedora, #inputNombreRM, #inputFechaUM, #rbSiCarpeta, #rbNoCarpeta, .pauta, #inputMarca, #selectUso, #inputCapacidad, #inputCapacidadKG, #selectSalaMaquina, #inputVelocidad, #inputRecorrido, #inputParadas, #selectTipoTraccion, #inputCantidad, #inputDiamTraccion, #inputEnclavamientoElectrico, #inputEnclavamientoMecanico, #inputDiamCableLimitador, #idNorma").change(function(e) {
+    $("#inputRutA, #inputTecnico, #inputCantAscensor, #inputNumInforme, #inputNombreE, #inputDireccionE, #inputRutE, #inputIdE, #inputNombreA, #inputEmailA, #idEmpresaMantenedora, #inputNombreRM, #inputFechaUM, #rbSiCarpeta, #rbNoCarpeta, .pauta, #inputMarca, #selectUso, #inputCapacidad, #inputCapacidadKG, #selectSalaMaquina, #inputVelocidad, #inputRecorrido, #inputParadas, #selectTipoTraccion, #inputCantidad, #inputDiamTraccion, #inputEnclavamientoElectrico, #inputEnclavamientoMecanico, #inputDiamCableLimitador, #idNorma").change(function(e) {
         //guardar_datos();
 
         guardar_elemento(e);
@@ -2284,6 +2297,7 @@ window.onload = function () {
     if(window.location.pathname.split('/')[2].toLowerCase() == 'reinspeccion'.toLowerCase())
     {
         var idInspeccion = document.getElementById('inputIdInspeccion').value;
+        var idReInspeccion = document.getElementById('inputReinspeccion').value;
         var idNorma = document.getElementById('idNorma').value;
         
         if (idInspeccion != "" && idNorma != "") {
@@ -2292,7 +2306,7 @@ window.onload = function () {
                 type: "POST",
                 url: baseurl,
                 dataType: 'json',
-                data: {idInspeccion: idInspeccion, idNorma: idNorma, reinspeccion: 1},
+                data: {idInspeccion: idInspeccion, idNorma: idNorma, reinspeccion: 1, idReInspeccion: idReInspeccion},
                 success: function(data) {
                     if (data) {
 
