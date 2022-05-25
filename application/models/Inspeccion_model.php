@@ -130,8 +130,18 @@ class Inspeccion_model extends CI_Model
 
 								$inspecciones_checklists_respuestas = $this->db->get_where('inspecciones_checklists_respuestas', array('id_inspecciones_checklists' => $id_inspecciones_checklists, 'id_estado' => 1))->result();
 								if (sizeof($inspecciones_checklists_respuestas) > 0) {
-
 									foreach ($inspecciones_checklists_respuestas as $ic_respuesta) {
+										$id_ic_respuesta = $ic_respuesta->id;
+
+										$imagenes_ic_respuesta = $this->db->get_where('archivos', array('inspeccion_checklist_resp_id' => $id_ic_respuesta, 'id_estado' => 1))->result();
+
+										if (sizeof($imagenes_ic_respuesta) > 0) {
+											foreach ($imagenes_ic_respuesta as $imagen_respuesta) {
+												$imagen_respuesta->id = null;
+											}
+										}
+
+
 										$ic_respuesta->id_inspecciones_checklists = $id_checklist_reinspeccion;
 										$ic_respuesta->id = null;
 									}
@@ -396,7 +406,7 @@ class Inspeccion_model extends CI_Model
 	public function activarInspeccion($idInspeccion, $id_usuario)
 	{
 		try{
-			$inspeccion = $this->db->get_where('inspecciones', array('id' => $idInspeccion, 'estado' => 0))->result();
+			$inspeccion = $this->db->get_where('inspecciones', array('id' => $idInspeccion, 'id_estado' => 1))->result();
 			$respuesta = array('resultado' => null,
 						'mensaje' => null,
 						'id_inspeccion' => null
@@ -405,7 +415,7 @@ class Inspeccion_model extends CI_Model
 			if (sizeof($inspeccion) > 0) {
 
 				$data3 = array(
-			        'estado' => 1
+			        'es_temporal' => 0
 				);
 			    
 				$this->db->set('updated_at', 'NOW()', FALSE);

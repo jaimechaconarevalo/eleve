@@ -118,8 +118,8 @@
         var loader = document.getElementById("loader");
         loader.removeAttribute('hidden');
         var es_temporal = document.getElementById('inputEsTemporal').value;
-        var es_temporal = 1;
-        if (es_temporal == 1) {
+        //var es_temporal = 1;
+        //if (es_temporal == 1) {
             //form.preventDefault();
             var id_elemento = null;
             var valor_elemento = null;
@@ -355,9 +355,9 @@
                 }
 
             }
-        }else{
-            loader.setAttribute('hidden', '');
-        }
+        //}else{
+        //    loader.setAttribute('hidden', '');
+        //}
 
         feather.replace();
         $('[data-toggle="tooltip"]').tooltip();
