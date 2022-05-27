@@ -280,32 +280,15 @@
                             if(data['resultado'] == '1')
                             {
                                 if (data['id_respuesta'] != null && data['orden'] != null) {
-                                    /*var selectRespuestaA = document.getElementById('sRespuesta'.concat(data['orden']));
-                                    $(selectRespuestaA).append($('<option>', {
-                                        value: data["id_respuesta"],
-                                        text: data["respuesta"]
-                                    }));
-                                    selectRespuestaA.lastElementChild.selected = true;
-                                    var observacion_respuesta = document.getElementById('inputObservaciones'.concat(data["orden"]));
-                                    observacion_respuesta.value = "";
-
-                                    tab_obs = document.getElementById('respuesta_obs_tab'.concat(data.id_categoria, '_', data.orden));
-                                    tab_obs.className = 'nav-link';
-
-                                    tab_cuerpo_obs = document.getElementById('respuesta_obs'.concat(data.id_categoria, '_', data.orden));
-                                    tab_cuerpo_obs.className = 'tab-pane fade';
-
-                                    tab = document.getElementById('respuesta_tab'.concat(data.id_categoria, '_', data.orden));
-                                    tab.className = 'nav-link active';
-
-                                    tab_cuerpo = document.getElementById('respuesta'.concat(data.id_categoria, '_', data.orden));
-                                    tab_cuerpo.className = 'tab-pane fade show active';*/
-
-                                    
-                                    //$('#tabRespuestas_'.concat(data['orden']),' li:first-child a').tab('show');
-
-
-                                    //$("#selectList").append('<option value=1>My option</option>');
+                                    var select = document.getElementById('sRespuesta'.concat(data.orden));
+                                    var opt = document.createElement('option');
+                                        opt.value = data.id_respuesta;
+                                        opt.innerHTML = data.respuesta;
+                                        opt.selected = true;
+                                    select.appendChild(opt);
+                                    var textarea = document.getElementById('inputObservaciones'.concat(data.orden));
+                                    textarea.value = "";
+                                    $('#respuesta_tab'.concat(data.id_categoria,'_',data.id_pregunta)).tab('show');
                                 }
                                 feather.replace();
                                 $('[data-toggle="tooltip"]').tooltip();
@@ -1757,9 +1740,45 @@
                                                     div = div.concat('</div>');
                                                 div = div.concat('</div>');
                                             }else{
-                                                div = div.concat('<div class="col-sm-6">');
-                                                div = div.concat('<label for="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'">Nueva Respuesta</label>');
-                                                div = div.concat('<textarea class="form-control form-control-sm block observacionNueva" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" rows="2"></textarea>');
+                                                //div = div.concat('<div class="col-sm-6">');
+                                                //#div = div.concat('<label for="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'">Nueva Respuesta</label>');
+                                                //#div = div.concat('<textarea class="form-control form-control-sm block observacionNueva" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" rows="2"></textarea>');
+                                                //div = div.concat('</div>');
+                                                div = div.concat('<div class="form-group col-sm-6">');
+                                                    div = div.concat('<ul class="nav nav-tabs" id="tabRespuestas_',contador,'" name="tabRespuestas_',contador,'" role="tablist">');
+                                                      div = div.concat('<li class="nav-item" role="presentation">');
+                                                        div = div.concat('<a class="nav-link active" id="respuesta_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'" name="respuesta_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'" data-toggle="tab" href="#respuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'"  role="tab" aria-controls="respuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'" aria-selected="true">Respuestas</a>');
+                                                      div = div.concat('</li>');
+                                                      div = div.concat('<li class="nav-item" role="presentation">');
+                                                        div = div.concat('<a class="nav-link" id="respuesta_obs_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'" data-toggle="tab" href="#respuesta_obs',categoria.id_categoria,'_',pregunta.id_pregunta,'" role="tab" aria-controls="respuesta_obs',categoria.id_categoria,'_',pregunta.id_pregunta,'" aria-selected="false">Nueva Respuesta</a>');
+                                                      div = div.concat('</li>');
+                                                    div = div.concat('</ul>');
+                                                    div = div.concat('<div class="tab-content" id="myTabContent">');
+                                                        div = div.concat('<div class="tab-pane fade show active" id="respuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'" role="tabpanel" aria-labelledby="respuesta_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'">');
+                                                            div = div.concat('<div class="form-group col-sm-12">');
+                                                                div = div.concat('<div class="row justify-content-md-left">');
+                                                                    div = div.concat('<div class="form-group col-sm-12  mt-3">');
+                                                                        //div = div.concat('<label for="sRespuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'">Respuesta</label>');
+                                                                        div = div.concat('<select id="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" name="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" class="custom-select custom-select-sm respuestas_checklist">');
+                                                                            div = div.concat('<option value="-1" selected>Seleccione una Respuesta</option>');
+                                                                            
+                                                                            $.each(pregunta.respuestas, function(index_r, respuesta) {
+                                                                                div = div.concat('<option value="',respuesta['id_respuesta'],'">',respuesta['respuesta'],'</option>');
+                                                                            });
+
+                                                                        div = div.concat('</select>');
+                                                                    div = div.concat('</div>');
+                                                                div = div.concat('</div>');
+                                                            div = div.concat('</div>');
+                                                        div = div.concat('</div>');
+                                                        div = div.concat('<div class="tab-pane fade" id="respuesta_obs',categoria.id_categoria,'_',pregunta.id_pregunta,'" role="tabpanel" aria-labelledby="respuesta_obs_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'">');
+                                                            div = div.concat('<div class="justify-content-md-left p-3">');
+                                                            //div = div.concat('<label for="inputObservaciones">Nueva Respuesta</label>');
+                                                            //div = div.concat('<input type="text" class="form-control form-control-sm" id="inputObservaciones" minlength="1" placeholder="Ingrese una Respuesta" name="inputObservaciones" value="">');
+                                                                div = div.concat('<textarea class="form-control form-control-sm block observacionNueva" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" rows="2"></textarea>');
+                                                            div = div.concat('</div>');
+                                                        div = div.concat('</div>');
+                                                    div = div.concat('</div>');
                                                 div = div.concat('</div>');
                                             }
 
@@ -2044,9 +2063,57 @@ window.onload = function () {
                                                 div = div.concat('</div>');
 
                                             }else{
-                                                div = div.concat('<div class="col-sm-6">');
-                                                div = div.concat('<label for="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'">Nueva Respuesta</label>');
-                                                div = div.concat('<textarea class="form-control form-control-sm block observacionNueva" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" rows="2"></textarea>');
+                                                //div = div.concat('<div class="col-sm-6">');
+                                                //div = div.concat('<label for="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'">Nueva Respuesta</label>');
+                                                //div = div.concat('<textarea class="form-control form-control-sm block observacionNueva" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" rows="2"></textarea>');
+                                                //div = div.concat('</div>');
+                                                 div = div.concat('<div class="form-group col-sm-6">');
+                                                    div = div.concat('<ul class="nav nav-tabs" id="tabRespuestas_',contador,'" name="tabRespuestas_',contador,'" role="tablist">');
+                                                      div = div.concat('<li class="nav-item" role="presentation">');
+                                                        div = div.concat('<a class="nav-link active" id="respuesta_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'" name="respuesta_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'" data-toggle="tab" href="#respuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'" role="tab" aria-controls="respuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'" aria-selected="true">Respuestas</a>');
+                                                      div = div.concat('</li>');
+                                                      div = div.concat('<li class="nav-item" role="presentation">');
+                                                        div = div.concat('<a class="nav-link" id="respuesta_obs_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'" data-toggle="tab" href="#respuesta_obs',categoria.id_categoria,'_',pregunta.id_pregunta,'" role="tab" aria-controls="respuesta_obs',categoria.id_categoria,'_',pregunta.id_pregunta,'" aria-selected="false">Nueva Respuesta</a>');
+                                                      div = div.concat('</li>');
+                                                    div = div.concat('</ul>');
+                                                    div = div.concat('<div class="tab-content" id="myTabContent">');
+                                                        div = div.concat('<div class="tab-pane fade show active" id="respuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'" role="tabpanel" aria-labelledby="respuesta_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'">');
+                                                            div = div.concat('<div class="form-group col-sm-12">');
+                                                                div = div.concat('<div class="row justify-content-md-left">');
+                                                                    div = div.concat('<div class="form-group col-sm-12  mt-3">');
+                                                                        //div = div.concat('<label for="sRespuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'">Respuesta</label>');
+                                                                        div = div.concat('<select id="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" name="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" class="custom-select custom-select-sm respuestas_checklist">');
+                                                                            div = div.concat('<option value="-1" selected>Seleccione una Respuesta</option>');
+                                                                            
+                                                                            $.each(pregunta.respuestas, function(index_r, respuesta) {
+                                                                                div = div.concat('<option value="',respuesta['id_respuesta'],'" ',(pregunta.id_respuesta == respuesta['id_respuesta'] ? 'selected' : ''),'>',respuesta['respuesta'],'</option>');
+                                                                            });
+
+                                                                        div = div.concat('</select>');
+                                                                    div = div.concat('</div>');
+                                                                div = div.concat('</div>');
+                                                            div = div.concat('</div>');
+                                                        div = div.concat('</div>');
+                                                        div = div.concat('<div class="tab-pane fade" id="respuesta_obs',categoria.id_categoria,'_',pregunta.id_pregunta,'" role="tabpanel" aria-labelledby="respuesta_obs_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'">');
+                                                            div = div.concat('<div class="justify-content-md-left p-3">');
+                                                            //div = div.concat('<label for="inputObservaciones">Nueva Respuesta</label>');
+                                                            //div = div.concat('<input type="text" class="form-control form-control-sm" id="inputObservaciones" minlength="1" placeholder="Ingrese una Respuesta" name="inputObservaciones" value="">');
+                                                                div = div.concat('<textarea class="form-control form-control-sm block observacionNueva" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'"  data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" rows="2"></textarea>');
+                                                            div = div.concat('</div>');
+                                                        div = div.concat('</div>');
+                                                    div = div.concat('</div>');
+                                                div = div.concat('</div>');
+
+
+                                                div = div.concat('<div class="form-group col-sm-6">');
+                                                div = div.concat('<label for="sTipoRespuesta_',contador,'">Severidad</label>');
+                                                div = div.concat('<select id="sTipoRespuesta_',contador,'" name="sTipoRespuesta_',contador,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" class="form-control form-control-sm tipo_respuesta">');
+                                                div = div.concat('<option value="-1" selected>Seleccione una Severidad</option>');
+
+                                                $.each(data.severidad, function(index_s, severidad) {
+                                                    div = div.concat('<option value="',severidad['id'],'" ',(pregunta.id_severidad_respuesta == severidad['id'] ? 'selected' : ''),'>',severidad['nombre'],'</option>');
+                                                });
+                                                div = div.concat('</select>');
                                                 div = div.concat('</div>');
                                             }
 
@@ -2478,9 +2545,57 @@ window.onload = function () {
                                                 div = div.concat('</div>');
 
                                             }else{
-                                                div = div.concat('<div class="col-sm-6">');
-                                                div = div.concat('<label for="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'">Nueva Respuesta</label>');
-                                                div = div.concat('<textarea class="form-control form-control-sm block observacionNueva" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" rows="2"></textarea>');
+                                                //div = div.concat('<div class="col-sm-6">');
+                                                //div = div.concat('<label for="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'">Nueva Respuesta</label>');
+                                                //div = div.concat('<textarea class="form-control form-control-sm block observacionNueva" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" rows="2"></textarea>');
+                                                //div = div.concat('</div>');
+                                                div = div.concat('<div class="form-group col-sm-6">');
+                                                    div = div.concat('<ul class="nav nav-tabs" id="tabRespuestas_',contador,'" name="tabRespuestas_',contador,'" role="tablist">');
+                                                      div = div.concat('<li class="nav-item" role="presentation">');
+                                                        div = div.concat('<a class="nav-link active" id="respuesta_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'" name="respuesta_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'" data-toggle="tab" href="#respuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'" role="tab" aria-controls="respuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'" aria-selected="true">Respuestas</a>');
+                                                      div = div.concat('</li>');
+                                                      div = div.concat('<li class="nav-item" role="presentation">');
+                                                        div = div.concat('<a class="nav-link" id="respuesta_obs_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'" data-toggle="tab" href="#respuesta_obs',categoria.id_categoria,'_',pregunta.id_pregunta,'" role="tab" aria-controls="respuesta_obs',categoria.id_categoria,'_',pregunta.id_pregunta,'" aria-selected="false">Nueva Respuesta</a>');
+                                                      div = div.concat('</li>');
+                                                    div = div.concat('</ul>');
+                                                    div = div.concat('<div class="tab-content" id="myTabContent">');
+                                                        div = div.concat('<div class="tab-pane fade show active" id="respuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'" role="tabpanel" aria-labelledby="respuesta_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'">');
+                                                            div = div.concat('<div class="form-group col-sm-12">');
+                                                                div = div.concat('<div class="row justify-content-md-left">');
+                                                                    div = div.concat('<div class="form-group col-sm-12  mt-3">');
+                                                                        //div = div.concat('<label for="sRespuesta',categoria.id_categoria,'_',pregunta.id_pregunta,'">Respuesta</label>');
+                                                                        div = div.concat('<select id="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" name="sRespuesta',contador/*categoria.id_categoria,'_',pregunta.id_pregunta*/,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" class="custom-select custom-select-sm respuestas_checklist">');
+                                                                            div = div.concat('<option value="-1" selected>Seleccione una Respuesta</option>');
+                                                                            
+                                                                            $.each(pregunta.respuestas, function(index_r, respuesta) {
+                                                                                div = div.concat('<option value="',respuesta['id_respuesta'],'" ',(pregunta.id_respuesta == respuesta['id_respuesta'] ? 'selected' : ''),'>',respuesta['respuesta'],'</option>');
+                                                                            });
+
+                                                                        div = div.concat('</select>');
+                                                                    div = div.concat('</div>');
+                                                                div = div.concat('</div>');
+                                                            div = div.concat('</div>');
+                                                        div = div.concat('</div>');
+                                                        div = div.concat('<div class="tab-pane fade" id="respuesta_obs',categoria.id_categoria,'_',pregunta.id_pregunta,'" role="tabpanel" aria-labelledby="respuesta_obs_tab',categoria.id_categoria,'_',pregunta.id_pregunta,'">');
+                                                            div = div.concat('<div class="justify-content-md-left p-3">');
+                                                            //div = div.concat('<label for="inputObservaciones">Nueva Respuesta</label>');
+                                                            //div = div.concat('<input type="text" class="form-control form-control-sm" id="inputObservaciones" minlength="1" placeholder="Ingrese una Respuesta" name="inputObservaciones" value="">');
+                                                                div = div.concat('<textarea class="form-control form-control-sm block observacionNueva" placeholder="Ingrese una nueva Respuesta" id="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'" name="inputObservaciones',contador,/*,id_categoria,'_',id_pregunta,*/'"  data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" rows="2"></textarea>');
+                                                            div = div.concat('</div>');
+                                                        div = div.concat('</div>');
+                                                    div = div.concat('</div>');
+                                                div = div.concat('</div>');
+
+
+                                                div = div.concat('<div class="form-group col-sm-6">');
+                                                div = div.concat('<label for="sTipoRespuesta_',contador,'">Severidad</label>');
+                                                div = div.concat('<select id="sTipoRespuesta_',contador,'" name="sTipoRespuesta_',contador,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" class="form-control form-control-sm tipo_respuesta">');
+                                                div = div.concat('<option value="-1" selected>Seleccione una Severidad</option>');
+
+                                                $.each(data.severidad, function(index_s, severidad) {
+                                                    div = div.concat('<option value="',severidad['id'],'" ',(pregunta.id_severidad_respuesta == severidad['id'] ? 'selected' : ''),'>',severidad['nombre'],'</option>');
+                                                });
+                                                div = div.concat('</select>');
                                                 div = div.concat('</div>');
                                             }
 
