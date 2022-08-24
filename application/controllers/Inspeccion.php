@@ -49,7 +49,7 @@ class Inspeccion extends CI_Controller {
 			if($this->input->GET('idInspeccion') && $this->input->GET('idInspeccion'))
 			{
 				$id_inspeccion = $this->input->GET('idInspeccion');
-				$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccionReporte($id_inspeccion, $usuario['id_usuario']);
+				#$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccionReporte($id_inspeccion, $usuario['id_usuario']);
 				#var_dump($respuestas_inspeccion);
 				#exit();
 				$inspeccion =  $this->inspeccion_model->obtenerInspeccion($id_inspeccion ,$usuario["id_usuario"]);
@@ -147,12 +147,12 @@ class Inspeccion extends CI_Controller {
 			if($this->input->GET('idInspeccion') && $this->input->GET('idInspeccion'))
 			{
 				$id_inspeccion = $this->input->GET('idInspeccion');
-				$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccionReporte($id_inspeccion, $usuario['id_usuario']);
+				#$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccionReporte($id_inspeccion, $usuario['id_usuario']);
 				#var_dump($respuestas_inspeccion);
 				#exit();
 				$inspeccion =  $this->inspeccion_model->obtenerInspeccion($id_inspeccion ,$usuario["id_usuario"]);
 				if (sizeof($inspeccion) > 0) {
-
+					#var_dump($inspeccion);exit();
 					$this->load->library('PHPWord');
 
 					$nombre_plantilla = base_url().'assets/doc/plantilla_reporte.docx';
@@ -269,6 +269,25 @@ class Inspeccion extends CI_Controller {
 					$enclavamiento_electrico = $inspeccion[0]['enclavamiento_electrico'];
 
 					
+
+					if ($inspeccion[0]["id_tipo_traccion"] == 1) {
+						#var_dump("es cable");
+						$template->setValue('cantidad_cable', $inspeccion[0]["cantidad"]);
+						$template->setValue('cantidad_cinta', "N/A");
+						$template->setValue('diametro_traccion_cable', $inspeccion[0]["diametro_traccion"]);
+						$template->setValue('diametro_traccion_cinta', "N/A");
+					}else{
+						#var_dump("es cinta");
+						$template->setValue('cantidad_cable', "N/A");
+						$template->setValue('cantidad_cinta', $inspeccion[0]["cantidad"]);
+						$template->setValue('diametro_traccion_cable', "N/A");
+						$template->setValue('diametro_traccion_cinta', $inspeccion[0]["diametro_traccion"]);
+					}
+
+
+
+					#var_dump($inspeccion);exit();
+
 					$template->setValue('cantidad_ascensor', $cantidad_ascensor);
 					$template->setValue('num_informe', $num_informe);
 
@@ -310,10 +329,10 @@ class Inspeccion extends CI_Controller {
 					$template->setValue('uso', $uso);
 					$template->setValue('norma', $norma);
 					$template->setValue('texto_sala_maquina', $texto_sala_maquina);
-					$template->setValue('diametro_cable', $diametro_cable);
-					$template->setValue('diametro_traccion', $diametro_traccion);
+					
 					$template->setValue('enclavamiento_mecanico', $enclavamiento_mecanico);
 					$template->setValue('enclavamiento_electrico', $enclavamiento_electrico);
+					$template->setValue('diametro_cable_limitador', $inspeccion[0]["diametro_cable"]);
 
 					$estilo_herramientas_titulo = array('bold'=>true, 'size'=>10, 'name'=>'Arial');
 					$estilo_herramientas = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
@@ -325,7 +344,13 @@ class Inspeccion extends CI_Controller {
 					$table->addCell(150)->addText('Incertidumbre', $estilo_herramientas_titulo, array('align' => 'center'));
 
 					$respuesta_herramientas =  $this->inspeccion_model->obtenerHerramientas($id_inspeccion ,$usuario["id_usuario"]);
+
+					$contador_herramienta = 1;
 					if (sizeof($respuesta_herramientas) > 0) {
+
+						$cant_herramientas = sizeof($respuesta_herramientas);
+						$template->cloneRow('nombre_herramienta', $cant_herramientas);
+
 						foreach ($respuesta_herramientas as $herramienta) {
 							$codigo = $herramienta["codigo"];
 							$nombre_herramienta = $herramienta["nombre"];
@@ -333,8 +358,13 @@ class Inspeccion extends CI_Controller {
 
 							$table->addRow();
 							$table->addCell(150)->addText($nombre_herramienta, $estilo_herramientas, array('align' => 'center', 'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::LEFT));
-							$table->addCell(150)->addText($codigo, $estilo_herramientas, array('align' => 'center'));
-							$table->addCell(150)->addText($observacion, $estilo_herramientas, array('align' => 'center'));
+							$table->addCell(150)->addText($codigo, $estilo_herramientas, array('align' => 'center', 'alignCenter'));
+							$table->addCell(150)->addText($observacion, $estilo_herramientas, array('align' => 'center', 'alignCenter'));
+
+							$template->setValue('nombre_herramienta#'.$contador_herramienta, $nombre_herramienta);
+							$template->setValue('codigo_herramienta#'.$contador_herramienta, $codigo);
+							$template->setValue('incertidumbre_herramienta#'.$contador_herramienta, $observacion);
+							$contador_herramienta++;
 						}
 					}
 
@@ -641,18 +671,30 @@ class Inspeccion extends CI_Controller {
 
 
 
+					
+
+
+
 					$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccionReporte($id_inspeccion, $usuario['id_usuario'], true);
 					$id_pregunta = null;
+					#var_dump(json_encode($respuestas_inspeccion));exit();
+
 					if (sizeof($respuestas_inspeccion) > 0) {
 						$cant_1 = 1;
 						$orden_reportes = $this->inspeccion_model->obtenerOrdenNorma($inspeccion[0]["id_norma"], $usuario["id_usuario"]);
 
 						$cant_categorias_reporte = sizeof($orden_reportes);
 						$template->cloneBlock('block_numero_1', $cant_categorias_reporte, true, true);
-
 						$contador_reporte = 1;
+
+						#var_dump($cant_categorias_reporte);
+						#return;
+
+
+
+
+
 						foreach ($orden_reportes as $orden_reporte) {
-							
 							$titulo_categoria_reporte = trim($orden_reporte['observaciones']);
 							$titulo_punto = trim($orden_reporte['nombre']);
 
@@ -660,11 +702,11 @@ class Inspeccion extends CI_Controller {
 							$template->setValue('nombre_categoria#'.$contador_reporte, strtoupper($titulo_categoria_reporte));
 							$template->setValue('titulo_punto#'.$contador_reporte, strtoupper($titulo_punto));
 							if (($contador_reporte) == $cant_categorias_reporte) {
-								$template->setValue('pageBreakHere#'.$contador_reporte, '');
+								#$template->setValue('pageBreakHere#'.$contador_reporte, '');
+								$template->setValue('pageBreakHere#'.$contador_reporte, '<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
 							}else{
 								$template->setValue('pageBreakHere#'.$contador_reporte, '<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
 							}
-							
 
 							$largo_palabra = strlen($orden_reporte['iniciales']);
 							$palabra = trim($orden_reporte['iniciales']);
@@ -673,12 +715,14 @@ class Inspeccion extends CI_Controller {
 					              return (substr($val['codigo_pregunta'], 0, $largo_palabra) == $palabra);
 					        });
 
+					        #var_dump(json_encode($array_filtrado));exit();
+
 					        $group = array();
 					        $contador_filtro = 0;
 					       	foreach ($array_filtrado as $filtro) {
 					       		$index_encontrado = array_search($filtro["id_pregunta"], array_column($group, 'id_pregunta'));
 					       		$contador_filtro++;
-					       		$orig_name = $filtro["orig_name"];
+					       		$orig_name = $filtro["file_name"];
 					       		$file_path = $filtro["file_path"];
 					       		$full_path = $filtro["full_path"];
 
@@ -689,32 +733,68 @@ class Inspeccion extends CI_Controller {
 										$url_imagen = base_url().'assets/files/image/'.$orig_name;
 										$imagenes[] = array("url_imagen" => $url_imagen, 'file_path' => $file_path, 'full_path' => $full_path);
 									}
-									if ($filtro["file_type"] === "image/png") {
-										$group[$index_encontrado]["imagenes"][] = $imagenes;
+
+									$index_resp_encontrado = array_search($filtro["inspeccion_checklist_resp_id"], array_column($group[$index_encontrado]["respuesta_imagenes"], 'inspeccion_checklist_resp_id'));
+
+									if ($index_resp_encontrado !== false) {
+										$imagenes = array();	
+
+										if ($filtro["cantidad_fotos"] > 0) {
+											$url_imagen = base_url().'assets/files/image/'.$orig_name;
+											$imagenes = array("url_imagen" => $url_imagen, 'file_path' => $file_path, 'full_path' => $full_path);
+										}
+
+										if ($filtro["file_type"] === "image/png") {
+											$group[$index_encontrado]["respuesta_imagenes"][$index_resp_encontrado]["imagenes"][] = $imagenes;
+										}
+										#var_dump($group);
+									}else{
+										$imagenes = array();
+										if ($filtro["cantidad_fotos"] > 0) {
+											$url_imagen = base_url().'assets/files/image/'.$orig_name;
+											$imagenes = array("url_imagen" => $url_imagen, 'file_path' => $file_path, 'full_path' => $full_path);
+										}
+
+										$respuestas = array();
+										$respuestas = array('inspeccion_checklist_resp_id' => $filtro["inspeccion_checklist_resp_id"], 'respuesta_obs' => $filtro["respuesta_obs"], 'id_severidad' => $filtro["id_severidad_respuesta"], 'severidad' => $filtro["severidad"], 'imagenes' => [$imagenes]);
+
+										if ($filtro["file_type"] === "image/png") {
+											$group[$index_encontrado]["respuesta_imagenes"][] = $respuestas;
+										}
+
+										
 									}
 								}else{
-
+									$respuestas = array();
 									$imagenes = array();
 									if ($filtro["cantidad_fotos"] > 0) {
+										
 										$url_imagen = base_url().'assets/files/image/'.$orig_name;
-										$imagenes[] = array("url_imagen" => $url_imagen, 'file_path' => $file_path, 'full_path' => $full_path);
+										$imagenes = array("url_imagen" => $url_imagen, 'file_path' => $file_path, 'full_path' => $full_path);
 									}
+
+									$respuestas = array('inspeccion_checklist_resp_id' => $filtro["inspeccion_checklist_resp_id"], 'respuesta_obs' => $filtro["respuesta_obs"], 'id_severidad' => $filtro["id_severidad_respuesta"], 'severidad' => $filtro["severidad"], 'imagenes' => [$imagenes]);
 
 									$group[] = array("id_pregunta" => $filtro["id_pregunta"],
 													"codigo_pregunta" => $filtro["codigo_pregunta"],
 													"pregunta_obs" => $filtro["pregunta_obs"],
 													"orig_name" => $filtro["orig_name"],
 													"cantidad_fotos" => $filtro["cantidad_fotos"],
-													"respuesta_obs" => $filtro["respuesta_obs"],
-													"id_severidad" => $filtro["id_severidad_respuesta"],
-													"severidad" => $filtro["severidad"],
-													"imagenes" => $imagenes
+													"respuesta_imagenes" => [$respuestas]
 												);
 								}
 					       	}
 
-					        $cant_preguntas_respuestas = sizeof($group);
 
+
+
+					       	#var_dump($group[0]);
+					       	#var_dump($group[0]["imagenes"]);
+					       	#var_dump(json_encode($group));return;
+
+					        $cant_preguntas_respuestas = sizeof($group);
+					        #var_dump("llego aca");
+					        #var_dump($cant_preguntas_respuestas);return;
 					        if ($cant_preguntas_respuestas > 0) {
 					        	$template->cloneRow('id_punto_1#'.$contador_reporte, $cant_preguntas_respuestas);
 					        }else{
@@ -736,93 +816,162 @@ class Inspeccion extends CI_Controller {
 					        
 					        $cant_pregunta_categoria = 0;
 					        foreach ($group as $pregunta_respuesta) {
-					        	
+					        	$es_grave = null;
+					        	$es_leve = null;
 					        	$cant_pregunta_categoria++;
 					        	$cant_imagen = 0;
 
 								$id_pregunta = $pregunta_respuesta["id_pregunta"];
 								$codigo_pregunta = $pregunta_respuesta["codigo_pregunta"];
 								$pregunta_obs = $pregunta_respuesta["pregunta_obs"];
-								$orig_name = $pregunta_respuesta["orig_name"];
-								$respuesta_obs = $pregunta_respuesta["respuesta_obs"];
-
-								if (isset($pregunta_respuesta["id_severidad"])) {
-									$id_severidad = $pregunta_respuesta["id_severidad"];
-									$severidad = $pregunta_respuesta["severidad"];
-									$estilo_grave = array('bold'=>true, '', 'size'=>10, 'name'=>'Arial', 'underline' => 'single', 'color' => 'red');
-									$estilo_leve = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
-									
-									if (isset($id_severidad) && is_numeric($id_severidad) && $id_severidad == 1) {
-										$template->setValue('id_severidad_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, $severidad);
-										$template->setValue('id_severidad_2#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
-									}elseif (isset($id_severidad) && is_numeric($id_severidad) && $id_severidad == 2) {
-										$template->setValue('id_severidad_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
-										$template->setValue('id_severidad_2#'.$contador_reporte.'#'.$cant_pregunta_categoria, $severidad);
-									}
-								}else{
-									$template->setValue('id_severidad_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
-									$template->setValue('id_severidad_2#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
-								}
 
 								$template->setValue('id_punto_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, $codigo_pregunta);
-
 								$template->setValue('generalidad_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, $pregunta_obs);
-								$template->setValue('comentario_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, $respuesta_obs);
 
-								if (sizeof($pregunta_respuesta["imagenes"]) > 0) {
+								$cant_respuestas_imagenes = sizeof($pregunta_respuesta["respuesta_imagenes"]);
 
-									for ($i=0; $i < 5 ; $i++) {
-										#var_dump($pregunta_respuesta["imagenes"]);
-										#exit();
-										if (isset($pregunta_respuesta["imagenes"][$i])) {
-											$url_imagen = null;
-											$full_path = null;
+								#$template->cloneBlock('block_comentario#'.$contador_reporte.'#'.$cant_pregunta_categoria, $cant_respuestas_imagenes);
+								#$estilo_carpetas_titulo = array('bold'=>true, 'size'=>10, 'name'=>'Arial');
+								#$estilo_carpetas = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
+								#$table_carpetas = new Table(array('borderSize' => 0, 'borderColor' => 'ffffff', 'width' => 9500, 'unit' => TblWidth::TWIP, 'align' => 'center'));
+								#$table_carpetas->addRow();
+								#$table_carpetas->addCell(20)->addText('Cumple', $estilo_carpetas_titulo, array('align' => 'center'));
 
-											if ($i > 0) {
-												if (isset($pregunta_respuesta["imagenes"][$i][0]["url_imagen"])) {
-													$url_imagen = $pregunta_respuesta["imagenes"][$i][0]["url_imagen"];
-													$full_path = $pregunta_respuesta["imagenes"][$i][0]["full_path"];
+								$cant_comentarios = 1;
+								$cant_imagenes = 1;
+								#$orden_comentario = 1;
+								if ($cant_respuestas_imagenes > 0) {
+									foreach ($pregunta_respuesta["respuesta_imagenes"] as $respuesta_imagen) {
+
+
+										#var_dump($respuesta_imagen);return;
+
+
+										$cant_imagen_comentario = sizeof($respuesta_imagen["imagenes"]);
+										/*var_dump('cant_comentarios</br>');
+										var_dump($cant_comentarios);
+										var_dump('cant_imagenes</br>');
+										var_dump($cant_imagenes);
+										var_dump('</br></br>');
+										var_dump('cant_imagen_comentario</br>');
+										var_dump($cant_imagen_comentario);
+										var_dump('</br></br>');*/
+
+										if ($cant_comentarios < 4) {
+											$template->setValue('comentario_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, $respuesta_imagen["respuesta_obs"]);
+
+											if (isset($respuesta_imagen["id_severidad"])) {
+												$id_severidad = $respuesta_imagen["id_severidad"];
+												$severidad = $respuesta_imagen["severidad"];
+												$estilo_grave = array('bold'=>true, '', 'size'=>10, 'name'=>'Arial', 'underline' => 'single', 'color' => 'red');
+												$estilo_leve = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
+												
+												if (isset($id_severidad) && is_numeric($id_severidad) && $id_severidad == 1) {
+													$template->setValue('id_severidad_l_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, $severidad);
+													$template->setValue('id_severidad_g_'.($cant_comentarios).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+												}elseif (isset($id_severidad) && is_numeric($id_severidad) && $id_severidad == 2) {
+													$template->setValue('id_severidad_l_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+													$template->setValue('id_severidad_g_'.($cant_comentarios).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, $severidad);
 												}
 											}else{
-												if (isset($pregunta_respuesta["imagenes"][$i]["url_imagen"])) {
-													$url_imagen = $pregunta_respuesta["imagenes"][$i]["url_imagen"];
-													$full_path = $pregunta_respuesta["imagenes"][$i]["full_path"];
+												$template->setValue('id_severidad_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+												$template->setValue('id_severidad_2#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+											}
+
+											$cant_comentarios++;
+										}
+
+										
+										if (sizeof($respuesta_imagen["imagenes"]) > 0) {
+											foreach ($respuesta_imagen["imagenes"] as $imagen_respuesta) {
+												#var_dump($imagen_respuesta);return;
+
+												$url_imagen = null;
+												$full_path = null;
+
+												if (isset($imagen_respuesta["url_imagen"])) {
+													$url_imagen = $imagen_respuesta["url_imagen"];
+													$full_path = $imagen_respuesta["full_path"];
+												
+													if (file_exists($full_path)) {
+														$template->setImageValue('imagen_resp_'.($cant_imagenes).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, array('path' => $url_imagen, 'width' => 269, 'height' => 200, 'ratio' => TRUE,'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER));
+														$cant_imagenes++;
+														#var_dump("entro aca");return;
+														#$table->addRow();
+														/*$imageStyle = array(
+														    'width' => 40,
+														    'height' => 40,
+														    'wrappingStyle' => 'square',
+														    'positioning' => 'absolute',
+														    'posHorizontalRel' => 'margin',
+														    'posVerticalRel' => 'line',
+														);*/
+														#$source = file_get_contents($url_imagen);
+														#$source = 'D:\Jaime Chacon\Escritorio\casa-en-ingles.jpg';
+														#var_dump($source);return;
+														#$table_carpetas->addCell()->addImage($source);
+														#$table_carpetas->addRow();
+														#$cell = $table_carpetas->addCell(1300);
+														#$cell->addImage($source, array('width' => 100));
+														#$textrun->addImage($source);
+														#$table->addCell()->addImage($full_path, $imageStyle);
+														#$textrun->addText($lipsumText);									            
+														#$template->setImageValue('imagen_resp_'.($i+1).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, array('path' => $url_imagen, 'width' => 269, 'height' => 200, 'ratio' => TRUE,'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER));
+											        }
+										    	}
+											}
+
+											$restante_img = (5-$cant_imagen_comentario);
+											if ($restante_img > 0) {
+												for ($i=0; $i < $restante_img; $i++) {
+													#echo 'restante_img '.$restante_img;
+													#echo 'cant_imagenes '.$cant_imagenes;
+													$template->setValue('imagen_resp_'.$cant_imagenes.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, '');
+													$cant_imagenes++;
 												}
 											}
-											
-											if (file_exists($full_path)) {
-									            
-												$template->setImageValue('imagen_resp_'.($i+1).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, array('path' => $url_imagen, 'width' => 200, 'height' => 200, 'ratio' => TRUE,'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER));
-									        }
-											
-											$cant_imagen++;
-										}else{
-											$template->setValue('imagen_resp_'.($i+1).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, '');
 										}
-										
+
 									}
-								}else{
-									$template->setValue('imagen_resp_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, '');
-									$template->setValue('imagen_resp_2#'.$contador_reporte.'#'.$cant_pregunta_categoria, '');
-									$template->setValue('imagen_resp_3#'.$contador_reporte.'#'.$cant_pregunta_categoria, '');
-									$template->setValue('imagen_resp_4#'.$contador_reporte.'#'.$cant_pregunta_categoria, '');
-									$template->setValue('imagen_resp_5#'.$contador_reporte.'#'.$cant_pregunta_categoria, '');
-									$cant_imagen = 0;
+
+									$restante_com = (3-$cant_respuestas_imagenes);
+									if ($restante_com > 0) {
+										for ($i=0; $i < $restante_com; $i++) {
+											$template->setValue('comentario_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+											$template->setValue('id_severidad_l_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+											$template->setValue('id_severidad_g_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+											$cant_comentarios++;
+										}
+									}
+
+									$restante_img = (16-$cant_imagenes);
+									if ($restante_img > 0) {
+										for ($i=0; $i < $restante_img; $i++) {
+											$template->setValue('imagen_resp_'.$cant_imagenes.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+											$cant_imagenes++;
+										}
+									}
 								}
 
-					        }
-							
-							$contador_reporte++;
+
+
+								#$template->cloneBlock('block_comentario_1#1#1', 3);
+								#$template->setComplexBlock('comentario_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, $table_carpetas);
+
+
+
+
+							}
+
+
+
+
 						}
 
 					}
 
 
-
-
-
-
-
+					#return;
 
 					$observaciones = array();
 					$observaciones_generales =  $this->inspeccion_model->obtenerObservacionesInspeccion($id_inspeccion ,$usuario["id_usuario"]);
@@ -861,7 +1010,7 @@ class Inspeccion extends CI_Controller {
 
 				    		$template->setValue('id_observacion#'.$cant, $orden_r);
 	                    	$template->setValue('observacion#'.$cant, $observacion_item);
-				    		$template->setImageValue('image_observacion#'.$cant, array('path' => $url_imagen, 'width' => 200, 'height' => 200, 'ratio' => TRUE,'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER));
+				    		$template->setImageValue('image_observacion#'.$cant, array('path' => $url_imagen, 'width' => 269, 'height' => 200, 'ratio' => TRUE,'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER));
 
 				    		$cant++;
 
@@ -1793,15 +1942,19 @@ class Inspeccion extends CI_Controller {
 					$accion = 'agregado';
 					$idInspeccion = null;
 					$es_temporal = 0;
+					$es_reinspeccion = 0;
 
 					if(!is_null($this->input->POST('es_temporal')) && trim($this->input->POST('es_temporal')) != "" && trim($this->input->POST('es_temporal')) != "-1")
 						$es_temporal = trim($this->input->POST('es_temporal'));
 
 					if(!is_null($this->input->POST('inputIdInspeccion')) && trim($this->input->POST('inputIdInspeccion')) != "" && trim($this->input->POST('inputIdInspeccion')) != "-1" && is_numeric($this->input->POST('inputIdInspeccion')))
 						$idInspeccion = trim($this->input->POST('inputIdInspeccion'));
+
+					if(!is_null($this->input->POST('es_reinspeccion')) && trim($this->input->POST('es_reinspeccion')) != "" && trim($this->input->POST('es_reinspeccion')) != "-1")
+						$es_reinspeccion = trim($this->input->POST('es_reinspeccion'));
 					
 
-					$respuesta_activacion = $this->inspeccion_model->activarInspeccion($idInspeccion, $usuario["id_usuario"]);
+					$respuesta_activacion = $this->inspeccion_model->activarInspeccion($idInspeccion, $usuario["id_usuario"], $es_reinspeccion);
 					#var_dump($respuesta_activacion);
 					
 					if ($respuesta_activacion && isset($respuesta_activacion["resultado"]) && is_numeric($respuesta_activacion["resultado"]) && (int)$respuesta_activacion["resultado"] > 0) {
@@ -1908,7 +2061,7 @@ class Inspeccion extends CI_Controller {
                 }
 
                 var_dump($dataCategoria);*/
-                #$usuario["inspeccion"] = array('es_temporal' => 1);
+                $usuario["inspeccion"] = array('es_temporal' => 1);
 
 				$this->load->view('temp/header');
 				$this->load->view('temp/menu', $usuario);
@@ -1934,6 +2087,7 @@ class Inspeccion extends CI_Controller {
 
 					$id_elemento = null;
 					$valor_elemento = null;
+					$resultado = null;
 					/*$tecnico = null;
 					$nombreE = null;
 					$direccionE = null;
@@ -2444,7 +2598,6 @@ class Inspeccion extends CI_Controller {
 					$id_pregunta = null;
 					$id_categoria = null;
 					if(!is_null($this->input->POST('total_categorias')) && trim($this->input->POST('total_categorias')) != "" && strpos($id_elemento, 'sRespuesta') !== false){
-						
 						$totalCategorias = trim($this->input->POST('total_categorias'));
 
 						if(!is_null($this->input->POST('id_categoria')) && trim($this->input->POST('id_categoria')) != "" && trim($this->input->POST('id_categoria')) != "-1")
@@ -2458,14 +2611,13 @@ class Inspeccion extends CI_Controller {
 
 							$respuesta = null;
 							$posicion_pregunta = substr($id_elemento, 10, strlen($id_elemento) - 9);
-
 							if (isset($posicion_pregunta) && is_numeric($posicion_pregunta) && (int)$posicion_pregunta > 0 /*&& (int)$posicion_pregunta === ($i+1)*/) {
 								$respuesta = $valor_elemento;
 
-								if (isset($respuesta) && strlen($respuesta) > 0 && is_numeric($respuesta)) {
+								#if (isset($respuesta) && strlen($respuesta) > 0 && is_numeric($respuesta)) {
 
 									$respuestas_checklists[] = array('id_categoria' => $id_categoria, 'id_pregunta' => $id_pregunta, 'id_respuesta' => $respuesta, 'orden' => $posicion_pregunta);
-								}
+								#}
 							}
 						}
 
@@ -2479,6 +2631,10 @@ class Inspeccion extends CI_Controller {
 						}else{
 							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
 						}
+						#var_dump($respuestas_checklists);
+						#var_dump($valor_elemento);
+						#var_dump($totalCategorias);
+						#var_dump($resultado);exit();
 
 						if($resultado && $resultado["resultado"] > 0)
 						{
@@ -2544,6 +2700,115 @@ class Inspeccion extends CI_Controller {
 					}
 
 
+
+
+
+
+
+
+					$totalCategorias = null;
+					$id_pregunta = null;
+					$id_categoria = null;
+					if(!is_null($this->input->POST('total_categorias')) && trim($this->input->POST('total_categorias')) != "" && strpos($id_elemento, 'sAscensor') !== false){
+						$totalCategorias = trim($this->input->POST('total_categorias'));
+						
+						if(!is_null($this->input->POST('id_categoria')) && trim($this->input->POST('id_categoria')) != "" && trim($this->input->POST('id_categoria')) != "-1")
+							$id_categoria = trim($this->input->POST('id_categoria'));
+
+						if(!is_null($this->input->POST('id_pregunta')) && trim($this->input->POST('id_pregunta')) != "" && trim($this->input->POST('id_pregunta')) != "-1")
+							$id_pregunta = trim($this->input->POST('id_pregunta'));
+
+						$respuestas_checklists = array();
+						if (isset($totalCategorias) && is_numeric($totalCategorias) && (int)$totalCategorias > 0) {
+
+							$respuesta = null;
+							$posicion_pregunta = substr($id_elemento, 9, strlen($id_elemento) - 8);
+
+							if (isset($posicion_pregunta) && is_numeric($posicion_pregunta) && (int)$posicion_pregunta > 0 /*&& (int)$posicion_pregunta === ($i+1)*/) {
+								$respuesta = $valor_elemento;
+
+								#if (isset($respuesta) && strlen($respuesta) > 0 && is_numeric($respuesta)) {
+
+									$respuestas_checklists[] = array('id_categoria' => $id_categoria, 'id_pregunta' => $id_pregunta, 'cant_ascensor' => $respuesta, 'orden' => $posicion_pregunta);
+								#}
+							}
+						}
+
+						#$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						if ($es_reinspeccion) {
+							#var_dump("entro aca en sAscensor");
+							#exit();
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($id_reinspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal, $es_reinspeccion);
+							#var_dump($resultado);
+							#exit();
+						}else{
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						}
+						#var_dump($respuestas_checklists);
+						#var_dump($valor_elemento);
+						#var_dump($totalCategorias);
+						#var_dump($resultado);exit();
+
+						if($resultado && $resultado["resultado"] > 0)
+						{
+							if(isset($resultado['id_inspeccion']))
+							{
+								if(is_null($idInspeccion) && !$es_reinspeccion){
+									$idInspeccion = (int)$resultado['id_inspeccion'];
+								}else{
+									if ($es_reinspeccion && is_numeric($id_reinspeccion)) {
+										$idInspeccion = $id_reinspeccion;
+									}
+								}
+
+
+
+							if (sizeof($respuestas_checklists) > 0) {
+									foreach ($respuestas_checklists as $res_check) {
+										$id_categoria = $res_check["id_categoria"];
+										$id_pregunta = $res_check["id_pregunta"];
+										
+										$observacion = null;
+										$orden = $res_check["orden"];
+
+										$cant_ascensor = $res_check["cant_ascensor"];
+										
+										$resultado_resp_check = $this->inspeccion_model->agregarRespuestaCheckTemporal($id_categoria, $id_pregunta, null, $observacion, $orden, $cant_ascensor, $idInspeccion, $usuario["id_usuario"], false, false, false, true);
+
+										if ($resultado_resp_check && isset($resultado_resp_check["resultado"]) && is_numeric($resultado_resp_check["resultado"]) && (int)$resultado_resp_check["resultado"] > 0) {
+											$id_inspeccion_checklist_resp = (int)$resultado_resp_check["id_inspeccion_checklist_resp"];
+											$cant_respuestas_agregadas++;
+										}
+									}
+								}
+
+								$resultado = 1;
+								$mensaje = 'Se ha '.$accion.' la Inspeccion exitosamente. </br></br>ID: '.$idInspeccion.'</br></br>'.$resultado["mensaje"];
+							}else{
+								$resultado = -1;
+								$mensaje = 'Ha ocurrido un error al '.$accion.' la Inspeccion, '.$resultado["mensaje"];
+							}
+						}else{
+
+							if($resultado["resultado"] === -1)
+							{
+								if (!isset($resultado["mensaje"])) {
+									$mensaje = 'Ha ocurrido un error al '.$accion.' la Inspeccion, '.$resultado["mensaje"];
+								}else{
+									if (isset($resultado["mensaje"]["message"])) {
+										$mensaje = 'Ha ocurrido un error al '.$accion.' la Inspeccion, Codigo: '.$resultado["mensaje"]["code"].', Mensaje: '.$resultado["mensaje"]["message"];
+									}
+								}
+							}elseif ($resultado["resultado"] === 0) {
+								$i=$i;
+								if (isset($data["reintentos"])) {
+									$data["reintentos"] = ((int)$data["reintentos"] +1);
+								}else{
+									$data["reintentos"] = 1;
+								}
+							}
+						}
+					}
 
 
 					$totalCategorias = null;
@@ -3225,8 +3490,81 @@ class Inspeccion extends CI_Controller {
 
 
 
+					$id_pregunta = null;
+					$id_categoria = null;
+					$orden_imagen = null;
+					if(!is_null($this->input->POST('id_categoria')) && trim($this->input->POST('id_categoria')) != "" && !is_null($this->input->POST('id_pregunta')) && trim($this->input->POST('id_pregunta')) != "" && !is_null($this->input->POST('orden_imagen')) && trim($this->input->POST('orden_imagen')) != "" && strpos($id_elemento, 'close_') !== false){
+						
+						if(!is_null($this->input->POST('id_categoria')) && trim($this->input->POST('id_categoria')) != "" && trim($this->input->POST('id_categoria')) != "-1")
+							$id_categoria = trim($this->input->POST('id_categoria'));
+
+						if(!is_null($this->input->POST('id_pregunta')) && trim($this->input->POST('id_pregunta')) != "" && trim($this->input->POST('id_pregunta')) != "-1")
+							$id_pregunta = trim($this->input->POST('id_pregunta'));
+
+						if(!is_null($this->input->POST('orden_imagen')) && trim($this->input->POST('orden_imagen')) != "" && trim($this->input->POST('orden_imagen')) != "-1")
+							$orden_imagen = trim($this->input->POST('orden_imagen'));
+
+						if ($es_reinspeccion) {
+							#var_dump("entro aca XD");
+							#exit();
+							#var_dump($id_reinspeccion);
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($id_reinspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal, $es_reinspeccion);
+							#var_dump($resultado);
+							#exit();
+						}else{
+							$resultado = $this->inspeccion_model->agregarInspeccionTemporal($idInspeccion, $id_elemento, null, null, $usuario["id_usuario"], $es_temporal);
+						}
+
+						if($resultado && $resultado["resultado"] > 0)
+						{
+							if(isset($resultado['id_inspeccion']))
+							{
 
 
+								#if ($es_reinspeccion) {
+								#	$idInspeccion = (int)$resultado['id_inspeccion'];
+								#}
+
+								if(is_null($idInspeccion) || $es_reinspeccion)
+									$idInspeccion = (int)$resultado['id_inspeccion'];
+
+								#var_dump($idInspeccion);
+								#var_dump($id_categoria);
+								#var_dump($id_pregunta);
+								#var_dump($orden_imagen);
+
+								$resultado_archivo = $this->inspeccion_model->eliminarArchivoExistente($idInspeccion, null, $id_categoria, $id_pregunta, $orden_imagen, $usuario["id_usuario"]);
+
+								#var_dump($resultado_archivo);
+								#exit();
+
+								$resultado = 1;
+								$mensaje = 'Se ha '.$accion.' la Inspeccion exitosamente. </br></br>ID: '.$idInspeccion.'</br></br>'.$resultado["mensaje"];
+							}else{
+								$resultado = -1;
+								$mensaje = 'Ha ocurrido un error al '.$accion.' la Inspeccion, '.$resultado["mensaje"];
+							}
+						}else{
+
+							if($resultado["resultado"] === -1)
+							{
+								if (!isset($resultado["mensaje"])) {
+									$mensaje = 'Ha ocurrido un error al '.$accion.' la Inspeccion, '.$resultado["mensaje"];
+								}else{
+									if (isset($resultado["mensaje"]["message"])) {
+										$mensaje = 'Ha ocurrido un error al '.$accion.' la Inspeccion, Codigo: '.$resultado["mensaje"]["code"].', Mensaje: '.$resultado["mensaje"]["message"];
+									}
+								}
+							}elseif ($resultado["resultado"] === 0) {
+								$i=$i;
+								if (isset($data["reintentos"])) {
+									$data["reintentos"] = ((int)$data["reintentos"] +1);
+								}else{
+									$data["reintentos"] = 1;
+								}
+							}
+						}
+					}
 
 
 
@@ -3292,7 +3630,11 @@ class Inspeccion extends CI_Controller {
 					$index_encontrado = array_search($id_elemento, array_column($diccionario_elementos, 'nombre'));
 					#var_dump($index_encontrado);
 
-					if ($index_encontrado >= 0) {
+					#var_dump($id_elemento);
+					#var_dump($index_encontrado);
+					#exit();
+
+					if ($index_encontrado !== false && $index_encontrado >= 0) {
 						$nombre_campo = $diccionario_elementos[$index_encontrado]["nombre"];
 						$valor_campo = $diccionario_elementos[$index_encontrado]["valor"];
 
@@ -3336,7 +3678,10 @@ class Inspeccion extends CI_Controller {
 						}
 						
 					}else{
-						echo 'valor_no_encontrado';
+						if (is_null($resultado)) {
+							$resultado = -1;
+							$mensaje = 'Ha ocurrido un error al '.$accion.' la Inspeccion, no se reconoce el campo que desea actualizar.';
+						}
 					}
 
 					#var_dump($diccionario_elementos);
@@ -3399,6 +3744,14 @@ class Inspeccion extends CI_Controller {
 					$usuario['inspeccion'] = $inspeccion[0];
 					#var_dump($inspeccion[0]);
 				}
+
+				#if (isset($inspeccion) && sizeof($inspeccion) > 0 && isset($inspeccion[0]["reinspeccion"]) && $inspeccion[0]["reinspeccion"] == "1") {
+					#var_dump($inspeccion[0]["reinspeccion"]);
+					#ECHO "es una reinspeccion";
+				#}else{
+					#var_dump($inspeccion[0]["reinspeccion"]);
+					#ECHO "es una INPSECCION";
+				#}
 				
 				$respuesta_carpetas =  $this->inspeccion_model->obtenerCarpetas($id_inspeccion ,$usuario["id_usuario"]);
 				$usuario['respuesta_carpetas'] = $respuesta_carpetas;
@@ -3447,6 +3800,8 @@ class Inspeccion extends CI_Controller {
 			{
 				$id_inspeccion = $this->input->GET('idInspeccion');
 
+				
+
 				$categorias =  $this->categoria_model->listarCategorias($usuario["id_usuario"]);
 				$usuario['categorias'] = $categorias;
 
@@ -3477,7 +3832,58 @@ class Inspeccion extends CI_Controller {
 					$usuario['inspeccion'] = $inspeccion[0];
 					#var_dump($inspeccion[0]);
 				}
-				
+
+
+
+
+				$cant_preguntas_respondidas = 0;
+				$cant_preguntas = 0;
+
+				$lista_cant_preguntas = $this->inspeccion_model->obtenerCantidadPreguntas($id_inspeccion, $usuario["id_usuario"]);
+				$lista_cant_preguntas_respondidas = $this->inspeccion_model->obtenerCantidadPreguntasRespondidas($id_inspeccion, $usuario["id_usuario"]);
+
+				#var_dump($cant_preguntas);
+				#var_dump($cant_preguntas_respondidas);
+
+				if (isset($lista_cant_preguntas_respondidas) && sizeof($lista_cant_preguntas_respondidas) > 0 && isset($lista_cant_preguntas_respondidas[0]["cant_respondidas"])) {
+					$cant_preguntas_respondidas = $lista_cant_preguntas_respondidas[0]["cant_respondidas"];
+				}
+
+				if (isset($lista_cant_preguntas) && sizeof($lista_cant_preguntas) > 0 && isset($lista_cant_preguntas[0]["cant_preguntas"])) {
+					$cant_preguntas = $lista_cant_preguntas[0]["cant_preguntas"];
+				}
+
+				if ($cant_preguntas_respondidas < $cant_preguntas) {
+					$respuesta['id_reinspeccion'] = -1;
+					$respuesta['resultado'] = -1;
+					$respuesta['mensaje'] = 'La Inspeccion #'.$id_inspeccion.' no se encuentra con el checklist respondido por completo, favor completar checklists para crear Re-Inspeccion.';
+					
+					#$this->session->mark_as_flash('respuesta');
+					#$this->session->mark_as_flash(array('respuesta', $respuesta));
+					#$this->session->set_flashdata('respuesta', $respuesta);
+					$_SESSION['respuesta'] =  $respuesta;
+					$this->session->mark_as_flash('respuesta');
+
+					redirect('Inspeccion/listarInspecciones');
+				}
+
+				if (isset($inspeccion[0]["reinspeccion"]) && $inspeccion[0]["reinspeccion"] == 1 && $inspeccion[0]["id_estado"] != 2) {
+					$respuesta['id_reinspeccion'] = -1;
+					$respuesta['resultado'] = -1;
+					$respuesta['mensaje'] = 'La Re-Inspeccion #'.$id_inspeccion.' no se encuentra confirmada, favor confirmar Re-Inspeccion para crear otra Re-Inspeccion.';
+					
+					#$this->session->mark_as_flash('respuesta');
+					#$this->session->mark_as_flash(array('respuesta', $respuesta));
+					#$this->session->set_flashdata('respuesta', $respuesta);
+					$_SESSION['respuesta'] =  $respuesta;
+					$this->session->mark_as_flash('respuesta');
+
+					redirect('Inspeccion/listarInspecciones');
+				}
+
+
+
+
 				$respuesta_carpetas =  $this->inspeccion_model->obtenerCarpetas($id_inspeccion ,$usuario["id_usuario"]);
 				$usuario['respuesta_carpetas'] = $respuesta_carpetas;
 
@@ -3499,6 +3905,7 @@ class Inspeccion extends CI_Controller {
 				#var_dump($observaciones_generales);
 				$respuesta_reinspeccion =  $this->inspeccion_model->obtenerReInspeccion($id_inspeccion ,$usuario["id_usuario"]);
 				#var_dump($respuesta_reinspeccion);#exit();
+
 				#var_dump(isset($respuesta_reinspeccion["resultado"]));
 				#var_dump(!isset($respuesta_reinspeccion["resultado"]));
 					
@@ -3506,7 +3913,7 @@ class Inspeccion extends CI_Controller {
 					#var_dump($respuesta_reinspeccion[0]);
 					$usuario['reinspeccion'] = $respuesta_reinspeccion[0];
 					#var_dump("entro aca");
-					#var_dump($inspeccion[0]);
+					#var_dump($respuesta_reinspeccion[0]);
 				}
 				
 
@@ -3613,7 +4020,7 @@ class Inspeccion extends CI_Controller {
 		if($this->session->userdata('id_usuario')){
 			if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-				$temporal = NULL;
+				$temporal = 0;
 				$datos[] = array();
      			unset($datos[0]);
 
@@ -3674,7 +4081,7 @@ class Inspeccion extends CI_Controller {
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$inspeccion['marca_ascensor'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$inspeccion['capacidad_personas'].'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.($inspeccion["reinspeccion"] == "1" ? "Re-Inspeccion" : "Base").'</p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.($inspeccion["id_estado"] == "1" ? "Activo" : "Eliminado").'</p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.($inspeccion["id_estado"] == "1" ? "Activo" : ($inspeccion["id_estado"] == "2" ? "Re-Inspeccion Confirmada" : "Eliminado")).'</p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio">'.$inspeccion['created_at'].'</p></td>
 						        <td class="text-center align-middle registro botonTabla">
 						        	<a id="edit_'.$inspeccion['id'].'" class="view_convenio" href="reInspeccion/?idInspeccion='.$inspeccion['id'].'">
@@ -3692,7 +4099,7 @@ class Inspeccion extends CI_Controller {
 					        		</a>
 					        	</td>
 					        	<td class="text-center align-middle registro botonTabla">';
-					        		if ($inspeccion["id_estado"] == "1") {
+					        		if ($inspeccion["id_estado"] == "1" || $inspeccion["id_estado"] == "2") {
 						        					$table_inspecciones .= '<a id="trash_'.$inspeccion['id'].'" class="trash" href="#" data-toggle="modal" data-target="#modalEliminarInspeccion" data-id="'.$inspeccion['id'].'" data-inspeccion="'.$inspeccion['edificio'].'">
 										        		<i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="Eliminar"></i>       		
 									        		</a>';
@@ -3715,13 +4122,14 @@ class Inspeccion extends CI_Controller {
 
 				$datos['table_inspecciones'] = $table_inspecciones;
 				echo json_encode($datos);
-
-				
 			}else{
-
+				if (isset($_SESSION['respuesta'])) {
+					$respuesta = $this->session->flashdata('respuesta');
+					$usuario['respuesta'] = $respuesta;
+				}
+				
 				$inspecciones =  $this->inspeccion_model->listarInspecciones($usuario["id_usuario"]);
 				$usuario['inspecciones'] = $inspecciones;
-				
 				$usuario['controller'] = 'inspeccion';
 
 				$this->load->view('temp/header');
@@ -3779,7 +4187,7 @@ class Inspeccion extends CI_Controller {
 					#	var_dump($categorias_preguntas_respuesta_inspeccion);
 					#}
 
-					#var_dump(sizeof($categorias_preguntas_norma));
+					#var_dump($categorias_preguntas_norma);
 					
 
 					foreach ($categorias_preguntas_norma as $pregunta) {
@@ -3843,6 +4251,7 @@ class Inspeccion extends CI_Controller {
 	                     		$respuesta_pregunta = null;
 	                     		$id_respuesta_pregunta = null;
 	                     		$id_severidad_respuesta = null;
+	                     		$cant_ascensor = null;
 	                     		$imagenes = array();
 	                     		if (isset($respuestas_inspeccion) && !is_null($respuestas_inspeccion) && sizeof($respuestas_inspeccion) > 0) {
 
@@ -3855,6 +4264,7 @@ class Inspeccion extends CI_Controller {
 	                     				$respuesta_pregunta = $array_filtrado[$first_key]["respuesta"];
 	                     				$id_respuesta_pregunta = $array_filtrado[$first_key]["id_respuesta"];
 	                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
+	                     				$cant_ascensor = $array_filtrado[$first_key]["cant_ascensor"];
 	                     				#var_dump($idCategoria);
 	                     				#var_dump($id_pregunta);
 	                     				
@@ -3877,7 +4287,7 @@ class Inspeccion extends CI_Controller {
 
 		                     				if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
 				                     			$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
-				                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);	
+				                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "cant_ascensor" => $cant_ascensor, "imagenes" => $imagenes, "respuestas" => []);	
 				                     		}
 
 
@@ -3888,7 +4298,7 @@ class Inspeccion extends CI_Controller {
 	                     		if (!isset($reinspeccion) && is_null($reinspeccion)) {
 	                     			$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
 
-	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "cant_ascensor" => $cant_ascensor, "imagenes" => $imagenes, "respuestas" => []);
 	                     		}
 
 		                     	if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
@@ -3929,6 +4339,7 @@ class Inspeccion extends CI_Controller {
 		                     				$respuesta_pregunta = $array_filtrado[$first_key]["respuesta"];
 		                     				$id_respuesta_pregunta = $array_filtrado[$first_key]["id_respuesta"];
 		                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
+		                     				$cant_ascensor = $array_filtrado[$first_key]["cant_ascensor"];
 
 		                     				if ($respuesta_pregunta == 2 && !is_null($respuesta_pregunta)) {
 		                     					$tiene_no = true;
@@ -3944,9 +4355,9 @@ class Inspeccion extends CI_Controller {
 		                     		#var_dump($reinspeccion);
 		                     		#var_dump($tiene_no);
 		                     		if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
-		                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+		                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "cant_ascensor" => $cant_ascensor, "imagenes" => $imagenes, "respuestas" => []);
 		                     		}elseif (!isset($reinspeccion) && is_null($reinspeccion)) {
-		                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+		                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "cant_ascensor" => $cant_ascensor, "imagenes" => $imagenes, "respuestas" => []);
 		                     		}
 
 	                     			if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
@@ -3995,6 +4406,7 @@ class Inspeccion extends CI_Controller {
 	                     				$respuesta_pregunta = $array_filtrado[$first_key]["respuesta"];
 	                     				$id_respuesta_pregunta = $array_filtrado[$first_key]["id_respuesta"];
 	                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
+	                     				$cant_ascensor = $array_filtrado[$first_key]["cant_ascensor"];
 
 	                     				#var_dump($idCategoria);var_dump($id_pregunta);
 	                     				#var_dump($array_filtrado);
@@ -4010,9 +4422,9 @@ class Inspeccion extends CI_Controller {
 	                     		}
 
 	                     		if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
-	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "cant_ascensor" => $cant_ascensor, "imagenes" => $imagenes, "respuestas" => []);
 	                     		}elseif (!isset($reinspeccion) && is_null($reinspeccion)) {
-	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "cant_ascensor" => $cant_ascensor, "imagenes" => $imagenes, "respuestas" => []);
 	                     		}
 
 		                    	if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
@@ -4125,7 +4537,9 @@ class Inspeccion extends CI_Controller {
 			if (isset($idNorma)) {
 				$categorias_preguntas_norma = $this->norma_model->listarCategoriasPreguntasNorma($idNorma, $usuario['id_usuario']);
 				$respuestas_inspeccion = $this->inspeccion_model->obtenerRespuestasInspeccion($idReInspeccion, $usuario['id_usuario']);
+				#var_dump($idNorma);
 				#var_dump($respuestas_inspeccion);
+				#var_dump($categorias_preguntas_norma);
 				#exit();
 				$severidad_respuestas = $this->inspeccion_model->obtenerSeveridadRespuestas($usuario["id_usuario"]);
 
@@ -4163,6 +4577,7 @@ class Inspeccion extends CI_Controller {
 	                     		$respuesta_pregunta = null;
 	                     		$id_respuesta_pregunta = null;
 	                     		$id_severidad_respuesta = null;
+	                     		$cant_ascensor = null;
 	                     		$imagenes = array();
 	                     		if (isset($respuestas_inspeccion) && !is_null($respuestas_inspeccion) && sizeof($respuestas_inspeccion) > 0) {
 
@@ -4175,6 +4590,7 @@ class Inspeccion extends CI_Controller {
 	                     				$respuesta_pregunta = $array_filtrado[$first_key]["respuesta"];
 	                     				$id_respuesta_pregunta = $array_filtrado[$first_key]["id_respuesta"];
 	                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
+	                     				$cant_ascensor = $array_filtrado[$first_key]["cant_ascensor"];
 	                     				#var_dump($id_severidad_respuesta);
 	                     				if (!is_null($respuesta_pregunta) && $respuesta_pregunta == 2) {
 	                     					#var_dump($array_filtrado);
@@ -4198,7 +4614,7 @@ class Inspeccion extends CI_Controller {
 	                     		#if (!isset($reinspeccion) && is_null($reinspeccion)) {
 	                     			$categorias[] = array('id_categoria' => $idCategoria, 'codigo' => $pregunta["codigo_c"], "categoria" => $pregunta["categoria"], "preguntas" => []);
 
-	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "cant_ascensor" => $cant_ascensor, "imagenes" => $imagenes, "respuestas" => []);
 	                     		#}
 
 		                     	if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
@@ -4225,6 +4641,7 @@ class Inspeccion extends CI_Controller {
 	                     				$respuesta_pregunta = $array_filtrado[$first_key]["respuesta"];
 	                     				$id_respuesta_pregunta = $array_filtrado[$first_key]["id_respuesta"];
 	                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
+	                     				$cant_ascensor = $array_filtrado[$first_key]["cant_ascensor"];
 
 	                     				if ($respuesta_pregunta == 2 && !is_null($respuesta_pregunta)) {
 	                     					$tiene_no = true;
@@ -4240,7 +4657,7 @@ class Inspeccion extends CI_Controller {
 	                     		#if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
 	                     			#$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
 	                     		#}elseif (!isset($reinspeccion) && is_null($reinspeccion)) {
-	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "cant_ascensor" => $cant_ascensor, "imagenes" => $imagenes, "respuestas" => []);
 	                     		#}
 
                      			if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
@@ -4278,6 +4695,7 @@ class Inspeccion extends CI_Controller {
 	                     				$respuesta_pregunta = $array_filtrado[$first_key]["respuesta"];
 	                     				$id_respuesta_pregunta = $array_filtrado[$first_key]["id_respuesta"];
 	                     				$id_severidad_respuesta = $array_filtrado[$first_key]["id_severidad_respuesta"];
+	                     				$cant_ascensor = $array_filtrado[$first_key]["cant_ascensor"];
 
 	                     				if ($respuesta_pregunta == 2 && !is_null($respuesta_pregunta)) {
 	                     					$tiene_no = true;
@@ -4293,7 +4711,7 @@ class Inspeccion extends CI_Controller {
 	                     		#if (isset($reinspeccion) && !is_null($reinspeccion) &&  $reinspeccion == 1 && $tiene_no == true) {
 	                     		#	$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
 	                     		#}elseif (!isset($reinspeccion) && is_null($reinspeccion)) {
-	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "imagenes" => $imagenes, "respuestas" => []);
+	                     			$preguntas[] = array('id_pregunta' => $id_pregunta, 'codigo' => $codigo_p, "pregunta" => $pregunta_r, "respuesta" => $respuesta_pregunta, "id_respuesta" => $id_respuesta_pregunta, "id_severidad_respuesta" => $id_severidad_respuesta, "cant_ascensor" => $cant_ascensor, "imagenes" => $imagenes, "respuestas" => []);
 	                     		#}
 
 		                    	if (!is_null($pregunta["respuesta_id"]) && is_numeric($pregunta["respuesta_id"]) && (int)$pregunta["respuesta_id"] > 0) {
@@ -4802,10 +5220,12 @@ class Inspeccion extends CI_Controller {
 			if($this->input->POST('idInspeccion'))
 				$idInspeccion = $this->input->POST('idInspeccion');
 			$resultado = $this->inspeccion_model->eliminarInspeccion($idInspeccion, $usuario['id_usuario']);
+			#var_dump($resultado);
 			$respuesta = 0;
-			if($resultado > 0)
+			if(isset($resultado) && isset($resultado["resultado"]) && $resultado["resultado"] > 0)
 				$respuesta = 1;
-			echo json_encode($respuesta);
+
+			echo json_encode($resultado);
 		}
 	}
 

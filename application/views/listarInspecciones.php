@@ -40,6 +40,7 @@
 			</div>
 		</div>
 	
+	<input type="text" class="form-control form-control-sm" id="inputMensaje" name="inputMensaje" value="<?php if(isset($respuesta['mensaje'])): echo $respuesta['mensaje']; endif; ?>" hidden>
 
 
 </div>
@@ -93,7 +94,7 @@
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['marca_ascensor']; ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['capacidad_personas']; ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo ($inspeccion["reinspeccion"] == "1" ? "Re-Inspeccion" : "Base"); ?></p></td>
-						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo ($inspeccion["id_estado"] == "1" ? "Activo" : "Eliminado"); ?></p></td>
+						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo ($inspeccion["id_estado"] == "1" ? "Activo" : ($inspeccion["id_estado"] == "2" ? "Re-Inspeccion Confirmada" : "Eliminado")   ); ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $inspeccion['created_at']; ?></p></td>
 
 						        
@@ -114,7 +115,7 @@
 					        		</a>
 					        	</td>
 					        	<td class="text-center align-middle registro botonTabla">
-					        		<?php if ($inspeccion["id_estado"] == "1") { ?>
+					        		<?php if ($inspeccion["id_estado"] == "1" || $inspeccion["id_estado"] == "2") { ?>
 						        					<a id="trash_<?php echo $inspeccion['id']; ?>" class="trash" href="#" data-toggle="modal" data-target="#modalEliminarInspeccion" data-id="<?php echo $inspeccion['id']; ?>" data-inspeccion="<?php echo $inspeccion['edificio']; ?>">
 										        		<i data-feather="trash-2" data-toggle="tooltip" data-placement="top" title="Eliminar"></i>       		
 									        		</a>

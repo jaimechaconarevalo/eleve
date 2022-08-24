@@ -31,8 +31,9 @@ class Empresa extends CI_Controller {
 		$usuario = $this->session->userdata();
 		if($this->session->userdata('id_usuario')){
 			if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+				$data = array();
 
-				$accion = 'agregado';
+				$accion = 'agregar';
 				$idEmpresa = null;
 				$rut = null;
 				$nombre = null;
@@ -95,8 +96,8 @@ class Empresa extends CI_Controller {
 									$contador++;
 							}*/
 
-							$resultado = 1;
-							$mensaje = 'Se ha '.$accion.' la Empresa exitosamente. </br></br>ID: '.$idEmpresa.'</br></br>'.$resultado["mensaje"];
+							$data["resultado"] = 1;
+							$data["mensaje"] = 'Se ha '.$accion.' la Empresa exitosamente. </br></br>ID: '.$idEmpresa.'</br></br>'.$resultado["mensaje"];
 
 							#if ($contador > 0) {
 							#	$mensaje .= ' Se han agregado '.$contador.' Edificios a la Empresa.</br></br>';
@@ -104,8 +105,8 @@ class Empresa extends CI_Controller {
 							
 						}else{
 							if (isset($resultado) && $resultado["resultado"] > 0) {
-								$resultado = 1;
-								$mensaje = 'Se ha '.$accion.' la Empresa exitosamente. </br></br>ID: '.$idEmpresa.'</br></br>'.$resultado["mensaje"];
+								$data["resultado"] = 1;
+								$data["mensaje"] = 'Se ha '.$accion.' la Empresa exitosamente. </br></br>ID: '.$idEmpresa.'</br></br>'.$resultado["mensaje"];
 							}else{
 								$mensaje = 'Ha ocurrido un error al '.$accion.' la Empresa, '.$resultado["mensaje"];
 							}
@@ -115,22 +116,17 @@ class Empresa extends CI_Controller {
 				{
 					if($resultado["resultado"] === -1)
 					{
-						if (!isset($resultado["mensaje"])) {
-							$mensaje = 'Ha ocurrido un error al '.$accion.' la Empresa, '.$resultado["mensaje"];
+						if (isset($resultado["mensaje"])) {
+							$data["resultado"] = -1;
+							$data["mensaje"] = 'Ha ocurrido un error al '.$accion.' la Empresa, '.$resultado["mensaje"];
 						}else{
 							if (isset($resultado["mensaje"]["message"])) {
-								$mensaje = 'Ha ocurrido un error al '.$accion.' la Empresa, Codigo: '.$resultado["mensaje"]["code"].', Mensaje: '.$resultado["mensaje"]["message"];
+								$data["resultado"] = -1;
+								$data["mensaje"] = 'Ha ocurrido un error al '.$accion.' la Empresa, Codigo: '.$resultado["mensaje"]["code"].', Mensaje: '.$resultado["mensaje"]["message"];
 							}
 						}
-						
 					}
 				}
-
-				$data['resultado'] = $resultado;
-				$data['mensaje'] = $mensaje;
-				$data['id_empresa'] = $idEmpresa;
-				$data['rut_empresa'] = $rut;
-				$data['nombre_empresa'] = $nombre;
 
 				echo json_encode($data);
 			}else{

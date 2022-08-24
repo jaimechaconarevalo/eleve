@@ -76,9 +76,9 @@
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $norma['created_at']; ?></p></td>
 						        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $norma['orden']; ?></p></td>
 						        <td class="text-center align-middle registro botonTabla">
-						        		<?php if ($norma['orden'] > 1) {
+						        		<?php if ($norma['orden'] > 1 && $norma['visible'] == 1) {
 								      	?>
-									      	<a id="mover_<?php echo $norma['id']; ?>" class="view_convenio" style="cursor: pointer;">
+									      	<a id="mover_<?php echo $norma['id']; ?>" class="view_convenio up_norma" data-id="<?php echo $norma['id']; ?>" data-norma="<?php echo $norma['nombre']; ?>" data-orden="<?php echo $norma['orden']; ?>" style="cursor: pointer;">
 								        		<i data-feather="corner-left-up" data-toggle="tooltip" data-placement="top" title="Subir"></i>
 							        		</a>
 								      	<?php	
@@ -86,9 +86,9 @@
 						        </td>
 							      <td class="text-center align-middle registro botonTabla">
 							      	<?php
-							      	if ($norma['orden'] < sizeof($normas)) {
+							      	if ($norma['orden'] < sizeof($normas) && $norma['visible'] == 1) {
 							      	?>
-								      	<a id="mover_<?php echo $norma['id']; ?>" class="view_convenio" style="cursor: pointer;">
+								      	<a id="mover_<?php echo $norma['id']; ?>" class="view_convenio down_norma" data-id="<?php echo $norma['id']; ?>" data-norma="<?php echo $norma['nombre']; ?>" data-orden="<?php echo $norma['orden']; ?>" style="cursor: pointer;">
 							        		<i data-feather="corner-left-down" data-toggle="tooltip" data-placement="top" title="Bajar" style="cursor: pointer;"></i>
 						        		</a>
 							      	<?php	

@@ -102,7 +102,7 @@ $('body').on('change', 'input[name="allCI"]', function(event) {
 
 $('#doc-front').on('change', function(event) {
     event.preventDefault();
-    if (DetectRTC.isMobileDevice) {
+    //if (DetectRTC.isMobileDevice) {
         var selectedFile = event.target.files[0];
         var reader = new FileReader();
 
@@ -114,7 +114,7 @@ $('#doc-front').on('change', function(event) {
         };
         reader.readAsDataURL(selectedFile);
         $('#id_front').show();
-    }
+    //}
 });
 
 // Interaccion del boton de captura de foto
@@ -151,6 +151,23 @@ $('body').on('click', '.take-photo', function(event) {
     }
 });
 
+
+$('body').on('click', '.upload-photo', function(event) {
+    event.preventDefault();
+    $('#doc-front').focus().trigger('click');
+    /*var selectedFile = event.target.files[0];
+    var reader = new FileReader();
+
+    var imgtag = document.getElementById("id_front");
+    imgtag.title = selectedFile.name;
+
+    reader.onload = function(event) {
+    imgtag.src = event.target.result;
+    };
+    reader.readAsDataURL(selectedFile);
+    $('#id_front').show();*/
+});
+
 $('body').on('click', '.refrescar', function(event) {
     event.preventDefault();
     $('#video-stream').show();
@@ -162,7 +179,7 @@ $('body').on('click', '.refrescar', function(event) {
 $('body').on('change', '[type="file"]', function(event) {
     event.preventDefault();
 
-    if (DetectRTC.isMobileDevice) {
+    if (DetectRTC.isMobileDevice || event.currentTarget.id == "doc-front") {
         var selectedFile = event.target.files[0];
         var reader = new FileReader();
 
@@ -174,6 +191,7 @@ $('body').on('change', '[type="file"]', function(event) {
         };
 
         reader.readAsDataURL(selectedFile);
+        $('#video-stream').hide();
     }else{
         var img_id = $(this).siblings().find('img').attr('id');
         var input_id = $(this).siblings().find('input').attr('name');

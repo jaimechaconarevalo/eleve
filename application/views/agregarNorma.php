@@ -72,6 +72,8 @@
 									<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre</th>
 									<th scope="col" class="texto-pequenio text-center align-middle registro">Iniciales</th>
 									<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
+									<th scope="col" class="texto-pequenio text-center align-middle registro">Subir</th>
+									<th scope="col" class="texto-pequenio text-center align-middle registro">Bajar</th>
 									<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
 								</tr>
 							</thead>
@@ -140,7 +142,7 @@
         </button>
       </div>
       <div class="modal-body">
-				<div class="table-responsive" id="tablaListaCategorias">
+				<div class="table table-responsive" id="tablaListaCategorias">
 					<table id="tListaCategorias" class="table table-sm table-hover table-bordered">
 						<thead class="thead-dark">
 							<tr>
@@ -181,7 +183,7 @@
 </div>
 
 <div class="modal fade" id="modalAgregarPregunta" tabindex="-1" role="dialog" aria-labelledby="modalAgregarPregunta" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="tituloAP" name="tituloAP" data-id="" data-codigo="" data-nombre="" >Agregar Pregunta</h5>
@@ -190,45 +192,27 @@
         </button>
       </div>
       <div class="modal-body">
-					<div class="table-responsive" id="tablaListaPreguntas">
-						<table id="tListaPreguntas" class="table table-sm table-hover table-bordered">
-							<thead class="thead-dark">
-								<tr>
-									<th scope="col" class="texto-pequenio text-center align-middle registro"># ID</th>
-									<th scope="col" class="texto-pequenio text-center align-middle registro">Codigo</th>
-									<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre</th>
-									<th scope="col" class="texto-pequenio text-center align-middle registro">Estado</th>
-									<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
-									<th scope="col" class="texto-pequenio text-center align-middle registro"></th>
-								</tr>
-							</thead>
-							<tbody id="tbodyPreguntas">
-					  			<?php
-						        if(isset($preguntas))
-						        {
-							        foreach ($preguntas as $pregunta): ?>
-							  			<tr>
-									        <th scope="row" class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $pregunta['id']; ?></th>
-									        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $pregunta['codigo']; ?></p></td>
-									        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $pregunta['nombre']; ?></p></td>
-									        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo ($pregunta["estado"] == "1" ? "Activo" : "Eliminado"); ?></p></td>
-									        <td class="text-center align-middle registro"><p class="texto-pequenio"><?php echo $pregunta['created_at']; ?></p></td>
-								        	<td class="text-center align-middle registro botonTabla">
-								        			<button type="button" class="btn btn-outline-success btn-sm seleccionarPregunta" data-id="<?php echo $pregunta['id']; ?>" data-codigo="<?php echo $pregunta['codigo']; ?>" data-nombre="<?php echo $pregunta['nombre']; ?>">Seleccionar</button>
-								        	</td>
-								    	</tr>
-								  		<?php endforeach;
-						  		}?>
-								  </tbody>
-								</table>
-							</div>
-						</div>
-      		</div>
-    		</div>
-
+				<div class="table-responsive" id="tablaListaPreguntas">
+					<table id="tListaPreguntas" class="table table-sm table-hover table-bordered">
+						<thead class="thead-dark">
+							<tr>
+								<th scope="col" class="texto-pequenio text-center align-middle registro"># ID</th>
+								<th scope="col" class="texto-pequenio text-center align-middle registro">Codigo</th>
+								<th scope="col" class="texto-pequenio text-center align-middle registro">Nombre</th>
+								<th scope="col" class="texto-pequenio text-center align-middle registro">Estado</th>
+								<th scope="col" class="texto-pequenio text-center align-middle registro">Fecha Creaci&oacute;n</th>
+								<!--<th scope="col" class="texto-pequenio text-center align-middle registro"></th>-->
+							</tr>
+						</thead>
+						<tbody id="tbodyPreguntas">
+					  </tbody>
+					</table>
+				</div>
+			</div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
-      </div>
+				<button id="btnCerrarE" type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+				<button id="btnSeleccionarPN" type="button" class="btn btn-success" data-dismiss="modal" data-id="" data-id="" data-id="" >Seleccionar</button>
+			</div>
     </div>
   </div>
 </div>
@@ -269,6 +253,75 @@
 	        <button id="agregarCategoriaReporte" type="submit" class="btn btn-success">Agregar Respuesta</button>
 	      </div>
       </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL CONFIRMAR ELIMINAR CATEGORIA PREGUNTA-->
+
+<div class="modal fade" id="modalConfirmacionEliminarCR" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog " role="document">
+    <div class="modal-content">
+		<div class="modal-header">
+			<h5 class="modal-title" id="tituloMCR" data-id="" data-orden=""></h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+		</div>
+		<div class="modal-body">
+			<p id="parrafoMCR"></p>	
+    </div>
+		<div class="modal-footer">
+			<button id="btnCerrarMCR" type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+			<button id="btnConfirmarMCR" type="button" class="btn btn-danger" data-dismiss="modal">Eliminar</button>
+		</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL CONFIRMAR ELIMINAR CATEGORIA-->
+
+<div class="modal fade" id="modalConfirmacionEliminarC" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog " role="document">
+    <div class="modal-content">
+		<div class="modal-header">
+			<h5 class="modal-title" id="tituloMC" data-id="" data-codigo="" data-orden_categoria=""></h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+		</div>
+		<div class="modal-body">
+			<p id="parrafoMC"></p>
+    </div>
+		<div class="modal-footer">
+			<button id="btnCerrarEC" type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+			<button id="btnConfirmarEC" type="button" class="btn btn-danger" data-dismiss="modal">Eliminar</button>
+		</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL CONFIRMAR ELIMINAR PREGUNTA-->
+
+<div class="modal fade" id="modalConfirmacionEliminarP" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog " role="document">
+    <div class="modal-content">
+		<div class="modal-header">
+			<h5 class="modal-title" id="tituloMEP" data-id="" data-id_categoria="" data-codigo="" data-orden_pregunta=""></h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+		</div>
+		<div class="modal-body">
+			<p id="parrafoMEP"></p>
+    </div>
+		<div class="modal-footer">
+			<button id="btnCerrarEP" type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+			<button id="btnConfirmarEP" type="button" class="btn btn-danger" data-dismiss="modal">Eliminar</button>
+		</div>
     </div>
   </div>
 </div>

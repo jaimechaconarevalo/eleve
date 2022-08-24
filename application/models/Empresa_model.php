@@ -202,18 +202,35 @@ class Empresa_model extends CI_Model
 			if ($idEmpresa && !is_null($idEmpresa)) {
 				$empresa = $this->db->get_where('empresas_mantenedoras', array('id_empresa' => $idEmpresa))->result();
 				if (sizeof($empresa) > 0) {
-					$this->db->set('updated_at', 'NOW()', FALSE);
-					$this->db->where('id_empresa', $idEmpresa);
-					$this->db->update('empresas_mantenedoras', $data);
 
-					if ($this->db->affected_rows() >= 1) {
-						$respuesta['id_empresa'] = $idEmpresa;
-						$respuesta['resultado'] = $this->db->affected_rows();
-						$respuesta['mensaje'] = "Se ha actualizado correctamente la Empresa.";
-					}else{
-						$respuesta['id_empresa'] = -1;
-						$respuesta['resultado'] = $this->db->affected_rows();
-						$respuesta['mensaje'] = $this->db->error();
+					$this->db->select('*');
+				    $this->db->where("id_estado", 1);
+				    $this->db->group_start();
+				    $this->db->or_where('trim(razon_social)', $nombre);
+				    $this->db->or_where('rut',$rut);
+				    $this->db->group_end();
+				    $this->db->where("id_empresa <>", $idEmpresa);
+				    $query = $this->db->get('empresas_mantenedoras');
+				    
+				    $empresa_existente = $query->result_array();
+				    if (sizeof($empresa_existente) > 0) {
+						$respuesta['id_empresa'] = $empresa_existente[0]["id_empresa"];
+						$respuesta['resultado'] = -1;
+						$respuesta['mensaje'] = "La Razon Social o R.U.T. ya existe";
+				    }else{
+						$this->db->set('updated_at', 'NOW()', FALSE);
+						$this->db->where('id_empresa', $idEmpresa);
+						$this->db->update('empresas_mantenedoras', $data);
+
+						if ($this->db->affected_rows() >= 1) {
+							$respuesta['id_empresa'] = $idEmpresa;
+							$respuesta['resultado'] = $this->db->affected_rows();
+							$respuesta['mensaje'] = "Se ha actualizado correctamente la Empresa.";
+						}else{
+							$respuesta['id_empresa'] = -1;
+							$respuesta['resultado'] = $this->db->affected_rows();
+							$respuesta['mensaje'] = $this->db->error();
+						}
 					}
 				}else{
 					$respuesta['id_empresa'] = -1;
@@ -221,17 +238,33 @@ class Empresa_model extends CI_Model
 					$respuesta['mensaje'] = "La Empresa no existe.";
 				}
 			}else{
-				$this->db->insert('empresas_mantenedoras', $data);
-				if ($this->db->affected_rows() >= 1) {
-					$id_empresa = $this->db->insert_id();
-					$respuesta['id_empresa'] = $id_empresa;
-					$respuesta['resultado'] = $this->db->affected_rows();
-					$respuesta['mensaje'] = "Se ha insertado correctamente la Empresa.";
-				}else{
-					$respuesta['id_empresa'] = -1;
-					$respuesta['resultado'] = $this->db->affected_rows();
-					$respuesta['mensaje'] = $this->db->error();
-				}	
+
+				$this->db->select('*');
+			    $this->db->where("id_estado", 1);
+			    $this->db->group_start();
+			    $this->db->or_where('trim(razon_social)', $nombre);
+			    $this->db->or_where('rut',$rut);
+			    $this->db->group_end();
+			    $query = $this->db->get('empresas_mantenedoras');
+			    
+			    $empresa_existente = $query->result_array();
+			    if (sizeof($empresa_existente) > 0) {
+					$respuesta['id_empresa'] = $empresa_existente[0]["id_empresa"];
+					$respuesta['resultado'] = -1;
+					$respuesta['mensaje'] = "La empresa ya existe";
+			    }else{
+			    	$this->db->insert('empresas_mantenedoras', $data);
+					if ($this->db->affected_rows() >= 1) {
+						$id_empresa = $this->db->insert_id();
+						$respuesta['id_empresa'] = $id_empresa;
+						$respuesta['resultado'] = $this->db->affected_rows();
+						$respuesta['mensaje'] = "Se ha insertado correctamente la Empresa.";
+					}else{
+						$respuesta['id_empresa'] = -1;
+						$respuesta['resultado'] = $this->db->affected_rows();
+						$respuesta['mensaje'] = $this->db->error();
+					}
+			    }
 			}
 		}catch(Exception $e){
 			$respuesta['resultado'] = -1;

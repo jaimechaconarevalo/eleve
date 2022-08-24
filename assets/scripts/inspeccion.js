@@ -130,6 +130,7 @@
             var total_preguntas = null;
             var id_categoria = null;
             var id_pregunta = null;
+            var orden_imagen = null;
             var formData = null;
 
             if (element != null) {
@@ -181,6 +182,27 @@
                     id_pregunta = element.currentTarget.dataset.id_pregunta;
                     //total_preguntas = document.getElementById('inputTotalPreguntas_'.concat())
                 }
+
+                if (id_elemento.includes("close_")) {
+
+                    if (id_elemento.replace('close_', '').split('_').length == 3) {
+                        id_categoria = id_elemento.replace('close_', '').split('_')[0];
+                        id_pregunta =  id_elemento.replace('close_', '').split('_')[1];
+                        orden_imagen = id_elemento.replace('close_', '').split('_')[2];
+                    }
+                }
+
+
+                if (id_elemento.includes("sAscensor")) {
+                    total_categorias = document.getElementById('inputTotalCategorias').value;
+                    id_categoria = element.currentTarget.dataset.id_categoria;
+                    id_pregunta =  element.currentTarget.dataset.id_pregunta;
+                    valor_elemento = $(element.currentTarget).selectpicker('val').toString();
+                }
+
+
+
+                
 
                 if (id_elemento.includes("picture_")) {
 
@@ -274,7 +296,7 @@
                     type: 'POST',
                     url: baseurl,
                     dataType: 'json',
-                    data: {id_inspeccion: id_inspeccion, es_temporal: es_temporal, id_elemento: id_elemento, valor_elemento: valor_elemento, total_carpetas: total_carpetas, total_normas: total_normas, total_herramientas: total_herramientas,  total_categorias: total_categorias, id_categoria: id_categoria, id_pregunta: id_pregunta, re_inspeccion: re_inspeccion, reinspeccion: reinspeccion},
+                    data: {id_inspeccion: id_inspeccion, es_temporal: es_temporal, id_elemento: id_elemento, valor_elemento: valor_elemento, total_carpetas: total_carpetas, total_normas: total_normas, total_herramientas: total_herramientas,  total_categorias: total_categorias, id_categoria: id_categoria, id_pregunta: id_pregunta, re_inspeccion: re_inspeccion, reinspeccion: reinspeccion, orden_imagen: orden_imagen},
                     success: function(data) {
                         if (data) {
                             if(data['resultado'] == '1')
@@ -451,6 +473,11 @@
     });
 
     $('#acordionCategorias').on('change', '.respuestas_checklist', function(e) {
+        guardar_elemento(e);
+    });
+
+    $('#acordionCategorias').on('change', '.cant_ascensor', function(e) {
+        e.stopImmediatePropagation();
         guardar_elemento(e);
     });
 
@@ -790,7 +817,7 @@
         success: function(data) {
         if (data)
         {
-            if(data == '1')
+            if(data != null && data.resultado != null && data.resultado == '1')
             {
               $('#tituloMP').empty();
               $("#parrafoMP").empty();
@@ -806,6 +833,7 @@
               $("#parrafoMP").empty();
               $("#tituloMP").append('<i class="plusTituloError mb-2" data-feather="x-circle"></i> Error!!!');
               $("#parrafoMP").append('Ha ocurrido un error al eliminar la Inspeccion.');
+              $("#parrafoMP").append('</br></br>Detalle: </br>', data.mensaje);
               $('#modalEliminarInspeccion').modal('hide');
               listarInspecciones();
               $('#modalMensajeInspeccion').modal({
@@ -844,7 +872,7 @@
     });
 
     $('#modalMensajeInspeccion').on('hidden.bs.modal', function(e) {
-        location.reload();   
+        //location.reload();
     });
 
     $('#modalFoto').on('hidden.bs.modal', function(e) {
@@ -896,7 +924,7 @@
                 id_div_r++;
             }
         }
-        guardar_datos();
+        guardar_elemento(e);
     });
 
     $('#acordionCategorias').on('click', '.rbSI, .rbNA', function(e) {
@@ -942,6 +970,7 @@
             var badge = document.getElementById('conteo_'.concat(id_categoria));
             var badge_total = document.getElementById('total_conteo_'.concat(id_categoria));
             var boton_principal = document.getElementById('button_cat_'.concat(id_categoria));
+            var es_reinspeccion = document.getElementById('es_reinspeccion');
 
             if(parseInt(badge_total.textContent) == contador){
                 badge_total.classList.remove("badge-primary");
@@ -957,8 +986,11 @@
                 boton_principal.classList.remove('btn-outline-warning');
                 boton_principal.classList.remove('btn-outline-danger');
                 boton_principal.classList.add('btn-outline-success');
-                if (e.currentTarget.value.split('-')[0] != "no")
-                    $('#tbodyCategoria'.concat(id_categoria)).collapse('hide');
+                
+                if (es_reinspeccion.value != 1) {
+                    if (e.currentTarget.value.split('-')[0] != "no")
+                        $('#tbodyCategoria'.concat(id_categoria)).collapse('hide');
+                }
                 
             }else{
                 boton_principal.classList.remove('btn-outline-success');
@@ -1447,85 +1479,113 @@
 
 
         }else{
-            var id = document.getElementById('seleccionarFoto').dataset.id;
-            var data_image = document.getElementById('id_front').src;
-            //$(document.getElementById('pregunta_', id)).prepend($('<img>',{id:'foto_1_'.concat(id),src:data_image}));
-            var img = '';
-            img = img.concat('<img id="foto_1_',id,'" src="',data_image,'"/>');
-            $(document.getElementById('div_', id)).append(img);
 
-            //<button type="submit" class="close">
-            //<span>&times;</span>
-            //</button>
-            
-            var id_concatenado = id.concat('_', (document.getElementById('div_'.concat(id)).children.length+1));
+            const imagen_capturada = document.getElementById('id_front');
 
+            const src_imagen_capturada = imagen_capturada.getAttribute('src');
 
-            var div = document.createElement("div");
-            //div.setAttribute('class', 'img-responsive content_area');
-            div.setAttribute('class', 'col-xs-3 m-3');
-            //div.width = '170px !important';
-            //div.setAttribute('style', ' width: 170px!important;');
-            div.id = 'div_image_'.concat(id_concatenado);
-            //div.id = 'div_image_'.concat(id, '_', ($('#div_'.concat(id)).children('input').length+1));
+            if (!src_imagen_capturada || imagen_capturada.style.display == 'none') {
+                $('#tituloMP').empty();
+                $("#parrafoMP").empty();
+                $("#tituloMP").append('<i class="plusTituloError mb-2" data-feather="x-circle"></i> Error!!!');
+                $("#parrafoMP").append('Debe tomar o seleccionar una foto.');                    
+                $('#modalMensajeInspeccion').modal({
+                  show: true
+                });
+            } else {
+                var id = document.getElementById('seleccionarFoto').dataset.id;
+                var data_image = document.getElementById('id_front').src;
+                //$(document.getElementById('pregunta_', id)).prepend($('<img>',{id:'foto_1_'.concat(id),src:data_image}));
+                var img = '';
+                img = img.concat('<img id="foto_1_',id,'" src="',data_image,'"/>');
+                $(document.getElementById('div_', id)).append(img);
 
-            var button = document.createElement("button");
-            button.type = "button";
-            button.setAttribute('class', 'close');
-            button.setAttribute('aria-label', 'Close');
-
-            var span = document.createElement("span");
-            span.setAttribute('class', 'close quitarImagen');
-            span.setAttribute('aria-hidden', 'true');
-            span.textContent = "×";
-            span.id = 'close_'.concat(id_concatenado);
-            span.dataset.id = id_concatenado;
-            span.dataset.id_div = id;
-            button.append(span);
-            
-
-            var image = document.createElement("IMG");
-            image.alt = "Alt information for image";
-            //image.setAttribute('class', 'photo img-thumbnail');
-            image.setAttribute('class', 'img-fluid rounded float-left');
-            image.src = data_image;
-            image.width = '150';
-            image.id = id_concatenado;
+                //<button type="submit" class="close">
+                //<span>&times;</span>
+                //</button>
+                
+                var id_concatenado = id.concat('_', (document.getElementById('div_'.concat(id)).children.length+1));
 
 
-            div.append(button);
-            div.append(image);
+                var div = document.createElement("div");
+                //div.setAttribute('class', 'img-responsive content_area');
+                div.setAttribute('class', 'col-xs-3 m-3');
+                //div.width = '170px !important';
+                //div.setAttribute('style', ' width: 170px!important;');
+                div.id = 'div_image_'.concat(id_concatenado);
+                //div.id = 'div_image_'.concat(id, '_', ($('#div_'.concat(id)).children('input').length+1));
 
-            const img2 = document.getElementById(image.id)
-                        fetch(data_image)
-                        .then(res => res.blob())
-                        .then(blob => {
-                            
-                            const file = new File([blob], 'picture_'.concat(id_concatenado), blob)
-                            input_file = file;
+                var button = document.createElement("button");
+                button.type = "button";
+                button.setAttribute('class', 'close');
+                button.setAttribute('aria-label', 'Close');
 
-                            let container = new DataTransfer();
-                            container.items.add(file);
-                            var x = document.createElement("INPUT");
-                            x.setAttribute("type", "file");
-                            x.files = container.files;
-                            x.id = 'picture_'.concat(id_concatenado);
-                            x.name = 'picture_'.concat(id_concatenado);
-                            x.setAttribute("hidden", true);
-                            //$('#div_'.concat(id)).append(x);
-                            x.dataset.id_categoria = id.split('_')[0];
-                            x.dataset.id_pregunta = id.split('_')[1];
-                            div.append(x);
+                var span = document.createElement("span");
+                span.setAttribute('class', 'close quitarImagen');
+                span.setAttribute('aria-hidden', 'true');
+                span.textContent = "×";
+                span.id = 'close_'.concat(id_concatenado);
+                span.dataset.id = id_concatenado;
+                span.dataset.id_div = id;
+                button.append(span);
 
-                            guardar_elemento(x);
-                        });
 
-            $('#div_'.concat(id)).append(div);
-            //$(document.getElementById('foto_1_'.concat(id))).attr('src', data_image);
-            //$(document.getElementById('foto_1_'.concat(id))).attr('width', '150px');
-            $('#id_front').hide();
-            $('#video-stream').show();
-            $('#video-stream').addClass("rounded");
+                var input = document.createElement('input');
+                input.type = "file";
+                input.id = 'picture_'.concat(id_concatenado);
+                input.name = 'picture_'.concat(id_concatenado);
+                input.dataset.archivo_id = "";
+                input.dataset.id_div = id;
+                input.setAttribute('hidden', 'true');
+
+
+                //<input type="file" id="picture_',imagen.archivo_id,'_',imagen.id_imagen,'" name="picture_',imagen.archivo_id,'_',imagen.id_imagen,'" data-origen="1" data-archivo_id="',imagen.archivo_id,'" hidden="true">');
+                
+
+                var image = document.createElement("IMG");
+                image.alt = "Alt information for image";
+                //image.setAttribute('class', 'photo img-thumbnail');
+                image.setAttribute('class', 'img-fluid rounded float-left');
+                image.src = data_image;
+                image.width = '150';
+                image.id = id_concatenado;
+
+
+                div.append(button);
+                div.append(image);
+                div.append(input);
+
+                const img2 = document.getElementById(image.id)
+                            fetch(data_image)
+                            .then(res => res.blob())
+                            .then(blob => {
+                                
+                                const file = new File([blob], 'picture_'.concat(id_concatenado), blob)
+                                input_file = file;
+
+                                let container = new DataTransfer();
+                                container.items.add(file);
+                                var x = document.createElement("INPUT");
+                                x.setAttribute("type", "file");
+                                x.files = container.files;
+                                x.id = 'picture_'.concat(id_concatenado);
+                                x.name = 'picture_'.concat(id_concatenado);
+                                x.setAttribute("hidden", true);
+                                //$('#div_'.concat(id)).append(x);
+                                x.dataset.id_categoria = id.split('_')[0];
+                                x.dataset.id_pregunta = id.split('_')[1];
+                                div.append(x);
+
+                                guardar_elemento(x);
+                            });
+
+                $('#div_'.concat(id)).append(div);
+                //$(document.getElementById('foto_1_'.concat(id))).attr('src', data_image);
+                //$(document.getElementById('foto_1_'.concat(id))).attr('width', '150px');
+                $('#id_front').hide();
+                $('#video-stream').show();
+                $('#video-stream').addClass("rounded"); 
+            }
         }
     });
 
@@ -1727,6 +1787,26 @@
 
                                                                         div = div.concat('</select>');
                                                                     div = div.concat('</div>');
+
+                                                                    div = div.concat('<div class="form-group col-sm-12  mt-3">');
+                                                                        //div = div.concat('<label for="sAscensor',contador,'">Ascensor</label>');
+                                                                        div = div.concat('<select id="sAscensor',contador,'" name="sAscensor',contador,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" class=" cant_ascensor selectpicker" data-actions-box="true" data-width="100%" data-live-search="true" data-deselectAllText="Eliminar Seleccion" data-selectAllText="Todo" multiple>');
+                                                                            //div = div.concat('<option value="-1" selected>Seleccione Ascensores</option>');
+
+                                                                            //cant_ascensores = pregunta.cant_ascensor.split(',');
+                                                                            div = div.concat('<option value="1">1</option>');
+                                                                            div = div.concat('<option value="2">2</option>');
+                                                                            div = div.concat('<option value="3">3</option>');
+                                                                            div = div.concat('<option value="4">4</option>');
+                                                                            div = div.concat('<option value="5">5</option>');
+                                                                            div = div.concat('<option value="6">6</option>');
+                                                                            div = div.concat('<option value="7">7</option>');
+                                                                            div = div.concat('<option value="8">8</option>');
+                                                                        div = div.concat('</select>');
+                                                                    div = div.concat('</div>');
+
+
+
                                                                 div = div.concat('</div>');
                                                             div = div.concat('</div>');
                                                         div = div.concat('</div>');
@@ -1768,6 +1848,26 @@
 
                                                                         div = div.concat('</select>');
                                                                     div = div.concat('</div>');
+
+
+
+                                                                    div = div.concat('<div class="form-group col-sm-12  mt-3">');
+                                                                        //div = div.concat('<label for="sAscensor',contador,'">Ascensor</label>');
+                                                                        div = div.concat('<select id="sAscensor',contador,'" name="sAscensor',contador,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" class=" cant_ascensor selectpicker" data-actions-box="true" data-width="100%" data-live-search="true" data-deselectAllText="Eliminar Seleccion" data-selectAllText="Todo" multiple>');
+                                                                            //div = div.concat('<option value="-1" selected>Seleccione Ascensores</option>');
+                                                                            //cant_ascensores = pregunta.cant_ascensor.split(',');
+                                                                            div = div.concat('<option value="1">1</option>');
+                                                                            div = div.concat('<option value="2">2</option>');
+                                                                            div = div.concat('<option value="3">3</option>');
+                                                                            div = div.concat('<option value="4">4</option>');
+                                                                            div = div.concat('<option value="5">5</option>');
+                                                                            div = div.concat('<option value="6">6</option>');
+                                                                            div = div.concat('<option value="7">7</option>');
+                                                                            div = div.concat('<option value="8">8</option>');
+                                                                        div = div.concat('</select>');
+                                                                    div = div.concat('</div>');
+
+
                                                                 div = div.concat('</div>');
                                                             div = div.concat('</div>');
                                                         div = div.concat('</div>');
@@ -1827,6 +1927,12 @@
                                 $("#acordionCategorias").append(div);
                                 feather.replace();
                                 $('[data-toggle="tooltip"]').tooltip();
+                                $('.selectpicker').selectpicker({
+                                    selectAllText: 'Todos',
+                                    deselectAllText: 'Eliminar Seleccion',
+                                    noneSelectedText : 'Seleccione un Ascensor'
+                                });
+                                $('.selectpicker').selectpicker('refresh');
                             }
                         }
                     }
@@ -1878,6 +1984,23 @@ window.onload = function () {
             lengthMenu: [[10, 20], [10, 20]]
         });
         feather.replace();
+
+
+        var input_mensaje = document.getElementById('inputMensaje');
+        if(input_mensaje != null && input_mensaje.value != null && input_mensaje.value.length > 0){
+            
+            $('#tituloMP').empty();
+            $("#parrafoMP").empty();
+            $("#tituloMP").append('<i class="plusTituloError mb-2" data-feather="x-circle"></i> Error!!!');
+            $("#parrafoMP").append('Ha ocurrido un error al intentar agregar la Re-Inspeccion.');
+            $("#parrafoMP").append('</br></br>Detalle: </br>', input_mensaje.value);
+                
+            $('#modalMensajeInspeccion').modal({
+              show: true
+            });
+            $('[data-toggle="tooltip"]').tooltip();
+            feather.replace();
+        }
     }
 
     if(window.location.pathname.split('/')[2].toLowerCase() == 'agregarInspeccion'.toLowerCase() || window.location.pathname.split('/')[2].toLowerCase() == 'modificarInspeccion'.toLowerCase())
@@ -2037,6 +2160,28 @@ window.onload = function () {
 
                                                                         div = div.concat('</select>');
                                                                     div = div.concat('</div>');
+
+
+
+                                                                    div = div.concat('<div class="form-group col-sm-12  mt-3">');
+                                                                        //div = div.concat('<label for="sAscensor',contador,'">Ascensor</label>');
+                                                                        div = div.concat('<select id="sAscensor',contador,'" name="sAscensor',contador,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" class=" cant_ascensor selectpicker" data-actions-box="true" data-width="100%" data-live-search="true" data-deselectAllText="Eliminar Seleccion" data-selectAllText="Todo" multiple>');
+                                                                            //div = div.concat('<option value="-1" selected>Seleccione Ascensores</option>');
+                                                                            cant_ascensores = null;
+                                                                            if (pregunta.cant_ascensor != null) {
+                                                                                cant_ascensores = pregunta.cant_ascensor.split(',');
+                                                                            }
+                                                                            div = div.concat('<option value="1" ',(cant_ascensores != null && (cant_ascensores.find(element => element == 1)) != null ? 'selected' : ''),'>1</option>');
+                                                                            div = div.concat('<option value="2" ',(cant_ascensores != null && (cant_ascensores.find(element => element == 2)) != null ? 'selected' : ''),'>2</option>');
+                                                                            div = div.concat('<option value="3" ',(cant_ascensores != null && (cant_ascensores.find(element => element == 3)) != null ? 'selected' : ''),'>3</option>');
+                                                                            div = div.concat('<option value="4" ',(cant_ascensores != null && (cant_ascensores.find(element => element == 4)) != null ? 'selected' : ''),'>4</option>');
+                                                                            div = div.concat('<option value="5" ',(cant_ascensores != null && (cant_ascensores.find(element => element == 5)) != null ? 'selected' : ''),'>5</option>');
+                                                                            div = div.concat('<option value="6" ',(cant_ascensores != null && (cant_ascensores.find(element => element == 6)) != null ? 'selected' : ''),'>6</option>');
+                                                                            div = div.concat('<option value="7" ',(cant_ascensores != null && (cant_ascensores.find(element => element == 7)) != null ? 'selected' : ''),'>7</option>');
+                                                                            div = div.concat('<option value="8" ',(cant_ascensores != null && (cant_ascensores.find(element => element == 8)) != null ? 'selected' : ''),'>8</option>');
+                                                                        div = div.concat('</select>');
+                                                                    div = div.concat('</div>');
+
                                                                 div = div.concat('</div>');
                                                             div = div.concat('</div>');
                                                         div = div.concat('</div>');
@@ -2091,6 +2236,32 @@ window.onload = function () {
 
                                                                         div = div.concat('</select>');
                                                                     div = div.concat('</div>');
+
+                                                                    
+
+                                                                    div = div.concat('<div class="form-group col-sm-12  mt-3">');
+                                                                        //div = div.concat('<label for="sAscensor',contador,'">Ascensor</label>');
+                                                                        div = div.concat('<select id="sAscensor',contador,'" name="sAscensor',contador,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" class=" cant_ascensor selectpicker" data-actions-box="true" data-width="100%" data-live-search="true" data-deselectAllText="Eliminar Seleccion" data-selectAllText="Todo" multiple>');
+                                                                            //div = div.concat('<option value="-1" selected>Seleccione Ascensores</option>');
+
+                                                                            cant_ascensores = null;
+                                                                            if (pregunta.cant_ascensor != null) {
+                                                                                cant_ascensores = pregunta.cant_ascensor.split(',');
+                                                                            }
+                                                                            div = div.concat('<option value="1" ',(cant_ascensores != null && (cant_ascensores.find(element => element == 1)) != null ? 'selected' : ''),'>1</option>');
+                                                                            div = div.concat('<option value="2" ',(cant_ascensores != null && (cant_ascensores.find(element => element == 2)) != null ? 'selected' : ''),'>2</option>');
+                                                                            div = div.concat('<option value="3" ',(cant_ascensores != null && (cant_ascensores.find(element => element == 3)) != null ? 'selected' : ''),'>3</option>');
+                                                                            div = div.concat('<option value="4" ',(cant_ascensores != null && (cant_ascensores.find(element => element == 4)) != null ? 'selected' : ''),'>4</option>');
+                                                                            div = div.concat('<option value="5" ',(cant_ascensores != null && (cant_ascensores.find(element => element == 5)) != null ? 'selected' : ''),'>5</option>');
+                                                                            div = div.concat('<option value="6" ',(cant_ascensores != null && (cant_ascensores.find(element => element == 6)) != null ? 'selected' : ''),'>6</option>');
+                                                                            div = div.concat('<option value="7" ',(cant_ascensores != null && (cant_ascensores.find(element => element == 7)) != null ? 'selected' : ''),'>7</option>');
+                                                                            div = div.concat('<option value="8" ',(cant_ascensores != null && (cant_ascensores.find(element => element == 8)) != null ? 'selected' : ''),'>8</option>');
+                                                                        div = div.concat('</select>');
+                                                                    div = div.concat('</div>');
+
+
+
+
                                                                 div = div.concat('</div>');
                                                             div = div.concat('</div>');
                                                         div = div.concat('</div>');
@@ -2174,6 +2345,13 @@ window.onload = function () {
                                 $("#acordionCategorias").append(div);
                                 feather.replace();
                                 $('[data-toggle="tooltip"]').tooltip();
+
+                                $('.selectpicker').selectpicker({
+                                    selectAllText: 'Todos',
+                                    deselectAllText: 'Eliminar Seleccion',
+                                    noneSelectedText : 'Seleccione un Ascensor'
+                                });
+                                $('.selectpicker').selectpicker('refresh');
                             }
 
                     }
@@ -2301,7 +2479,7 @@ window.onload = function () {
             //"data": data.empresas_mantenedoras,
             searching: true,
             paging:         true,
-            ordering:       true,
+            ordering:       false,
             info:           true,
             select: true,
             select:{
@@ -2519,6 +2697,28 @@ window.onload = function () {
 
                                                                         div = div.concat('</select>');
                                                                     div = div.concat('</div>');
+
+
+
+
+                                                                    div = div.concat('<div class="form-group col-sm-12  mt-3">');
+                                                                        //div = div.concat('<label for="sAscensor',contador,'">Ascensor</label>');
+                                                                        div = div.concat('<select id="sAscensor',contador,'" name="sAscensor',contador,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" class="cant_ascensor selectpicker" data-actions-box="true" data-width="100%" data-live-search="true" data-deselectAllText="Eliminar Seleccion" data-selectAllText="Todo" multiple>');
+                                                                            //div = div.concat('<option value="-1" selected>Seleccione Ascensores</option>');
+                                                                            cant_ascensores = pregunta.cant_ascensor.split(',');
+                                                                            div = div.concat('<option value="1" ',((cant_ascensores.find(element => element == 1)) != null ? 'selected' : ''),'>1</option>');
+                                                                            div = div.concat('<option value="2" ',((cant_ascensores.find(element => element == 2)) != null ? 'selected' : ''),'>2</option>');
+                                                                            div = div.concat('<option value="3" ',((cant_ascensores.find(element => element == 3)) != null ? 'selected' : ''),'>3</option>');
+                                                                            div = div.concat('<option value="4" ',((cant_ascensores.find(element => element == 4)) != null ? 'selected' : ''),'>4</option>');
+                                                                            div = div.concat('<option value="5" ',((cant_ascensores.find(element => element == 5)) != null ? 'selected' : ''),'>5</option>');
+                                                                            div = div.concat('<option value="6" ',((cant_ascensores.find(element => element == 6)) != null ? 'selected' : ''),'>6</option>');
+                                                                            div = div.concat('<option value="7" ',((cant_ascensores.find(element => element == 7)) != null ? 'selected' : ''),'>7</option>');
+                                                                            div = div.concat('<option value="8" ',((cant_ascensores.find(element => element == 8)) != null ? 'selected' : ''),'>8</option>');
+                                                                        div = div.concat('</select>');
+                                                                    div = div.concat('</div>');
+
+
+
                                                                 div = div.concat('</div>');
                                                             div = div.concat('</div>');
                                                         div = div.concat('</div>');
@@ -2573,6 +2773,26 @@ window.onload = function () {
 
                                                                         div = div.concat('</select>');
                                                                     div = div.concat('</div>');
+
+
+
+                                                                    div = div.concat('<div class="form-group col-sm-12  mt-3">');
+                                                                        //div = div.concat('<label for="sAscensor',contador,'">Ascensor</label>');
+                                                                        div = div.concat('<select id="sAscensor',contador,'" name="sAscensor',contador,'" data-id_categoria="',categoria.id_categoria,'" data-id_pregunta="',pregunta.id_pregunta,'" class=" cant_ascensor selectpicker" data-actions-box="true" data-width="100%" data-live-search="true" data-deselectAllText="Eliminar Seleccion" data-selectAllText="Todo" multiple>');
+                                                                            //div = div.concat('<option value="-1" selected>Seleccione Ascensores</option>');
+                                                                            cant_ascensores = pregunta.cant_ascensor.split(',');
+                                                                            div = div.concat('<option value="1" ',((cant_ascensores.find(element => element == 1)) != null ? 'selected' : ''),'>1</option>');
+                                                                            div = div.concat('<option value="2" ',((cant_ascensores.find(element => element == 2)) != null ? 'selected' : ''),'>2</option>');
+                                                                            div = div.concat('<option value="3" ',((cant_ascensores.find(element => element == 3)) != null ? 'selected' : ''),'>3</option>');
+                                                                            div = div.concat('<option value="4" ',((cant_ascensores.find(element => element == 4)) != null ? 'selected' : ''),'>4</option>');
+                                                                            div = div.concat('<option value="5" ',((cant_ascensores.find(element => element == 5)) != null ? 'selected' : ''),'>5</option>');
+                                                                            div = div.concat('<option value="6" ',((cant_ascensores.find(element => element == 6)) != null ? 'selected' : ''),'>6</option>');
+                                                                            div = div.concat('<option value="7" ',((cant_ascensores.find(element => element == 7)) != null ? 'selected' : ''),'>7</option>');
+                                                                            div = div.concat('<option value="8" ',((cant_ascensores.find(element => element == 8)) != null ? 'selected' : ''),'>8</option>');
+                                                                        div = div.concat('</select>');
+                                                                    div = div.concat('</div>');
+
+
                                                                 div = div.concat('</div>');
                                                             div = div.concat('</div>');
                                                         div = div.concat('</div>');
@@ -2656,6 +2876,12 @@ window.onload = function () {
                                 $("#acordionCategorias").append(div);
                                 feather.replace();
                                 $('[data-toggle="tooltip"]').tooltip();
+                                $('.selectpicker').selectpicker({
+                                    selectAllText: 'Todos',
+                                    deselectAllText: 'Eliminar Seleccion',
+                                    noneSelectedText : 'Seleccione un Ascensor'
+                                });
+                                $('.selectpicker').selectpicker('refresh');
                             }
 
                     }

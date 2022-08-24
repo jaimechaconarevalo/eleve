@@ -58,7 +58,7 @@ $(document).ready(function() {
 
     if (!DetectRTC.isMobileDevice) {
         if (DetectRTC.isWebRTCSupported) {
-            console.log('Browser Support WebRTC')
+            //console.log('Browser Support WebRTC')
             navigator.mediaDevices.enumerateDevices().then(function (devices) {
                 for(var i = 0; i < devices.length; i ++){
                     var device = devices[i];
@@ -71,10 +71,11 @@ $(document).ready(function() {
                 };
                 setVideoStream($('#videoSource').val());
             });
-            $('input[type="file"]').detach();
+            //$('input[type="file"]').detach();
+            $('input[type="file"]').hide();
             $('label.images').detach();
         } else {
-            console.log('This Browser Not Support WebRTC');
+            //console.log('This Browser Not Support WebRTC');
             bootbox.alert(lang[app_locale]['webrtc_fail']);
             $('.api').detach();
             $('.supported').show();

@@ -2,6 +2,79 @@
   $('[data-toggle="tooltip"]').tooltip();
   feather.replace();
 
+  $('#inputRut').on('input', function(e) {
+    var resultado = checkRut(this);
+  });
+
+  function checkRut(rut) {
+        // Despejar Puntos
+        var valor = rut.value.replace('.','');
+        // Despejar Guión
+        valor = valor.replace('-','');
+        
+        // Aislar Cuerpo y Dígito Verificador
+        cuerpo = valor.slice(0,-1);
+        dv = valor.slice(-1).toUpperCase();
+        
+        // Formatear RUN
+        if (cuerpo.length > 0 || dv.length > 0) {
+            
+            if ((cuerpo.length + dv.length) == 1) {
+                rut.value = dv;
+            }else{
+                if (cuerpo.length > 3) {
+                    var largo_rut = cuerpo.length;
+                    var cant_puntos = Math.ceil(~~(cuerpo.length / 3));
+
+                    if (cant_puntos == 1) {
+                        cuerpo = cuerpo.slice(0, (cuerpo.replace('.', '').length-3)) + '.' + cuerpo.replace('.', '').slice((cuerpo.replace('.', '').length - 3), cuerpo.replace('.', '').length);
+                    }else{
+                        if (cuerpo.length > 6) {
+
+                            cuerpo = cuerpo.replace('.', '').slice(0, (cuerpo.replace('.', '').length-6)) + '.' + cuerpo.replace('.', '').slice((cuerpo.replace('.', '').length-6), ((cuerpo.replace('.', '').length-6)+3)) + '.' + cuerpo.replace('.', '').slice((cuerpo.replace('.', '').length - 3), cuerpo.replace('.', '').length);
+                        }else{
+                            cuerpo = cuerpo.replace('.', '').slice(0, (cuerpo.replace('.', '').length-3)) + '.' + cuerpo.replace('.', '').slice((cuerpo.length - 3), cuerpo.replace('.', '').length);
+                        }
+                    }
+                }
+
+                rut.value = cuerpo + '-'+ dv;
+            }
+        }else{
+            rut.value = "";
+        }
+        
+        // Calcular Dígito Verificador
+        suma = 0;
+        multiplo = 2;
+        
+        // Para cada dígito del Cuerpo
+        for(i=1;i<=cuerpo.length;i++) {
+        
+            // Obtener su Producto con el Múltiplo Correspondiente
+            index = multiplo * valor.charAt(cuerpo.length - i);
+            
+            // Sumar al Contador General
+            suma = suma + index;
+            
+            // Consolidar Múltiplo dentro del rango [2,7]
+            if(multiplo < 7) { multiplo = multiplo + 1; } else { multiplo = 2; }
+      
+        }
+        
+        // Calcular Dígito Verificador en base al Módulo 11
+        dvEsperado = 11 - (suma % 11);
+        
+        // Casos Especiales (0 y K)
+        dv = (dv == 'K')?10:dv;
+        dv = (dv == 0)?11:dv;
+        
+        // Validar que el Cuerpo coincide con su Dígito Verificador
+        
+        // Si todo sale bien, eliminar errores (decretar que es válido)
+        rut.setCustomValidity('');
+    }
+
   $("#agregarEmpresa").on("submit", function(e){
         var loader = document.getElementById("loader");
         loader.removeAttribute('hidden');

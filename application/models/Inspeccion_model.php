@@ -75,7 +75,7 @@ class Inspeccion_model extends CI_Model
 		$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion', 'LEFT');
 		$this->db->join('normas n', 'ic.id_norma = n.id', 'LEFT');
 		$this->db->join('usos us', 'i.id_uso = us.id', 'LEFT');
-		$this->db->where('i.id_estado', 1);
+		$this->db->where('i.id_estado >=', 1);
 		
 		$this->db->group_start();
 		$this->db->where('ic.id_estado', 1)->or_where('ic.id IS NULL', NULL, FALSE);
@@ -89,17 +89,44 @@ class Inspeccion_model extends CI_Model
 	public function obtenerReInspeccion($idInspeccion, $id_usuario)
 	{
 		try{
-			$inspeccion = $this->db->get_where('inspecciones', array('id' => $idInspeccion, 'id_estado' => 1))->result();
+			$inspeccion = $this->db->get_where('inspecciones', array('id' => $idInspeccion, 'id_estado >=' => 1))->result();
 			$respuesta = array('resultado' => null,
 						'mensaje' => null,
 						'id_inspeccion' => null
 					  );
 
+			$cant_preguntas_respondidas = 0;
+			$cant_preguntas = 0;
 			if (sizeof($inspeccion) > 0) {
+
+
+				/*$lista_cant_preguntas_respondidas = $this->obtenerCantidadPreguntasRespondidas($idInspeccion, $id_usuario);
+				$lista_cant_preguntas = $this->obtenerCantidadPreguntas($idInspeccion, $id_usuario);
+				
+				
+				#var_dump($lista_cant_preguntas);
+
+				if (isset($lista_cant_preguntas_respondidas) && sizeof($lista_cant_preguntas_respondidas) > 0 && isset($lista_cant_preguntas_respondidas[0]["cant_respondidas"])) {
+					$cant_preguntas_respondidas = $lista_cant_preguntas_respondidas[0]["cant_respondidas"];
+				}
+
+				if (isset($lista_cant_preguntas) && sizeof($lista_cant_preguntas) > 0 && isset($lista_cant_preguntas[0]["cant_preguntas"])) {
+					$cant_preguntas = $lista_cant_preguntas[0]["cant_preguntas"];
+				}
+
+				if ($cant_preguntas_respondidas <= $cant_preguntas) {
+					$respuesta['id_reinspeccion'] = -1;
+					$respuesta['resultado'] = -1;
+					$respuesta['mensaje'] = 'La Inspeccion #'.$idInspeccion.' no se encuentra con el checklist respondido al 100%.';
+					return;
+				}*/
+
 				if (is_null($inspeccion[0]->id_reinspeccion)) {
+					#var_dump("entro aca");
 					$inspeccion[0]->id = null;
 					$id_reinspeccion = null;
 					$inspeccion[0]->reinspeccion = 1;
+					$inspeccion[0]->id_estado = 1;
 					$this->db->insert('inspecciones', $inspeccion[0]);
 					if ($this->db->affected_rows() >= 1){
 						$id_reinspeccion = $this->db->insert_id();
@@ -129,25 +156,69 @@ class Inspeccion_model extends CI_Model
 					    		#$respuesta["resultado"] = $this->db->affected_rows();
 
 								$inspecciones_checklists_respuestas = $this->db->get_where('inspecciones_checklists_respuestas', array('id_inspecciones_checklists' => $id_inspecciones_checklists, 'id_estado' => 1))->result();
+
+
+								
+
+
 								if (sizeof($inspecciones_checklists_respuestas) > 0) {
 									foreach ($inspecciones_checklists_respuestas as $ic_respuesta) {
 										$id_ic_respuesta = $ic_respuesta->id;
 
-										$imagenes_ic_respuesta = $this->db->get_where('archivos', array('inspeccion_checklist_resp_id' => $id_ic_respuesta, 'id_estado' => 1))->result();
+										$ic_respuesta->id = null;
+										$ic_respuesta->id_inspecciones_checklists = $id_checklist_reinspeccion;
 
+											
+										$this->db->insert('inspecciones_checklists_respuestas', $ic_respuesta);
+
+										$id_ic_respuesta_nuevo = $this->db->insert_id();
+
+										$imagenes_ic_respuesta = $this->db->get_where('archivos', array('inspeccion_checklist_resp_id' => $id_ic_respuesta, 'id_estado' => 1))->result();
+										#var_dump($id_ic_respuesta);
 										if (sizeof($imagenes_ic_respuesta) > 0) {
 											foreach ($imagenes_ic_respuesta as $imagen_respuesta) {
 												$imagen_respuesta->id = null;
+												$imagen_respuesta->inspeccion_checklist_resp_id = $id_ic_respuesta_nuevo;
+												$this->db->insert('archivos', $imagen_respuesta);
+												#var_dump($this->db->affected_rows());
 											}
 										}
-
-
-										$ic_respuesta->id_inspecciones_checklists = $id_checklist_reinspeccion;
-										$ic_respuesta->id = null;
+										#$ic_respuesta->id_inspecciones_checklists = $id_checklist_reinspeccion;
+										#$ic_respuesta->id = null;
 									}
-									$this->db->insert_batch('inspecciones_checklists_respuestas', $inspecciones_checklists_respuestas);
-									if ($this->db->affected_rows() >= 1){
-										$respuesta['cant_reinspeccion_checklists_respuestas'] = $this->db->affected_rows();
+									#$this->db->insert_batch('inspecciones_checklists_respuestas', $inspecciones_checklists_respuestas);
+									#if ($this->db->affected_rows() >= 1){
+									#$respuesta['cant_reinspeccion_checklists_respuestas'] = $this->db->affected_rows();
+
+
+									$inspecciones_checklists_obs = $this->db->get_where('inspecciones_checklists_obs', array('id_inspecciones_checklists' => $id_inspecciones_checklists, 'id_estado' => 1))->result();
+
+									foreach ($inspecciones_checklists_obs as $ic_obs) {
+										$id_ic_obs = $ic_obs->id;
+
+										$ic_obs->id = null;
+										$ic_obs->id_inspecciones_checklists = $id_checklist_reinspeccion;
+
+											
+										$this->db->insert('inspecciones_checklists_obs', $ic_obs);
+
+										$id_ic_obs_nuevo = $this->db->insert_id();
+
+										$imagenes_ic_obs = $this->db->get_where('archivos', array('inspeccion_checklist_obs_id' => $id_ic_obs, 'id_estado' => 1))->result();
+										#var_dump($id_ic_respuesta);
+										if (sizeof($imagenes_ic_obs) > 0) {
+											foreach ($imagenes_ic_obs as $imagen_obs) {
+												$imagen_obs->id = null;
+												$imagen_obs->inspeccion_checklist_obs_id = $id_ic_obs_nuevo;
+												$this->db->insert('archivos', $imagen_obs);
+												#var_dump($this->db->affected_rows());
+											}
+										}
+										#$ic_respuesta->id_inspecciones_checklists = $id_checklist_reinspeccion;
+										#$ic_respuesta->id = null;
+									}
+
+
 
 										$this->db->select('i.id, i.id_edificio, i.nombre_tecnico, i.cantidad_ascensor, i.rut_admin, i.nombre_admin, i.email_admin, i.fecha_contrato_mant, i.contrato_vigente, i.id_empresa_mantenedora, i.nombre_mant_2, i.fecha_ultima_mant, i.marca_ascensor, i.id_uso, i.capacidad_personas, i.capacidad_kg, i.id_suspension, s.nombre as suspension, i.sala_maquinas, i.velocidad, i.recorrido, i.paradas, i.id_tipo_traccion, i.cantidad, i.num_informe, i.diametro_traccion, i.enclavamiento_electrico, i.enclavamiento_mecanico, i.diametro_cable, i.reinspeccion, i.id_estado, i.id_usuario, i.created_at, i.updated_at, e.rol, e.nombre as edificio, e.rut as rut_e, e.domicilio, em.cod_empresa, em.razon_social, em.num_registro, em.direccion as direccion_em, em.rut as rut_em, em.email as email_em, em.observaciones as observaciones_em, i.es_temporal, n.id as id_norma, n.codigo as codigo_norma, n.nombre as norma, n.observaciones as obs_norma, us.codigo as codigo_uso, us.nombre as uso, us.observaciones as obs_uso');
 										$this->db->from('inspecciones i');
@@ -157,7 +228,7 @@ class Inspeccion_model extends CI_Model
 										$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion', 'LEFT');
 										$this->db->join('normas n', 'ic.id_norma = n.id', 'LEFT');
 										$this->db->join('usos us', 'i.id_uso = us.id', 'LEFT');
-										$this->db->where('i.id_estado', 1);
+										$this->db->where('i.id_estado >=', 1);
 										$this->db->where('ic.id_estado', 1);
 										$this->db->where('i.id', $id_reinspeccion);
 										$respuesta = $this->db->get();
@@ -168,7 +239,10 @@ class Inspeccion_model extends CI_Model
 										order by a.id_categoria, a.id_pregunta, a.orden;*/
 
 
-									}
+									#}
+
+
+
 									#var_dump($this->db->affected_rows());
 									#exit();
 
@@ -208,13 +282,20 @@ class Inspeccion_model extends CI_Model
 							}
 						}
 
+
+
+
+
+
 					}else{
 						$respuesta['id_reinspeccion'] = -1;
 						$respuesta['resultado'] = $this->db->affected_rows();
 						$respuesta['mensaje'] = $this->db->error();
 					}
 					#var_dump($id_reinspeccion);
-				}else{					
+				}else{
+
+
 					$this->db->select('i.id, i.id_edificio, i.nombre_tecnico, i.cantidad_ascensor, i.rut_admin, i.nombre_admin, i.email_admin, i.fecha_contrato_mant, i.contrato_vigente, i.id_empresa_mantenedora, i.nombre_mant_2, i.fecha_ultima_mant, i.marca_ascensor, i.id_uso, i.capacidad_personas, i.capacidad_kg, i.id_suspension, s.nombre as suspension, i.sala_maquinas, i.velocidad, i.recorrido, i.paradas, i.id_tipo_traccion, i.cantidad, i.num_informe, i.diametro_traccion, i.enclavamiento_electrico, i.enclavamiento_mecanico, i.diametro_cable, i.reinspeccion, i.id_estado, i.id_usuario, i.created_at, i.updated_at, e.rol, e.nombre as edificio, e.rut as rut_e, e.domicilio, em.cod_empresa, em.razon_social, em.num_registro, em.direccion as direccion_em, em.rut as rut_em, em.email as email_em, em.observaciones as observaciones_em, i.es_temporal, n.id as id_norma, n.codigo as codigo_norma, n.nombre as norma, n.observaciones as obs_norma, us.codigo as codigo_uso, us.nombre as uso, us.observaciones as obs_uso');
 					$this->db->from('inspecciones i');
 					$this->db->join('edificios e', 'i.id_edificio = e.id', 'LEFT');
@@ -223,7 +304,7 @@ class Inspeccion_model extends CI_Model
 					$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion', 'LEFT');
 					$this->db->join('normas n', 'ic.id_norma = n.id', 'LEFT');
 					$this->db->join('usos us', 'i.id_uso = us.id', 'LEFT');
-					$this->db->where('i.id_estado', 1);
+					$this->db->where('i.id_estado >= ', 1);
 					$this->db->where('ic.id_estado', 1);
 					$this->db->where('i.id', $inspeccion[0]->id_reinspeccion);
 					$inspeccion = $this->db->get();
@@ -241,31 +322,116 @@ class Inspeccion_model extends CI_Model
 
 	public function obtenerCarpetas($idInspeccion, $id_usuario)
 	{
+		$id_inspeccion = $idInspeccion;
+		$es_inspeccion = 0;
+		$contador = 0;
+		while ($es_inspeccion == 0) {
+			if ($contador == 0) {
+				$inspeccion = $this->db->get_where('inspecciones', array('id' => $id_inspeccion, 'id_estado >=' => 1))->result();
+			}else{
+				$inspeccion = $this->db->get_where('inspecciones', array('id_reinspeccion' => $id_inspeccion, 'id_estado >=' => 1))->result();
+			}
+
+			if (sizeof($inspeccion) > 0) {
+				if (isset($inspeccion[0]) && isset($inspeccion[0]->reinspeccion) && $inspeccion[0]->reinspeccion == "1") {
+					$id_inspeccion = $inspeccion[0]->id;
+				}else{
+					if (isset($inspeccion[0]) && is_null($inspeccion[0]->reinspeccion)){
+						$es_inspeccion = 1;
+						$id_inspeccion = $inspeccion[0]->id;
+					}
+				}
+			}
+
+			$contador++;
+
+			if ($contador == 10) {
+				$es_inspeccion = 1;
+			}
+		}
+
 		$this->db->select('ic.id, ic.id_inspeccion, ic.id_carpeta, ic.respuesta, ic.orden');
 		$this->db->from('inspecciones_carpetas ic');
 		$this->db->where('ic.id_estado', 1);
-		$this->db->where('ic.id_inspeccion', $idInspeccion);
+		$this->db->where('ic.id_inspeccion', $id_inspeccion);
 		$inspeccion = $this->db->get();
 		return $inspeccion->result_array();
 	}
 
 	public function obtenerNormas($idInspeccion, $id_usuario)
 	{
+
+		$id_inspeccion = $idInspeccion;
+		$es_inspeccion = 0;
+		$contador = 0;
+		while ($es_inspeccion == 0) {
+			if ($contador == 0) {
+				$inspeccion = $this->db->get_where('inspecciones', array('id' => $id_inspeccion, 'id_estado >=' => 1))->result();
+			}else{
+				$inspeccion = $this->db->get_where('inspecciones', array('id_reinspeccion' => $id_inspeccion, 'id_estado >=' => 1))->result();
+			}
+
+			if (sizeof($inspeccion) > 0) {
+				if (isset($inspeccion[0]) && isset($inspeccion[0]->reinspeccion) && $inspeccion[0]->reinspeccion == "1") {
+					$id_inspeccion = $inspeccion[0]->id;
+				}else{
+					if (isset($inspeccion[0]) && is_null($inspeccion[0]->reinspeccion)){
+						$es_inspeccion = 1;
+						$id_inspeccion = $inspeccion[0]->id;
+					}
+				}
+			}
+
+			$contador++;
+
+			if ($contador == 10) {
+				$es_inspeccion = 1;
+			}
+		}
+
 		$this->db->select('ic.id, ic.id_inspeccion, ic.id_norma, ic.respuesta, ic.orden');
 		$this->db->from('inspecciones_normas ic');
 		$this->db->where('ic.id_estado', 1);
-		$this->db->where('ic.id_inspeccion', $idInspeccion);
+		$this->db->where('ic.id_inspeccion', $id_inspeccion);
 		$inspeccion = $this->db->get();
 		return $inspeccion->result_array();
 	}
 
 	public function obtenerHerramientas($idInspeccion, $id_usuario)
 	{
+		$id_inspeccion = $idInspeccion;
+		$es_inspeccion = 0;
+		$contador = 0;
+		while ($es_inspeccion == 0) {
+			if ($contador == 0) {
+				$inspeccion = $this->db->get_where('inspecciones', array('id' => $id_inspeccion, 'id_estado >=' => 1))->result();
+			}else{
+				$inspeccion = $this->db->get_where('inspecciones', array('id_reinspeccion' => $id_inspeccion, 'id_estado >=' => 1))->result();
+			}
+
+			if (sizeof($inspeccion) > 0) {
+				if (isset($inspeccion[0]) && isset($inspeccion[0]->reinspeccion) && $inspeccion[0]->reinspeccion == "1") {
+					$id_inspeccion = $inspeccion[0]->id;
+				}else{
+					if (isset($inspeccion[0]) && is_null($inspeccion[0]->reinspeccion)){
+						$es_inspeccion = 1;
+						$id_inspeccion = $inspeccion[0]->id;
+					}
+				}
+			}
+
+			$contador++;
+
+			if ($contador == 10) {
+				$es_inspeccion = 1;
+			}
+		}
+
 		$this->db->select('ic.id, ic.id_inspeccion, ic.id_herramienta, ic.respuesta, ic.orden, h.codigo, h.nombre, h.observaciones, h.estado, h.created_at, h.updated_at, h.id_usuario');
 		$this->db->from('inspecciones_herramientas ic');
 		$this->db->join('herramientas h', 'ic.id_herramienta = h.id', 'LEFT');
 		$this->db->where('ic.id_estado', 1);
-		$this->db->where('ic.id_inspeccion', $idInspeccion);
+		$this->db->where('ic.id_inspeccion', $id_inspeccion);
 		$this->db->order_by('ic.orden');
 		$inspeccion = $this->db->get();
 		return $inspeccion->result_array();
@@ -289,18 +455,19 @@ class Inspeccion_model extends CI_Model
 
 	public function obtenerRespuestasInspeccion($idInspeccion, $id_usuario, $reinspeccion = false)
 	{
-		$this->db->select('icr.id, icr.id_inspecciones_checklists, icr.id_categoria, icr.id_pregunta, icr.id_pregunta, icr.respuesta, icr.observaciones, icr.orden, icr.id_respuesta, icr.id_estado, icr.created_at, icr.updated_at, icr.id_severidad_respuesta, a.id as archivo_id, a.file_name, a.file_type, a.file_path, a.full_path, a.raw_name, a.orig_name, a.client_name, a.file_ext, a.file_size, a.is_image, a.image_width, a.image_height, a.image_type, a.image_size_str, a.id_estado as id_estado_a, a.inspeccion_checklist_resp_id, a.inspeccion_checklist_obs_id, a.id_categoria as id_categoria_a, a.id_pregunta as id_pregunta_a, a.orden as orden_a, a.id_usuario as id_usuario_a, a.create_at as create_at_a, a.updated_at as updated_at_a');
+		$this->db->select('icr.id, icr.id_inspecciones_checklists, icr.id_categoria, icr.id_pregunta, icr.id_pregunta, icr.respuesta, icr.observaciones, icr.orden, icr.id_respuesta, icr.id_estado, icr.created_at, icr.updated_at, icr.id_severidad_respuesta, icr.cant_ascensor, a.id as archivo_id, a.file_name, a.file_type, a.file_path, a.full_path, a.raw_name, a.orig_name, a.client_name, a.file_ext, a.file_size, a.is_image, a.image_width, a.image_height, a.image_type, a.image_size_str, a.id_estado as id_estado_a, a.inspeccion_checklist_resp_id, a.inspeccion_checklist_obs_id, a.id_categoria as id_categoria_a, a.id_pregunta as id_pregunta_a, a.orden as orden_a, a.id_usuario as id_usuario_a, a.create_at as create_at_a, a.updated_at as updated_at_a');
 		$this->db->from('inspecciones i');
 		$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion', 'LEFT');
 		$this->db->join('inspecciones_checklists_respuestas icr', 'ic.id = icr.id_inspecciones_checklists', 'LEFT');
-		$this->db->join('archivos a', 'icr.id = a.inspeccion_checklist_resp_id', 'LEFT');
+		$this->db->join('archivos a', 'icr.id = a.inspeccion_checklist_resp_id AND a.id IS NOT NULL AND a.id_estado = 1', 'LEFT OUTER');
 		$this->db->where('i.id', $idInspeccion);
 		if ($reinspeccion) {
 			$this->db->where('icr.respuesta', 2);
 		}
-		$this->db->where('i.id_estado', 1);
+		$this->db->where('i.id_estado >=', 1);
 		$this->db->where('ic.id_estado', 1);
 		$this->db->where('icr.id_estado', 1);
+		#$this->db->where('a.id_estado', 1);
 		$inspeccion = $this->db->get();
 		return $inspeccion->result_array();
 	}
@@ -320,14 +487,18 @@ class Inspeccion_model extends CI_Model
 		$this->db->join('severidad_respuesta sr', 'icr.id_severidad_respuesta = sr.id', 'LEFT');
 		$this->db->join('preguntas p', 'icr.id_pregunta = p.id', 'LEFT');
 		$this->db->join('respuestas r', 'icr.id_respuesta = r.id', 'LEFT');
+		#$this->db->join('archivos a', 'icr.id = a.inspeccion_checklist_resp_id', 'LEFT');
 		$this->db->join('archivos a', 'icr.id = a.inspeccion_checklist_resp_id', 'LEFT');
 		$this->db->where('i.id', $idInspeccion);
 		if ($es_reinspeccion = true) {
 			$this->db->where('icr.respuesta', 2);	
 		}
-		$this->db->where('i.id_estado', 1);
+		$this->db->where('i.id_estado >=', 1);
+		$this->db->where('a.id_estado', 1);
 		$this->db->where('ic.id_estado', 1);
 		$this->db->where('icr.id_estado', 1);
+		#$this->db->where('icr.id_pregunta', 72);
+		$this->db->order_by('p.id');
 		$inspeccion = $this->db->get();
 		return $inspeccion->result_array();
 	}
@@ -343,7 +514,7 @@ class Inspeccion_model extends CI_Model
 		$this->db->join('categorias c', 'ico.id_categoria = c.id', 'LEFT');
 		$this->db->join('archivos a', 'ico.id = a.inspeccion_checklist_obs_id', 'LEFT');
 		$this->db->where('i.id', $idInspeccion);
-		$this->db->where('i.id_estado', 1);
+		$this->db->where('i.id_estado >=', 1);
 		$this->db->where('ic.id_estado', 1);
 		$this->db->where('ico.id_estado', 1);
 		$this->db->order_by('a.orden');
@@ -356,7 +527,7 @@ class Inspeccion_model extends CI_Model
 		$this->db->select('i.id, i.id_edificio, i.nombre_tecnico, i.rut_admin, i.nombre_admin, i.email_admin, i.fecha_contrato_mant, i.contrato_vigente, i.id_empresa_mantenedora, i.nombre_mant_2, i.fecha_ultima_mant, i.marca_ascensor, i.id_uso, i.capacidad_personas, i.capacidad_kg, i.id_suspension, i.sala_maquinas, i.velocidad, i.recorrido, i.paradas, i.id_tipo_traccion, i.cantidad, i.num_informe, i.diametro_traccion, i.enclavamiento_electrico, i.enclavamiento_mecanico, i.diametro_cable, i.reinspeccion, i.id_estado, i.id_usuario, i.created_at, i.updated_at`, e.rol, e.nombre as edificio, e.rut as rut_e, e.domicilio');
 		$this->db->from('inspecciones i');
 		$this->db->join('edificios e', 'i.id_edificio = e.id', 'LEFT');
-		$this->db->where('i.id_estado', 1);
+		$this->db->where('i.id_estado >=', 1);
 		if (isset($temporal)) {
 			$this->db->where('i.es_temporal', $temporal);
 		}
@@ -403,10 +574,10 @@ class Inspeccion_model extends CI_Model
 		return $respuesta;
 	}
 
-	public function activarInspeccion($idInspeccion, $id_usuario)
+	public function activarInspeccion($idInspeccion, $id_usuario, $es_reinspeccion = null)
 	{
 		try{
-			$inspeccion = $this->db->get_where('inspecciones', array('id' => $idInspeccion, 'id_estado' => 1))->result();
+			$inspeccion = $this->db->get_where('inspecciones', array('id' => $idInspeccion, 'id_estado >=' => 1))->result();
 			$respuesta = array('resultado' => null,
 						'mensaje' => null,
 						'id_inspeccion' => null
@@ -414,9 +585,17 @@ class Inspeccion_model extends CI_Model
 
 			if (sizeof($inspeccion) > 0) {
 
-				$data3 = array(
-			        'es_temporal' => 0
-				);
+				if ($es_reinspeccion == 1) {
+					$data3 = array(
+						'id_estado' => 2,
+				        'es_temporal' => 0
+					);
+				}else{
+					$data3 = array(
+				        'es_temporal' => 0
+					);	
+				}
+				
 			    
 				$this->db->set('updated_at', 'NOW()', FALSE);
 				$this->db->where('id', $idInspeccion);
@@ -425,7 +604,11 @@ class Inspeccion_model extends CI_Model
 			    if ($this->db->affected_rows() >= 1) {
 					$respuesta['id_inspeccion'] = $idInspeccion;
 					$respuesta['resultado'] = $this->db->affected_rows();
-					$respuesta['mensaje'] = "Se ha activado correctamente la Inspeccion.";
+					if ($es_reinspeccion == 1) {
+						$respuesta['mensaje'] = "Se ha activado correctamente la Re-Inspeccion.";
+					}else{
+						$respuesta['mensaje'] = "Se ha activado correctamente la Inspeccion.";
+					}
 				}else{
 					$respuesta['id_inspeccion'] = -1;
 					$respuesta['resultado'] = $this->db->affected_rows();
@@ -475,7 +658,7 @@ class Inspeccion_model extends CI_Model
 				$this->db->from('inspecciones i');
 				$this->db->join('edificios e', 'i.id_edificio = e.id');
 				$this->db->where('i.id', $idInspeccion);
-				$this->db->where('i.id_estado', 1);
+				$this->db->where('i.id_estado >=', 1);
 				$this->db->where('e.id_estado', 1);
 				$edificio_inspeccion = $this->db->get()->result_array();
 
@@ -634,7 +817,7 @@ class Inspeccion_model extends CI_Model
 					$this->db->from('inspecciones i');
 					$this->db->join('edificios e', 'i.id_edificio = e.id');
 					$this->db->where('i.id', $idInspeccion);
-					$this->db->where('i.id_estado', 1);
+					$this->db->where('i.id_estado >=', 1);
 					$this->db->where('e.id_estado', 1);
 					$edificio_inspeccion = $this->db->get()->result_array();
 					if (isset($edificio_inspeccion) && sizeof($edificio_inspeccion) > 0 && isset($edificio_inspeccion[0]["id"])) {
@@ -749,7 +932,7 @@ class Inspeccion_model extends CI_Model
 					$this->db->from('inspecciones i');
 					$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion');
 					$this->db->where('i.id', $idInspeccion);
-					$this->db->where('i.id_estado', 1);
+					$this->db->where('i.id_estado >=', 1);
 					$this->db->where('ic.id_estado', 1);
 					$inspeccion_checklist = $this->db->get()->result_array();
 					if (isset($inspeccion_checklist) && sizeof($inspeccion_checklist) > 0 && isset($inspeccion_checklist[0]["id"])) {
@@ -955,7 +1138,7 @@ class Inspeccion_model extends CI_Model
 				'orden' => $orden
 			);
 
-			$carpeta = $this->db->get_where('inspecciones_carpetas', array('id_inspeccion' => $idInspeccion, 'id_carpeta' => $id_carpeta, 'id_estado' => 1))->result();
+			$carpeta = $this->db->get_where('inspecciones_carpetas', array('id_inspeccion' => $idInspeccion, 'id_carpeta' => $id_carpeta, 'id_estado >=' => 1))->result();
 			if (sizeof($carpeta) > 0) {
 				$id_inspeccion_carpeta = $carpeta[0]->id;
 
@@ -1272,7 +1455,7 @@ class Inspeccion_model extends CI_Model
 	}
 
 
-	public function agregarRespuestaCheckTemporal($id_categoria, $id_pregunta, $respuesta_check, $observacion, $orden, $id_respuesta, $id_inspeccion, $id_usuario, $solo_respuesta = false, $solo_observacion = false, $solo_severidad = false){
+	public function agregarRespuestaCheckTemporal($id_categoria, $id_pregunta, $respuesta_check, $observacion, $orden, $id_respuesta, $id_inspeccion, $id_usuario, $solo_respuesta = false, $solo_observacion = false, $solo_severidad = false, $solo_cant_ascensor = false){
 		try{
 			$this->db->db_debug = FALSE;
 			$idRespuesta = null;
@@ -1287,10 +1470,11 @@ class Inspeccion_model extends CI_Model
 			$this->db->from('inspecciones i');
 			$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion');
 			$this->db->where('i.id', $id_inspeccion);
-			$this->db->where('i.id_estado', 1);
+			$this->db->where('i.id_estado >=', 1);
 			$this->db->where('ic.id_estado', 1);
 			$inspeccion_checklist = $this->db->get()->result_array();
 			#var_dump($inspeccion_checklist);
+			#exit();
 
 			if (sizeof($inspeccion_checklist) > 0){
 				$id_inspeccion_checklist = $inspeccion_checklist[0]["id"];
@@ -1383,6 +1567,13 @@ class Inspeccion_model extends CI_Model
 						'id_respuesta' => $id_respuesta,
 						'observaciones' => $observacion
 					);
+
+					if (is_null($id_respuesta)) {
+						$data = array(
+					        'id_respuesta' => null,
+					        'observaciones' => null
+						);
+					}
 				}elseif ($solo_observacion) {
 					$orden_respuesta = null;
 					$respuestas_pregunta = $this->db->get_where('respuestas', array('id_pregunta' => $id_pregunta, 'id_estado' => 1))->result();
@@ -1414,6 +1605,11 @@ class Inspeccion_model extends CI_Model
 					$data = array(
 				        #'id_inspecciones_checklists' => $id_inspeccion_checklist,
 						'id_severidad_respuesta' => $id_respuesta
+					);
+				}elseif ($solo_cant_ascensor) {
+					$data = array(
+				        'id_inspecciones_checklists' => $id_inspeccion_checklist,
+						'cant_ascensor' => $id_respuesta
 					);
 				}
 
@@ -1580,7 +1776,7 @@ class Inspeccion_model extends CI_Model
 		$this->db->join('archivos a', 'icr.id = a.inspeccion_checklist_resp_id');
 		$this->db->where('i.id', $idInspeccion);
 		$this->db->where('ic.id', $id_inspeccion_checklist_bk);
-		$this->db->where('i.id_estado', 1);
+		$this->db->where('i.id_estado >=', 1);
 		$this->db->where('ic.id_estado', -1);
 		$this->db->where('icr.id_estado', -1);
 		$this->db->where('a.id', $archivo_id);
@@ -1624,6 +1820,100 @@ class Inspeccion_model extends CI_Model
 		return $respuesta;
 	}
 
+	public function eliminarArchivoExistente($idInspeccion, $archivo_id, $id_categoria, $id_pregunta, $orden, $id_usuario){
+		$respuesta = array('resultado' => null, 
+			'mensaje' => null,
+			'id_archivo' => null);
+
+		
+		$this->db->select('icr.id, icr.id_inspecciones_checklists, icr.id_categoria, icr.id_pregunta, icr.id_pregunta, icr.respuesta, icr.observaciones, icr.orden, icr.id_respuesta, icr.id_estado, icr.created_at, icr.updated_at, a.id as archivo_id, 
+		a.file_name, a.file_type, a.file_path, a.full_path, a.raw_name, a.orig_name, a.client_name, a.file_ext, a.file_size, a.is_image, a.image_width, a.image_height, a.image_type, a.image_size_str, a.id_estado as id_estado_a, 
+        a.inspeccion_checklist_resp_id, a.inspeccion_checklist_obs_id, a.id_categoria as id_categoria_a, a.id_pregunta as id_pregunta_a, a.orden as orden_a, a.id_usuario as id_usuario_a, a.create_at as create_at_a, a.updated_at as updated_at_a');
+		$this->db->from('inspecciones i');
+		$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion');
+		$this->db->join('inspecciones_checklists_respuestas icr', 'ic.id = icr.id_inspecciones_checklists');
+		$this->db->join('archivos a', 'icr.id = a.inspeccion_checklist_resp_id');
+		$this->db->where('i.id_estado >=', 1);
+		$this->db->where('ic.id_estado', 1);
+		$this->db->where('icr.id_estado', 1);
+		$this->db->where('a.id_estado', 1);
+		$this->db->where('i.id', $idInspeccion);
+		$this->db->where('icr.id_categoria', $id_categoria);
+		$this->db->where('icr.id_pregunta', $id_pregunta);
+		#if (!is_null($archivo_id)) {
+			#$this->db->where('a.id', $archivo_id)	
+		#}
+		$archivo_existente = $this->db->get()->result_array();
+
+		if (sizeof($archivo_existente) > 0) {
+			
+			$archivo_encontrado = false;
+			$orden_nuevo = 0;
+			
+			foreach ($archivo_existente as $archivo) {
+
+				#var_dump($archivo["orden_a"]);
+				
+
+				if ($archivo["orden_a"] == $orden) {
+					#var_dump("entro aca");
+					#var_dump($archivo["archivo_id"]);
+					#$this->db->set('id_estado', -1);
+					$this->db->set('updated_at', 'NOW()', FALSE);
+					$this->db->where('id', $archivo["archivo_id"]);
+			    	$this->db->where('id_estado', 1);
+					$this->db->update('archivos', array('id_estado' => '-1'));
+
+					#var_dump($archivo);
+					$archivo_existente = true;
+
+					if ($this->db->affected_rows() >= 1) {
+						$respuesta['id_archivo'] = $archivo["archivo_id"];
+						$respuesta['resultado'] = $this->db->affected_rows();
+						$respuesta['mensaje'] = "Se ha eliminado correctamente el archivo.";
+					}else{
+						$respuesta['id_archivo'] = -1;
+						$respuesta['resultado'] = $this->db->affected_rows();
+						$respuesta['mensaje'] = $this->db->error();
+						break;
+					}
+				}else{
+					$orden_nuevo++;
+				}
+
+				if ($archivo_existente) {
+					$this->db->set('updated_at', 'NOW()', FALSE);
+					#$this->db->set('orden_a', $orden_nuevo);
+					$this->db->where('id', $archivo["archivo_id"]);
+			    	$this->db->where('id_estado', 1);
+					$this->db->update('archivos', array('orden' => $orden_nuevo));
+
+					if ($this->db->affected_rows() >= 1) {
+						$respuesta['id_archivo'] = $archivo["archivo_id"];
+						$respuesta['resultado'] = $this->db->affected_rows();
+						$respuesta['mensaje'] = "Se ha modificado el orden del archivo correctamente.";
+					}else{
+						$respuesta['id_archivo'] = -1;
+						$respuesta['resultado'] = $this->db->affected_rows();
+						$respuesta['mensaje'] = $this->db->error();
+						#break;
+					}
+
+				}
+			}
+
+			
+		}else{
+			$respuesta['id_archivo'] = -1;
+			$respuesta['resultado'] = -1;
+			$respuesta['mensaje'] = "El archivo no se ha encontrado.";
+		}
+
+		#$archivo_existente = $this->db->get_where('archivos', array('id_categoria' => $id_categoria, 'id_pregunta' => $id_pregunta, 'id_estado' => 1))->result();
+		
+		return $respuesta;
+	}
+
 
 	public function eliminarRespuestasChecklistInspeccion($idInspeccion, $id_usuario){
 		try{
@@ -1637,7 +1927,7 @@ class Inspeccion_model extends CI_Model
 			$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion');
 			$this->db->join('inspecciones_checklists_respuestas icr', 'ic.id = icr.id_inspecciones_checklists');
 			$this->db->where('i.id', $idInspeccion);
-			$this->db->where('i.id_estado', 1);
+			$this->db->where('i.id_estado >=', 1);
 			$this->db->where('ic.id_estado', 1);
 			$this->db->where('icr.id_estado', 1);
 			$respuestas_checklists = $this->db->get()->result_array();
@@ -1675,30 +1965,123 @@ class Inspeccion_model extends CI_Model
 	public function eliminarInspeccion($idInspeccion, $id_usuario)
 	{
 		try{
-			$inspeccion = $this->db->get_where('inspecciones', array('id' => $idInspeccion, 'id_estado' => 1))->result();
+			$inspeccion = $this->db->get_where('inspecciones', array('id' => $idInspeccion, 'id_estado >=' => 1))->result();
 			$respuesta = array('resultado' => null,
 						'mensaje' => null,
 						'id_inspeccion' => null
 					  );
 
+			#var_dump($inspeccion);exit();
+
 			if (sizeof($inspeccion) > 0) {
+				if (isset($inspeccion[0]->id_reinspeccion) && $inspeccion[0]->id_reinspeccion > 0) {
+					#var_dump("entro aca");exit();
+					$respuesta['resultado'] = -1;
+				    $respuesta['mensaje'] = 'No se puede eliminar la Inspeccion ya que tiene una Re-Inspeccion Activa #'.$inspeccion[0]->id_reinspeccion.'.';
+				    $respuesta['id_inspeccion'] = -1;
 
-				$data3 = array(
-			        'id_estado' => -1
-				);
-			    
-				$this->db->set('updated_at', 'NOW()', FALSE);
-				$this->db->where('id', $idInspeccion);
-			    $this->db->update('inspecciones', $data3);
-
-			    if ($this->db->affected_rows() >= 1) {
-					$respuesta['id_inspeccion'] = $idInspeccion;
-					$respuesta['resultado'] = $this->db->affected_rows();
-					$respuesta['mensaje'] = "Se ha eliminado correctamente la Norma.";
+				    return $respuesta;
 				}else{
-					$respuesta['id_inspeccion'] = -1;
-					$respuesta['resultado'] = $this->db->affected_rows();
-					$respuesta['mensaje'] = $this->db->error();
+
+					$inspecciones = $this->db->get_where('inspecciones', array('id_reinspeccion' => $idInspeccion, 'id_estado >=' => 1))->result();
+
+					if (sizeof($inspecciones) > 0) {
+						foreach ($inspecciones as $inspec) {
+							$data2 = array(
+						        'id_reinspeccion' => NULL
+							);
+						    
+							$this->db->set('updated_at', 'NOW()', FALSE);
+							$this->db->where('id', $inspec->id);
+						    $this->db->update('inspecciones', $data2);
+						}
+					}
+
+					$data3 = array(
+				        'id_estado' => -1
+					);
+				    
+					$this->db->set('updated_at', 'NOW()', FALSE);
+					$this->db->where('id', $idInspeccion);
+				    $this->db->update('inspecciones', $data3);
+
+				    if ($this->db->affected_rows() >= 1) {
+						$respuesta['id_inspeccion'] = $idInspeccion;
+						$respuesta['resultado'] = $this->db->affected_rows();
+						$respuesta['mensaje'] = "Se ha eliminado correctamente la Norma.";
+
+						#$inspecciones_checklists = $this->db->get_where('inspecciones_checklists', array('id_reinspeccion' => $idInspeccion, 'id_estado >=' => 1))->result();
+
+						$inspecciones_checklists = $this->db->get_where('inspecciones_checklists', array('id_inspeccion' => $idInspeccion, 'id_estado >=' => 1))->result();
+
+						$this->db->set('updated_at', 'NOW()', FALSE);
+						$this->db->where('id_inspeccion', $idInspeccion);
+					    $this->db->update('inspecciones_checklists', $data3);
+
+					    if ($this->db->affected_rows() >= 1) {
+					    	if (sizeof($inspecciones_checklists) > 0) {
+					    		foreach ($inspecciones_checklists as $insp_check) {
+
+
+					    			$sql = "select a.*
+											from archivos a 
+											where a.inspeccion_checklist_resp_id in (
+											select icr.id
+											from inspecciones_checklists_respuestas icr
+											where icr.id_inspecciones_checklists = ".$insp_check->id."
+											);";
+									$query = $this->db->query($sql);
+									$archivos_respuestas = $query->result_array();
+
+
+									$sql = "select a.*
+											from archivos a 
+											where a.inspeccion_checklist_obs_id in (
+											select ico.id
+											from inspecciones_checklists_obs ico
+											where ico.id_inspecciones_checklists = ".$insp_check->id."
+											);";
+									$query = $this->db->query($sql);
+									$archivos_obs = $query->result_array();
+									
+
+					    			$this->db->set('updated_at', 'NOW()', FALSE);
+									$this->db->where('id_inspecciones_checklists', $insp_check->id);
+								    $this->db->update('inspecciones_checklists_respuestas', $data3);
+
+								    $this->db->set('updated_at', 'NOW()', FALSE);
+									$this->db->where('id_inspecciones_checklists', $insp_check->id);
+								    $this->db->update('inspecciones_checklists_obs', $data3);
+
+								    
+								    foreach ($archivos_respuestas as $archivo_resp) {
+								    	$this->db->set('updated_at', 'NOW()', FALSE);
+										$this->db->where('id', $archivo_resp["id"]);
+									    $this->db->update('archivos', $data3);
+								    }
+
+								    foreach ($archivos_obs as $archivo_obs) {
+								    	$this->db->set('updated_at', 'NOW()', FALSE);
+										$this->db->where('id', $archivo_obs["id"]);
+									    $this->db->update('archivos', $data3);
+								    }
+								    #$this->db->update_batch('mytable', $data, 'title');
+
+
+
+					    		}
+					    	}
+					    	
+
+					    }
+
+
+					}else{
+						$respuesta['id_inspeccion'] = -1;
+						$respuesta['resultado'] = $this->db->affected_rows();
+						$respuesta['mensaje'] = $this->db->error();
+					}
+
 				}
 			}
 		}catch(Exception $e){
@@ -1719,7 +2102,7 @@ class Inspeccion_model extends CI_Model
 		$this->db->where('i.id', $idInspeccion);
 		$this->db->where('icr.id_categoria', $id_categoria);
 		$this->db->where('icr.id_pregunta', $id_pregunta);
-		$this->db->where('i.id_estado', 1);
+		$this->db->where('i.id_estado >=', 1);
 		$this->db->where('ic.id_estado', 1);
 		$this->db->where('icr.id_estado', 1);
 		$inspeccion = $this->db->get();
@@ -1732,7 +2115,7 @@ class Inspeccion_model extends CI_Model
 		$this->db->from('inspecciones i');
 		$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion');
 		$this->db->where('i.id', $idInspeccion);
-		$this->db->where('i.id_estado', 1);
+		$this->db->where('i.id_estado >=', 1);
 		$this->db->where('ic.id_estado', 1);
 		$inspeccion = $this->db->get();
 		return $inspeccion->result_array();
@@ -1755,6 +2138,35 @@ class Inspeccion_model extends CI_Model
 		$this->db->from('severidad_respuesta sr');
 		$this->db->where('sr.id_estado', 1);
 		$this->db->order_by('sr.orden');
+		$inspeccion = $this->db->get();
+		return $inspeccion->result_array();
+	}
+
+	public function obtenerCantidadPreguntasRespondidas($id_inspeccion, $id_usuario)
+	{
+		$this->db->select(' count(icr.respuesta) as cant_respondidas');
+		$this->db->from('inspecciones i');
+		$this->db->join('inspecciones_checklists ic', 'i.id = ic.id_inspeccion');
+		$this->db->join('inspecciones_checklists_respuestas icr', 'ic.id = icr.id_inspecciones_checklists');
+		$this->db->where('i.id', $id_inspeccion);
+		$this->db->where('i.id_estado >=', 1);
+		$this->db->where('ic.id_estado', 1);
+		$this->db->where('icr.id_estado', 1);
+		$this->db->where('i.es_temporal', 0);
+		$this->db->where('icr.respuesta IS NOT NULL', NULL, FALSE);
+		$inspeccion = $this->db->get();
+		return $inspeccion->result_array();
+	}
+
+	public function obtenerCantidadPreguntas($id_inspeccion, $id_usuario)
+	{
+		$this->db->select('count(ncp.id_pregunta) as cant_preguntas');
+		$this->db->from('normas_categorias_preguntas ncp');
+		$this->db->join('categorias c', 'ncp.id_categoria = c.id');
+		$this->db->join('preguntas p', 'ncp.id_pregunta = p.id');
+		$this->db->where('c.estado', 1);
+		$this->db->where('p.estado', 1);
+		$this->db->where('ncp.id_norma', '(select ic.id_norma from inspecciones_checklists ic where ic.id_estado = 1 and ic.id_inspeccion = '.$id_inspeccion.' limit 1)', FALSE);
 		$inspeccion = $this->db->get();
 		return $inspeccion->result_array();
 	}
