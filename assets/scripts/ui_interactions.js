@@ -165,7 +165,27 @@ $('body').on('click', '.upload-photo', function(event) {
     fileInput.attr('id', 'doc-front');
     fileInput.attr('type', 'file');
     fileInput.attr('accept', 'image/*');
+    fileInput.attr('hidden', '');
     fileInput.trigger('click');
+
+    document.getElementsByClassName('take-photo')[0].parentElement.append(fileInput[0]);
+
+
+    $(fileInput).on('change', function (event) {
+        var selectedFile = event.target.files[0];
+        var reader = new FileReader();
+
+        var imgtag = document.getElementById("id_front");
+        imgtag.title = selectedFile.name;
+
+        reader.onload = function(event) {
+        imgtag.src = event.target.result;
+        };
+
+        reader.readAsDataURL(selectedFile);
+        $('#video-stream').hide();
+    });
+    
 
     /*var fileInput = $(document.getElementById("doc-front"));
     fileInput.attr('type', 'file');
