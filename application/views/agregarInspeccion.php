@@ -166,7 +166,7 @@
 
 
 						<div id="acordeonCarpeta" class="collapse <?php echo (isset($respuesta_carpetas) && sizeof($respuesta_carpetas) > 0 ? 'show' : ''); ?> col-sm-12">
-							<table class="table">
+							<table class="table table-sm">
 							  <thead>
 							    <tr>
 							      <!--<th scope="col" class="text-left align-middle">#</th>-->
@@ -194,9 +194,9 @@
 								        ?>
 							  			<tr>
 									        <!--<th class="text-left align-middle"><p><?php echo $carpeta['codigo']; ?></p></th>-->
-									        <td class="text-left align-middle"><p><?php echo $carpeta['nombre']; ?></p></td>
-									        <td class="text-left align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_si" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta_carpeta" value="si-<?php echo $carpeta['id']; ?>"  <?php echo (isset($respuesta_carpeta_rb) && $respuesta_carpeta_rb === 1 ? 'checked' : ''); ?> <?php  if(isset($inspeccion['reinspeccion']) && $inspeccion['reinspeccion'] == 1): echo 'disabled="yes"'; endif; ?>></td>
-							      			<td class="text-left align-middle"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_no" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta_carpeta" value="no-<?php echo $carpeta['id']; ?>" <?php echo (isset($respuesta_carpeta_rb) && $respuesta_carpeta_rb === 0 ? 'checked' : ''); ?> <?php  if(isset($inspeccion['reinspeccion']) && $inspeccion['reinspeccion'] == 1): echo 'disabled="yes"'; endif; ?>></td>
+									        <td class="text-left align-middle celdaAsignado"><p class="texto-pequenio text-left align-middle registro"><?php echo $carpeta['nombre']; ?></p></td>
+									        <td class="text-left align-middle radio"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_si" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta_carpeta" value="si-<?php echo $carpeta['id']; ?>"  <?php echo (isset($respuesta_carpeta_rb) && $respuesta_carpeta_rb === 1 ? 'checked' : ''); ?> <?php  if(isset($inspeccion['reinspeccion']) && $inspeccion['reinspeccion'] == 1): echo 'disabled="yes"'; endif; ?>></td>
+							      			<td class="text-left align-middle radio"><input type="radio" id="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>_no" name="rbCarpeta<?php echo $contador;#echo $carpeta['id']; ?>" class="pauta_carpeta" value="no-<?php echo $carpeta['id']; ?>" <?php echo (isset($respuesta_carpeta_rb) && $respuesta_carpeta_rb === 0 ? 'checked' : ''); ?> <?php  if(isset($inspeccion['reinspeccion']) && $inspeccion['reinspeccion'] == 1): echo 'disabled="yes"'; endif; ?>></td>
 								    	</tr>
 								  		<?php 
 								  		endforeach;
@@ -211,46 +211,43 @@
 					<div class="col-lg-12 mb-5">
 						<hr class="my-3">
 						<h5 class="mb-3"><i class="mb-2" data-feather="check-square" ></i> Referencias Normativas</h5>
-
 						<div class="row">
-							<div class="form-group col-sm-12">
-								<table class="table">
-								  <thead>
-								    <tr>
-								      <th scope="col" class="text-left align-middle">#</th>
-								      <th scope="col" class="text-left align-middle">NORMA</th>
-								      <th scope="col" class="text-left align-middle">SI</th>
-								      <th scope="col" class="text-left align-middle">NO</th>
-								    </tr>
-								  </thead>
+							<table class="table table-sm">
+							  <thead>
+							    <tr>
+							      <th scope="col" class="text-left align-middle">#</th>
+							      <th scope="col" class="text-left align-middle">NORMA</th>
+							      <th scope="col" class="text-left align-middle">SI</th>
+							      <th scope="col" class="text-left align-middle">NO</th>
+							    </tr>
+							  </thead>
 
-								  <tbody id="tbodyHerramientas">
-						  			<?php
-							        if(isset($normas))
-							        {
-							        	$contador = 0;
-								        foreach ($normas as $norma): 
-								        	$contador++;
-								        	if (isset($respuesta_normas) && sizeof($respuesta_normas) > 0) {
-								        		$respuesta_norma_rb = false;
-								        		$key = array_search($norma['id'], array_column($respuesta_normas, 'id_norma'));
-								        		if (is_numeric($key) && $key >= 0 && $key !== false) {
-								        			$respuesta_norma_rb = ((int)$respuesta_normas[$key]["respuesta"]);
-								        		}
-								        	}
-							        	?>
-								  			<tr>
-										        <th class="text-left align-middle"><p><?php echo $norma['codigo']; ?></p></th>
-										        <td class="text-left align-middle"><p><?php echo $norma['nombre']; ?></p></td>
-										        <td class="text-left align-middle"><input type="radio" id="rbNorma<?php echo $contador;#$norma['id']; ?>_si" name="rbNorma<?php echo $contador;#$norma['id']; ?>" class="pauta" value="si-<?php echo $norma['id']; ?>" <?php echo (isset($respuesta_norma_rb) && !is_null($respuesta_norma_rb) && $respuesta_norma_rb === 1 ? 'checked' : ''); ?> <?php  if(isset($inspeccion['reinspeccion']) && $inspeccion['reinspeccion'] == 1): echo 'disabled="yes"'; endif; ?>></td>
-								      			<td class="text-left align-middle"><input type="radio" id="rbNorma<?php echo $contador;#$norma['id']; ?>_no" name="rbNorma<?php echo $contador;#$norma['id']; ?>" class="pauta" value="no-<?php echo $norma['id']; ?>" <?php echo (isset($respuesta_norma_rb) && !is_null($respuesta_norma_rb) && $respuesta_norma_rb === 0 ? 'checked' : ''); ?> <?php  if(isset($inspeccion['reinspeccion']) && $inspeccion['reinspeccion'] == 1): echo 'disabled="yes"'; endif; ?>></td>
-									    	</tr>
-									  		<?php endforeach;
-									  		echo '<input type="text" class="form-control" id="inputTotalNormas" minlength="1" name="inputTotalNormas" value="'.$contador.'" hidden>';
-							  		}?>
-						  		  </tbody>
-								</table>
-							</div>
+							  <tbody id="tbodyHerramientas">
+					  			<?php
+						        if(isset($normas))
+						        {
+						        	$contador = 0;
+							        foreach ($normas as $norma): 
+							        	$contador++;
+							        	if (isset($respuesta_normas) && sizeof($respuesta_normas) > 0) {
+							        		$respuesta_norma_rb = false;
+							        		$key = array_search($norma['id'], array_column($respuesta_normas, 'id_norma'));
+							        		if (is_numeric($key) && $key >= 0 && $key !== false) {
+							        			$respuesta_norma_rb = ((int)$respuesta_normas[$key]["respuesta"]);
+							        		}
+							        	}
+						        	?>
+							  			<tr>
+									        <th class="text-left align-middle celdaAsignado"><p class="texto-pequenio text-left align-middle registro"><?php echo $norma['codigo']; ?></p></th>
+									        <td class="text-left align-middle celdaAsignado"><p class="texto-pequenio text-left align-middle registro"><?php echo $norma['nombre']; ?></p></td>
+									        <td class="text-left align-middle radio"><input type="radio" id="rbNorma<?php echo $contador;#$norma['id']; ?>_si" name="rbNorma<?php echo $contador;#$norma['id']; ?>" class="pauta" value="si-<?php echo $norma['id']; ?>" <?php echo (isset($respuesta_norma_rb) && !is_null($respuesta_norma_rb) && $respuesta_norma_rb === 1 ? 'checked' : ''); ?> <?php  if(isset($inspeccion['reinspeccion']) && $inspeccion['reinspeccion'] == 1): echo 'disabled="yes"'; endif; ?>></td>
+							      			<td class="text-left align-middle radio"><input type="radio" id="rbNorma<?php echo $contador;#$norma['id']; ?>_no" name="rbNorma<?php echo $contador;#$norma['id']; ?>" class="pauta" value="no-<?php echo $norma['id']; ?>" <?php echo (isset($respuesta_norma_rb) && !is_null($respuesta_norma_rb) && $respuesta_norma_rb === 0 ? 'checked' : ''); ?> <?php  if(isset($inspeccion['reinspeccion']) && $inspeccion['reinspeccion'] == 1): echo 'disabled="yes"'; endif; ?>></td>
+								    	</tr>
+								  		<?php endforeach;
+								  		echo '<input type="text" class="form-control" id="inputTotalNormas" minlength="1" name="inputTotalNormas" value="'.$contador.'" hidden>';
+						  		}?>
+					  		  </tbody>
+							</table>
 						</div>
 					</div>
 
@@ -261,50 +258,49 @@
 						<h5 class="mb-3"><i class="mb-2" data-feather="tool" ></i> EQUIPOS Y HERRAMIENTAS y EPP UTILIZADOS UTILIZADAS PARA LA REVISION</h5>
 
 						<div class="row">
-							<div class="form-group col-sm-12">
-								<table class="table">
-								  <thead>
-								    <tr>
-								      <th scope="col" class="text-left align-middle">#</th>
-								      <th scope="col" class="text-left align-middle">EQUIPO Y HERRAMIENTA</th>
-								      <th scope="col" class="text-left align-middle">SI</th>
-								      <th scope="col" class="text-left align-middle">NO</th>
-								    </tr>
-								  </thead>
+							<table class="table table-sm">
+							  <thead>
+							    <tr>
+							      <th scope="col" class="text-left align-middle">#</th>
+							      <th scope="col" class="text-left align-middle">EQUIPO Y HERRAMIENTA</th>
+							      <th scope="col" class="text-left align-middle">SI</th>
+							      <th scope="col" class="text-left align-middle">NO</th>
+							    </tr>
+							  </thead>
 
-								  <tbody id="tbodyHerramientas">
-						  			<?php
-							        if(isset($herramientas))
-							        {
-							        	$contador = 0;
-								        foreach ($herramientas as $herramienta):
-								        	$contador++;
+							  <tbody id="tbodyHerramientas">
+					  			<?php
+						        if(isset($herramientas))
+						        {
+						        	$contador = 0;
+							        foreach ($herramientas as $herramienta):
+							        	$contador++;
 
-								        	if (isset($respuesta_herramientas) && sizeof($respuesta_herramientas) > 0) {
-								        		$respuesta_herramienta_rb = false;
-								        		$key = array_search($herramienta['id'], array_column($respuesta_herramientas, 'id_herramienta'));
-								        		if (is_numeric($key) && $key >= 0 && $key !== false) {
-								        			$respuesta_herramienta_rb = ((int)$respuesta_herramientas[$key]["respuesta"]);
-								        		}
-								        	}
-								        ?>
-								  			<tr>
-										        <th class="text-left align-middle"><p><?php echo $herramienta['codigo']; ?></p></th>
-										        <td class="text-left align-middle"><p><?php echo $herramienta['nombre']; ?></p></td>
-										        <td class="text-left align-middle"><input type="radio" id="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>_si" name="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>" class="pauta" value="si-<?php echo $herramienta['id']; ?>" <?php echo (isset($respuesta_herramienta_rb) && !is_null($respuesta_herramienta_rb) && $respuesta_herramienta_rb === 1 ? 'checked' : ''); ?> <?php  if(isset($inspeccion['reinspeccion']) && $inspeccion['reinspeccion'] == 1): echo 'disabled="yes"'; endif; ?>></td>
-								      			<td class="text-left align-middle"><input type="radio" id="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>_no" name="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>" class="pauta" value="no-<?php echo $herramienta['id']; ?>" <?php echo (isset($respuesta_herramienta_rb) && !is_null($respuesta_herramienta_rb) && $respuesta_herramienta_rb === 0 ? 'checked' : ''); ?> <?php  if(isset($inspeccion['reinspeccion']) && $inspeccion['reinspeccion'] == 1): echo 'disabled="yes"'; endif; ?>></td>
-									    	</tr>
-									  		<?php endforeach;
-									  		echo '<input type="text" class="form-control" id="inputTotalHerramientas" minlength="1" name="inputTotalHerramientas" value="'.$contador.'" hidden>';
-							  		}?>
-						  		  </tbody>
-								</table>
-							</div>
-							<!--<div class="form-group col-sm-6">
-								<label for="inputObservaciones">Observaciones</label>
-								<textarea class="form-control form-control-sm block" placeholder="Ingrese una Obseravaci&oacute;n" id="inputObservaciones" name="inputObservaciones" rows="2"><?php if(isset($inspeccion['observaciones'])): echo $inspeccion['observaciones']; endif; ?></textarea>
-							</div>-->
+							        	if (isset($respuesta_herramientas) && sizeof($respuesta_herramientas) > 0) {
+							        		$respuesta_herramienta_rb = false;
+							        		$key = array_search($herramienta['id'], array_column($respuesta_herramientas, 'id_herramienta'));
+							        		if (is_numeric($key) && $key >= 0 && $key !== false) {
+							        			$respuesta_herramienta_rb = ((int)$respuesta_herramientas[$key]["respuesta"]);
+							        		}
+							        	}
+							        ?>
+							  			<tr>
+									        <th class="text-left align-middle celdaAsignado"><p class="texto-pequenio text-left align-middle registro"><?php echo $herramienta['codigo']; ?></p></th>
+									        <td class="text-left align-middle celdaAsignado"><p class="texto-pequenio text-left align-middle registro"><?php echo $herramienta['nombre']; ?></p></td>
+									        <td class="text-left align-middle radio"><input type="radio" id="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>_si" name="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>" class="pauta" value="si-<?php echo $herramienta['id']; ?>" <?php echo (isset($respuesta_herramienta_rb) && !is_null($respuesta_herramienta_rb) && $respuesta_herramienta_rb === 1 ? 'checked' : ''); ?> <?php  if(isset($inspeccion['reinspeccion']) && $inspeccion['reinspeccion'] == 1): echo 'disabled="yes"'; endif; ?>></td>
+							      			<td class="text-left align-middle radio"><input type="radio" id="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>_no" name="rbHerramienta<?php echo $contador;#$herramienta['id']; ?>" class="pauta" value="no-<?php echo $herramienta['id']; ?>" <?php echo (isset($respuesta_herramienta_rb) && !is_null($respuesta_herramienta_rb) && $respuesta_herramienta_rb === 0 ? 'checked' : ''); ?> <?php  if(isset($inspeccion['reinspeccion']) && $inspeccion['reinspeccion'] == 1): echo 'disabled="yes"'; endif; ?>></td>
+								    	</tr>
+								  		<?php endforeach;
+								  		echo '<input type="text" class="form-control" id="inputTotalHerramientas" minlength="1" name="inputTotalHerramientas" value="'.$contador.'" hidden>';
+						  		}?>
+					  		  </tbody>
+							</table>
 						</div>
+						<!--<div class="form-group col-sm-6">
+							<label for="inputObservaciones">Observaciones</label>
+							<textarea class="form-control form-control-sm block" placeholder="Ingrese una Obseravaci&oacute;n" id="inputObservaciones" name="inputObservaciones" rows="2"><?php if(isset($inspeccion['observaciones'])): echo $inspeccion['observaciones']; endif; ?></textarea>
+						</div>-->
+						
 					</div>
 				</div>
 
