@@ -152,23 +152,38 @@ $('body').on('click', '.take-photo', function(event) {
     }
 });
 
+$('body').on('change', '#doc-front', function(event) {
+    var selectedFile = event.target.files[0];
+    var reader = new FileReader();
+
+    var imgtag = document.getElementById("id_front");
+    imgtag.title = selectedFile.name;
+
+    reader.onload = function(event) {
+    imgtag.src = event.target.result;
+    };
+
+    reader.readAsDataURL(selectedFile);
+    $('#video-stream').hide();
+});
+
 
 $('body').on('click', '.upload-photo', function(event) {
     event.preventDefault();
     //document.getElementById('doc-front').removeAttribute('capture');
     //$('#doc-front').focus().trigger('click');
 
-    const doc_front = document.getElementById('doc-front');
-    doc_front.remove();
+    //const doc_front = document.getElementById('doc-front');
+    //#doc_front.remove();
 
-    var fileInput = $(document.createElement("input"));
-    fileInput.attr('id', 'doc-front');
+    var fileInput = $(document.createElement("doc-front"));
+    //fileInput.attr('id', 'doc-front');
     fileInput.attr('type', 'file');
     fileInput.attr('accept', 'image/*');
-    fileInput.attr('hidden', '');
+    fileInput.attr('hidden', 'true');
     fileInput.trigger('click');
 
-    document.getElementsByClassName('take-photo')[0].parentElement.append(fileInput[0]);
+    //document.getElementsByClassName('take-photo')[0].parentElement.append(fileInput[0]);
 
 
     $(fileInput).on('change', function (event) {
