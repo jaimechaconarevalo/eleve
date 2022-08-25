@@ -100,7 +100,7 @@ $('body').on('change', 'input[name="allCI"]', function(event) {
     $('.loading').hide();
 });
 
-$('#doc-front').on('change', function(event) {
+$('#doc-front, #doc-front-file').on('change', function(event) {
     event.preventDefault();
     //if (DetectRTC.isMobileDevice) {
         var selectedFile = event.target.files[0];
@@ -152,7 +152,7 @@ $('body').on('click', '.take-photo', function(event) {
     }
 });
 
-$('body').on('change', '#doc-front', function(event) {
+/*$('body').on('change', '#doc-front', function(event) {
     var selectedFile = event.target.files[0];
     var reader = new FileReader();
 
@@ -165,28 +165,28 @@ $('body').on('change', '#doc-front', function(event) {
 
     reader.readAsDataURL(selectedFile);
     $('#video-stream').hide();
-});
+});*/
 
 
 $('body').on('click', '.upload-photo', function(event) {
     event.preventDefault();
+    $('#doc-front-file').focus().trigger('click');
     //document.getElementById('doc-front').removeAttribute('capture');
     //$('#doc-front').focus().trigger('click');
 
     //const doc_front = document.getElementById('doc-front');
     //#doc_front.remove();
 
-    var fileInput = $(document.createElement("doc-front"));
-    //fileInput.attr('id', 'doc-front');
-    fileInput.attr('type', 'file');
+    //var fileInput = $(document.createElement("doc-front-file"));
+    /*fileInput.attr('type', 'file');
     fileInput.attr('accept', 'image/*');
     fileInput.attr('hidden', 'true');
-    fileInput.trigger('click');
+    fileInput.trigger('click');*/
 
     //document.getElementsByClassName('take-photo')[0].parentElement.append(fileInput[0]);
 
 
-    $(fileInput).on('change', function (event) {
+    /*$(fileInput).on('change', function (event) {
         var selectedFile = event.target.files[0];
         var reader = new FileReader();
 
@@ -199,7 +199,7 @@ $('body').on('click', '.upload-photo', function(event) {
 
         reader.readAsDataURL(selectedFile);
         $('#video-stream').hide();
-    });
+    });*/
     
 
     /*var fileInput = $(document.getElementById("doc-front"));
@@ -228,14 +228,14 @@ $('body').on('click', '.refrescar', function(event) {
 });
 
 // Interaccion del cambio de valor al capturar foto con el móvil
-$('body').on('change', '[type="file"]', function(event) {
+$('#doc-front-file, #doc-front').on('change', function(event) {
     event.preventDefault();
 
-    if (DetectRTC.isMobileDevice || event.currentTarget.id == "doc-front") {
+    if (DetectRTC.isMobileDevice || event.currentTarget.id == "doc-front" || event.currentTarget.id == "doc-front-file") {
         var selectedFile = event.target.files[0];
         var reader = new FileReader();
 
-        var imgtag = document.getElementById("id_front");
+        var imgtag = document.getElementById('id_front');
         imgtag.title = selectedFile.name;
 
         reader.onload = function(event) {

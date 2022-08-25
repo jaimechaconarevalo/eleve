@@ -610,7 +610,8 @@
 									            </div>
 									            <div class="row">
 									            	<div class="col-sm-12 text-center mt-3">
-									            		<input type="file" id="doc-front" name="doc-front" class="inputfile" accept="image/*" capture="camera" hidden="true">
+									            		<input type="file" id="doc-front" name="doc-front" class="inputfile" accept="image/*" capture="environment" hidden="true">
+									            		<input type="file" id="doc-front-file" name="doc-front" class="inputfile" accept="image/*" hidden="true">
 												        <label for="doc-front" class="images captura-btn"><i class="fa fa-camera" aria-hidden="true"></i> <span id="span_foto" data-localize="capture">FOTO</span></label>
 												        <a href="#" class="btn btn-success take-photo">
 												        	<i data-feather="camera"></i>
