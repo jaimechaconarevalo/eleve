@@ -124,6 +124,7 @@ $('body').on('click', '.take-photo', function(event) {
         $('#doc-front').focus().trigger('click');
     }else{
         // retake photo
+        document.getElementById('doc-front').setAttribute('capture', 'camera');
         if ($(this).hasClass('retake') && $(this).siblings('.image').find('input[type="text"]').val() != '' &&
         $(this).siblings('.image').find('input[type="text"]').val().length > 0) {
             //$('.next').hide();
@@ -154,6 +155,7 @@ $('body').on('click', '.take-photo', function(event) {
 
 $('body').on('click', '.upload-photo', function(event) {
     event.preventDefault();
+    document.getElementById('doc-front').removeAttribute('capture');
     $('#doc-front').focus().trigger('click');
     /*var selectedFile = event.target.files[0];
     var reader = new FileReader();
