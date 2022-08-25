@@ -1706,8 +1706,8 @@
                                     }
 
 
-                                    div = div.concat('<div id="categoria',categoria.id_categoria,'" class="card card-body ',clase,'" ',hidden,'>');
-                                    div = div.concat('<div class="table-responsive">');
+                                    div = div.concat('<div id="categoria',categoria.id_categoria,'" class=" ',clase,'" ',hidden,'>');
+                                    div = div.concat('<div class="">');
                                     div = div.concat('<table id="tabla_',categoria.id_categoria,'" class="table table-sm">');
                                     div = div.concat('<thead>');
                                     div = div.concat('<tr class="border-1">');
@@ -1753,7 +1753,7 @@
                                             
                                             div = div.concat('<tr>');
                                             div = div.concat('<td id="cat_pre_',categoria.id_categoria,'_',pregunta.id_pregunta,'" class="collapse" colspan="5">');
-                                            div = div.concat('<div class="card card-body">');
+                                            div = div.concat('<div class="">');
                                             div = div.concat('<div class="row">');
 
                                             //div = div.concat('<div class="col-sm-6">');
@@ -2079,8 +2079,8 @@ window.onload = function () {
                                     clase_titulo_respuestas = (cant_preguntas_respondidas == categoria.preguntas.length ? "btn-outline-success" : (cant_preguntas_respondidas < categoria.preguntas.length && cant_preguntas_respondidas > 0 ? "btn-outline-warning" : "btn-outline-danger"));
 
 
-                                    div = div.concat('<div id="categoria',categoria.id_categoria,'" class="card card-body ',clase,'" ',hidden,'>');
-                                    div = div.concat('<div class="table-responsive">');
+                                    div = div.concat('<div id="categoria',categoria.id_categoria,'" class=" ',clase,'" ',hidden,'>');
+                                    div = div.concat('<div class="">');
                                     div = div.concat('<table id="tabla_',categoria.id_categoria,'" class="table table-sm">');
                                     div = div.concat('<thead>');
                                     div = div.concat('<tr class="border-1">');
@@ -2126,7 +2126,7 @@ window.onload = function () {
                                             
                                             div = div.concat('<tr>');
                                             div = div.concat('<td id="cat_pre_',categoria.id_categoria,'_',pregunta.id_pregunta,'" class="collapse  ',(pregunta.respuesta == 2 ? 'show' : ''),'" colspan="5">');
-                                            div = div.concat('<div class="card card-body">');
+                                            div = div.concat('<div class="">');
                                             div = div.concat('<div class="row">');
 
                                             //div = div.concat('<div class="col-sm-6">');
@@ -2616,8 +2616,8 @@ window.onload = function () {
                                     clase_titulo_respuestas = (cant_preguntas_respondidas == categoria.preguntas.length ? "btn-outline-success" : (cant_preguntas_respondidas < categoria.preguntas.length && cant_preguntas_respondidas > 0 ? "btn-outline-warning" : "btn-outline-danger"));
 
 
-                                    div = div.concat('<div id="categoria',categoria.id_categoria,'" class="card card-body ',clase,'" ',hidden,'>');
-                                    div = div.concat('<div class="table-responsive">');
+                                    div = div.concat('<div id="categoria',categoria.id_categoria,'" class=" ',clase,'" ',hidden,'>');
+                                    div = div.concat('<div class="">');
                                     div = div.concat('<table id="tabla_',categoria.id_categoria,'" class="table table-sm">');
                                     div = div.concat('<thead>');
                                     div = div.concat('<tr class="border-1">');
@@ -2663,7 +2663,7 @@ window.onload = function () {
                                             
                                             div = div.concat('<tr>');
                                             div = div.concat('<td id="cat_pre_',categoria.id_categoria,'_',pregunta.id_pregunta,'" class="collapse  ',(pregunta.respuesta == 2 ? 'show' : ''),'" colspan="5">');
-                                            div = div.concat('<div class="card card-body">');
+                                            div = div.concat('<div class="">');
                                             div = div.concat('<div class="row">');
 
                                             //div = div.concat('<div class="col-sm-6">');
