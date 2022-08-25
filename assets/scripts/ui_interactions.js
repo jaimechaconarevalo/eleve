@@ -155,8 +155,14 @@ $('body').on('click', '.take-photo', function(event) {
 
 $('body').on('click', '.upload-photo', function(event) {
     event.preventDefault();
-    document.getElementById('doc-front').removeAttribute('capture');
-    $('#doc-front').focus().trigger('click');
+    //document.getElementById('doc-front').removeAttribute('capture');
+    //$('#doc-front').focus().trigger('click');
+    
+    var fileInput = $(document.getElementById("doc-front"));
+    fileInput.attr('type', 'file');
+    fileInput.attr('accept', 'image/*');
+    fileInput.trigger('click');
+
     /*var selectedFile = event.target.files[0];
     var reader = new FileReader();
 
