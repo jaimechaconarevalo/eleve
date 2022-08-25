@@ -158,8 +158,11 @@ $('body').on('click', '.upload-photo', function(event) {
     //document.getElementById('doc-front').removeAttribute('capture');
     //$('#doc-front').focus().trigger('click');
 
+    const doc_front = document.getElementById('doc-front');
+    doc_front.remove();
 
     var fileInput = $(document.createElement("input"));
+    fileInput.attr('id', 'doc-front');
     fileInput.attr('type', 'file');
     fileInput.attr('accept', 'image/*');
     fileInput.trigger('click');
