@@ -798,9 +798,9 @@ class Inspeccion extends CI_Controller {
 							#$template->cloneRow('id_punto_1#'.$contador_reporte, $cant_preguntas_respuestas);
 					        #return;
 
-					        if ($cant_preguntas_respuestas > 0) {
+					        /*if ($cant_preguntas_respuestas > 0) {
 					        	$template->cloneRow('id_punto_1#'.$contador_reporte, $cant_preguntas_respuestas);
-					        }/*else{
+					        }else{
 					        	$template->cloneRow('id_punto_1#'.$contador_reporte, 1);
 					        	$template->setValue('id_punto_1#'.$contador_reporte.'#1', '');
 					        	$template->setValue('generalidad_1#'.$contador_reporte.'#1', 'Sin observaciones.');
