@@ -796,7 +796,7 @@ class Inspeccion extends CI_Controller {
 					        #var_dump("llego aca");
 					        #var_dump($cant_preguntas_respuestas);return;
 					        if ($cant_preguntas_respuestas > 0) {
-					        	$template->cloneRow('id_punto_1#'.$contador_reporte, $cant_preguntas_respuestas);
+					        	//$template->cloneRow('id_punto_1#'.$contador_reporte, $cant_preguntas_respuestas);
 					        }else{
 					        	/*$template->cloneRow('id_punto_1#'.$contador_reporte, 1);
 					        	$template->setValue('id_punto_1#'.$contador_reporte.'#1', '');
@@ -815,7 +815,7 @@ class Inspeccion extends CI_Controller {
 					        $id_pregunta = null;
 					        
 					        $cant_pregunta_categoria = 0;
-					        foreach ($group as $pregunta_respuesta) {
+					        /*foreach ($group as $pregunta_respuesta) {
 					        	$es_grave = null;
 					        	$es_leve = null;
 					        	$cant_pregunta_categoria++;
@@ -961,7 +961,7 @@ class Inspeccion extends CI_Controller {
 
 
 
-							}
+							}*/
 
 
 
