@@ -794,7 +794,10 @@ class Inspeccion extends CI_Controller {
 
 					        $cant_preguntas_respuestas = sizeof($group);
 					        #var_dump("llego aca");
-					        #var_dump($cant_preguntas_respuestas);return;
+					        var_dump('id_punto_1#'.$contador_reporte);
+							$template->cloneRow('id_punto_1#'.$contador_reporte, $cant_preguntas_respuestas);
+					        return;
+
 					        if ($cant_preguntas_respuestas > 0) {
 					        	//$template->cloneRow('id_punto_1#'.$contador_reporte, $cant_preguntas_respuestas);
 					        }else{
