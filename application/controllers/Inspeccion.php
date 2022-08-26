@@ -848,14 +848,6 @@ class Inspeccion extends CI_Controller {
 
 
 										$cant_imagen_comentario = sizeof($respuesta_imagen["imagenes"]);
-										/*var_dump('cant_comentarios</br>');
-										var_dump($cant_comentarios);
-										var_dump('cant_imagenes</br>');
-										var_dump($cant_imagenes);
-										var_dump('</br></br>');
-										var_dump('cant_imagen_comentario</br>');
-										var_dump($cant_imagen_comentario);
-										var_dump('</br></br>');*/
 
 										if ($cant_comentarios < 4) {
 											$template->setValue('comentario_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, $respuesta_imagen["respuesta_obs"]);
@@ -898,14 +890,6 @@ class Inspeccion extends CI_Controller {
 														$cant_imagenes++;
 														#var_dump("entro aca");return;
 														#$table->addRow();
-														/*$imageStyle = array(
-														    'width' => 40,
-														    'height' => 40,
-														    'wrappingStyle' => 'square',
-														    'positioning' => 'absolute',
-														    'posHorizontalRel' => 'margin',
-														    'posVerticalRel' => 'line',
-														);*/
 														#$source = file_get_contents($url_imagen);
 														#$source = 'D:\Jaime Chacon\Escritorio\casa-en-ingles.jpg';
 														#var_dump($source);return;
