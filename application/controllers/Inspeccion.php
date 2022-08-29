@@ -828,7 +828,7 @@ class Inspeccion extends CI_Controller {
 									$codigo_pregunta = $pregunta_respuesta["codigo_pregunta"];
 									$pregunta_obs = $pregunta_respuesta["pregunta_obs"];
 
-									$template->setValue('id_punto_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, $codigo_pregunta);
+									$template->setValue('id_punto_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, $codigo_pregunta.'</w:t><w:br/><w:t>');
 									$template->setValue('generalidad_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, $pregunta_obs);
 
 									$cant_respuestas_imagenes = sizeof($pregunta_respuesta["respuesta_imagenes"]);
@@ -853,7 +853,11 @@ class Inspeccion extends CI_Controller {
 											$cant_imagen_comentario = sizeof($respuesta_imagen["imagenes"]);
 
 											if ($cant_comentarios < 4) {
-												$template->setValue('comentario_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, $respuesta_imagen["respuesta_obs"]);
+												$salto_linea = '</w:t><w:br/><w:t>';
+												#if ($cant_comentarios == $cant_respuestas_imagenes) {
+												#	$salto_linea = '';
+												#}
+												$template->setValue('comentario_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, $respuesta_imagen["respuesta_obs"].$salto_linea);
 
 												if (isset($respuesta_imagen["id_severidad"])) {
 													$id_severidad = $respuesta_imagen["id_severidad"];
@@ -862,15 +866,15 @@ class Inspeccion extends CI_Controller {
 													$estilo_leve = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
 													
 													if (isset($id_severidad) && is_numeric($id_severidad) && $id_severidad == 1) {
-														$template->setValue('id_severidad_l_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, $severidad);
+														$template->setValue('id_severidad_l_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, $severidad.'</w:t><w:br/><w:t>');
 														$template->setValue('id_severidad_g_'.($cant_comentarios).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
 													}elseif (isset($id_severidad) && is_numeric($id_severidad) && $id_severidad == 2) {
 														$template->setValue('id_severidad_l_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
-														$template->setValue('id_severidad_g_'.($cant_comentarios).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, $severidad);
+														$template->setValue('id_severidad_g_'.($cant_comentarios).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, $severidad.'</w:t><w:br/><w:t>');
 													}
 												}else{
-													$template->setValue('id_severidad_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
-													$template->setValue('id_severidad_2#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+													$template->setValue('id_severidad_l_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+													$template->setValue('id_severidad_g_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
 												}
 
 												$cant_comentarios++;
@@ -954,6 +958,41 @@ class Inspeccion extends CI_Controller {
 
 
 
+					        }else{
+					        	$nombre_vacio = 'no tiene respuestas';
+
+					        	$template->cloneRow('id_punto_1#'.$contador_reporte, 1);
+					        	$template->setValue('id_punto_1#'.$contador_reporte.'#1', '');
+					        	$template->setValue('generalidad_1#'.$contador_reporte.'#1', 'Sin observaciones.');
+					        	$template->setValue('comentario_1#'.$contador_reporte.'#1', '');
+					        	$template->setValue('comentario_2#'.$contador_reporte.'#1', '');
+					        	$template->setValue('comentario_3#'.$contador_reporte.'#1', '');
+
+					        	$template->setValue('imagen_resp_1#'.$contador_reporte.'#1', '');
+					        	$template->setValue('imagen_resp_2#'.$contador_reporte.'#1', '');
+					        	$template->setValue('imagen_resp_3#'.$contador_reporte.'#1', '');
+					        	$template->setValue('imagen_resp_4#'.$contador_reporte.'#1', '');
+					        	$template->setValue('imagen_resp_5#'.$contador_reporte.'#1', '');
+
+					        	$template->setValue('imagen_resp_6#'.$contador_reporte.'#1', '');
+					        	$template->setValue('imagen_resp_7#'.$contador_reporte.'#1', '');
+					        	$template->setValue('imagen_resp_8#'.$contador_reporte.'#1', '');
+					        	$template->setValue('imagen_resp_9#'.$contador_reporte.'#1', '');
+					        	$template->setValue('imagen_resp_10#'.$contador_reporte.'#1', '');
+
+					        	$template->setValue('imagen_resp_11#'.$contador_reporte.'#1', '');
+					        	$template->setValue('imagen_resp_12#'.$contador_reporte.'#1', '');
+					        	$template->setValue('imagen_resp_13#'.$contador_reporte.'#1', '');
+					        	$template->setValue('imagen_resp_14#'.$contador_reporte.'#1', '');
+					        	$template->setValue('imagen_resp_15#'.$contador_reporte.'#1', '');
+
+								$template->setValue('id_severidad_l_1#'.$contador_reporte.'#1', '');
+								$template->setValue('id_severidad_g_1#'.$contador_reporte.'#1', '');
+								$template->setValue('id_severidad_l_2#'.$contador_reporte.'#1', '');
+								$template->setValue('id_severidad_g_2#'.$contador_reporte.'#1', '');
+								$template->setValue('id_severidad_l_3#'.$contador_reporte.'#1', '');
+								$template->setValue('id_severidad_g_3#'.$contador_reporte.'#1', '');
+					        	$contador_reporte++;
 					        }
 					       	
 
@@ -1024,6 +1063,10 @@ class Inspeccion extends CI_Controller {
 
 		                }
 
+					}else{
+						$template->setValue('id_observacion', "");
+	                    $template->setValue('observacion', 'Sin observaciones.');
+	                    $template->setValue('image_observacion', '');
 					}
 
 
