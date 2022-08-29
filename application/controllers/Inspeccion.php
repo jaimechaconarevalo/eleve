@@ -685,11 +685,13 @@ class Inspeccion extends CI_Controller {
 
 						$cant_categorias_reporte = sizeof($orden_reportes);
 						$template->cloneBlock('block_numero_1', $cant_categorias_reporte, true, true);
+						$template->cloneBlock('block_numero_2', $cant_categorias_reporte, true, true);
 						$contador_reporte = 1;
 
 						#var_dump($cant_categorias_reporte);
 						#return;
-
+						#var_dump(json_encode($orden_reportes));
+						#return;
 
 
 
@@ -700,12 +702,16 @@ class Inspeccion extends CI_Controller {
 
 
 							$template->setValue('nombre_categoria#'.$contador_reporte, strtoupper($titulo_categoria_reporte));
+							#$template->setValue('nombre_categoria_2#'.$contador_reporte, strtoupper($titulo_categoria_reporte));
 							$template->setValue('titulo_punto#'.$contador_reporte, strtoupper($titulo_punto));
+							#$template->setValue('titulo_punto_2#'.$contador_reporte, strtoupper($titulo_punto));
 							if (($contador_reporte) == $cant_categorias_reporte) {
 								#$template->setValue('pageBreakHere#'.$contador_reporte, '');
 								$template->setValue('pageBreakHere#'.$contador_reporte, '<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
+								#$template->setValue('pageBreakHere_2#'.$contador_reporte, '<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
 							}else{
 								$template->setValue('pageBreakHere#'.$contador_reporte, '<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
+								#$template->setValue('pageBreakHere_2#'.$contador_reporte, '<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
 							}
 
 							$largo_palabra = strlen($orden_reporte['iniciales']);
@@ -719,245 +725,256 @@ class Inspeccion extends CI_Controller {
 
 					        $group = array();
 					        $contador_filtro = 0;
-					       	foreach ($array_filtrado as $filtro) {
-					       		$index_encontrado = array_search($filtro["id_pregunta"], array_column($group, 'id_pregunta'));
-					       		$contador_filtro++;
-					       		$orig_name = $filtro["file_name"];
-					       		$file_path = $filtro["file_path"];
-					       		$full_path = $filtro["full_path"];
 
-								if ($index_encontrado !== false){
-									$imagenes = array();	
+					        if (sizeof($array_filtrado) > 0) {
+					        	foreach ($array_filtrado as $filtro) {
+						       		$index_encontrado = array_search($filtro["id_pregunta"], array_column($group, 'id_pregunta'));
+						       		$contador_filtro++;
+						       		$orig_name = $filtro["file_name"];
+						       		$file_path = $filtro["file_path"];
+						       		$full_path = $filtro["full_path"];
 
-									if ($filtro["cantidad_fotos"] > 0) {
-										$url_imagen = base_url().'assets/files/image/'.$orig_name;
-										$imagenes[] = array("url_imagen" => $url_imagen, 'file_path' => $file_path, 'full_path' => $full_path);
-									}
-
-									$index_resp_encontrado = array_search($filtro["inspeccion_checklist_resp_id"], array_column($group[$index_encontrado]["respuesta_imagenes"], 'inspeccion_checklist_resp_id'));
-
-									if ($index_resp_encontrado !== false) {
+									if ($index_encontrado !== false){
 										$imagenes = array();	
 
 										if ($filtro["cantidad_fotos"] > 0) {
 											$url_imagen = base_url().'assets/files/image/'.$orig_name;
-											$imagenes = array("url_imagen" => $url_imagen, 'file_path' => $file_path, 'full_path' => $full_path);
+											$imagenes[] = array("url_imagen" => $url_imagen, 'file_path' => $file_path, 'full_path' => $full_path);
 										}
 
-										if ($filtro["file_type"] === "image/png") {
-											$group[$index_encontrado]["respuesta_imagenes"][$index_resp_encontrado]["imagenes"][] = $imagenes;
+										$index_resp_encontrado = array_search($filtro["inspeccion_checklist_resp_id"], array_column($group[$index_encontrado]["respuesta_imagenes"], 'inspeccion_checklist_resp_id'));
+
+										if ($index_resp_encontrado !== false) {
+											$imagenes = array();	
+
+											if ($filtro["cantidad_fotos"] > 0) {
+												$url_imagen = base_url().'assets/files/image/'.$orig_name;
+												$imagenes = array("url_imagen" => $url_imagen, 'file_path' => $file_path, 'full_path' => $full_path);
+											}
+
+											if ($filtro["file_type"] === "image/png") {
+												$group[$index_encontrado]["respuesta_imagenes"][$index_resp_encontrado]["imagenes"][] = $imagenes;
+											}
+											#var_dump($group);
+										}else{
+											$imagenes = array();
+											if ($filtro["cantidad_fotos"] > 0) {
+												$url_imagen = base_url().'assets/files/image/'.$orig_name;
+												$imagenes = array("url_imagen" => $url_imagen, 'file_path' => $file_path, 'full_path' => $full_path);
+											}
+
+											$respuestas = array();
+											$respuestas = array('inspeccion_checklist_resp_id' => $filtro["inspeccion_checklist_resp_id"], 'respuesta_obs' => $filtro["respuesta_obs"], 'id_severidad' => $filtro["id_severidad_respuesta"], 'severidad' => $filtro["severidad"], 'imagenes' => [$imagenes]);
+
+											if ($filtro["file_type"] === "image/png") {
+												$group[$index_encontrado]["respuesta_imagenes"][] = $respuestas;
+											}
+
+											
 										}
-										#var_dump($group);
 									}else{
+										$respuestas = array();
 										$imagenes = array();
 										if ($filtro["cantidad_fotos"] > 0) {
+											
 											$url_imagen = base_url().'assets/files/image/'.$orig_name;
 											$imagenes = array("url_imagen" => $url_imagen, 'file_path' => $file_path, 'full_path' => $full_path);
 										}
 
-										$respuestas = array();
 										$respuestas = array('inspeccion_checklist_resp_id' => $filtro["inspeccion_checklist_resp_id"], 'respuesta_obs' => $filtro["respuesta_obs"], 'id_severidad' => $filtro["id_severidad_respuesta"], 'severidad' => $filtro["severidad"], 'imagenes' => [$imagenes]);
 
-										if ($filtro["file_type"] === "image/png") {
-											$group[$index_encontrado]["respuesta_imagenes"][] = $respuestas;
+										$group[] = array("id_pregunta" => $filtro["id_pregunta"],
+														"codigo_pregunta" => $filtro["codigo_pregunta"],
+														"pregunta_obs" => $filtro["pregunta_obs"],
+														"orig_name" => $filtro["orig_name"],
+														"cantidad_fotos" => $filtro["cantidad_fotos"],
+														"respuesta_imagenes" => [$respuestas]
+													);
+									}
+						       	}
+
+
+
+						       	$cant_preguntas_respuestas = sizeof($group);
+						        #var_dump("llego aca");
+						        //var_dump('id_punto_1#'.$contador_reporte);
+
+						        if ($cant_preguntas_respuestas > 0) {
+						        	$template->cloneRow('id_punto_1#'.$contador_reporte, $cant_preguntas_respuestas);
+						        }else{
+						        	$template->cloneRow('id_punto_1#'.$contador_reporte, 1);
+						        	$template->setValue('id_punto_1#'.$contador_reporte.'#1', '');
+						        	$template->setValue('generalidad_1#'.$contador_reporte.'#1', 'Sin observaciones.');
+						        	$template->setValue('comentario_1#'.$contador_reporte.'#1', '');
+						        	$template->setValue('imagen_resp_1#'.$contador_reporte.'#1', '');
+						        	$template->setValue('imagen_resp_2#'.$contador_reporte.'#1', '');
+						        	$template->setValue('imagen_resp_3#'.$contador_reporte.'#1', '');
+						        	$template->setValue('imagen_resp_4#'.$contador_reporte.'#1', '');
+						        	$template->setValue('imagen_resp_5#'.$contador_reporte.'#1', '');
+									$template->setValue('id_severidad_1#'.$contador_reporte.'#1', '');
+									$template->setValue('id_severidad_2#'.$contador_reporte.'#1', '');
+						        }
+
+						        $id_pregunta = null;
+						        
+						        $cant_pregunta_categoria = 0;
+						        foreach ($group as $pregunta_respuesta) {
+						        	$es_grave = null;
+						        	$es_leve = null;
+						        	$cant_pregunta_categoria++;
+						        	$cant_imagen = 0;
+
+									$id_pregunta = $pregunta_respuesta["id_pregunta"];
+									$codigo_pregunta = $pregunta_respuesta["codigo_pregunta"];
+									$pregunta_obs = $pregunta_respuesta["pregunta_obs"];
+
+									$template->setValue('id_punto_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, $codigo_pregunta);
+									$template->setValue('generalidad_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, $pregunta_obs);
+
+									$cant_respuestas_imagenes = sizeof($pregunta_respuesta["respuesta_imagenes"]);
+
+									#$template->cloneBlock('block_comentario#'.$contador_reporte.'#'.$cant_pregunta_categoria, $cant_respuestas_imagenes);
+									#$estilo_carpetas_titulo = array('bold'=>true, 'size'=>10, 'name'=>'Arial');
+									#$estilo_carpetas = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
+									#$table_carpetas = new Table(array('borderSize' => 0, 'borderColor' => 'ffffff', 'width' => 9500, 'unit' => TblWidth::TWIP, 'align' => 'center'));
+									#$table_carpetas->addRow();
+									#$table_carpetas->addCell(20)->addText('Cumple', $estilo_carpetas_titulo, array('align' => 'center'));
+
+									$cant_comentarios = 1;
+									$cant_imagenes = 1;
+									#$orden_comentario = 1;
+									if ($cant_respuestas_imagenes > 0) {
+										foreach ($pregunta_respuesta["respuesta_imagenes"] as $respuesta_imagen) {
+
+
+											#var_dump($respuesta_imagen);return;
+
+
+											$cant_imagen_comentario = sizeof($respuesta_imagen["imagenes"]);
+
+											if ($cant_comentarios < 4) {
+												$template->setValue('comentario_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, $respuesta_imagen["respuesta_obs"]);
+
+												if (isset($respuesta_imagen["id_severidad"])) {
+													$id_severidad = $respuesta_imagen["id_severidad"];
+													$severidad = $respuesta_imagen["severidad"];
+													$estilo_grave = array('bold'=>true, '', 'size'=>10, 'name'=>'Arial', 'underline' => 'single', 'color' => 'red');
+													$estilo_leve = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
+													
+													if (isset($id_severidad) && is_numeric($id_severidad) && $id_severidad == 1) {
+														$template->setValue('id_severidad_l_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, $severidad);
+														$template->setValue('id_severidad_g_'.($cant_comentarios).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+													}elseif (isset($id_severidad) && is_numeric($id_severidad) && $id_severidad == 2) {
+														$template->setValue('id_severidad_l_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+														$template->setValue('id_severidad_g_'.($cant_comentarios).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, $severidad);
+													}
+												}else{
+													$template->setValue('id_severidad_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+													$template->setValue('id_severidad_2#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+												}
+
+												$cant_comentarios++;
+											}
+
+											
+											if (sizeof($respuesta_imagen["imagenes"]) > 0) {
+												foreach ($respuesta_imagen["imagenes"] as $imagen_respuesta) {
+													#var_dump($imagen_respuesta);return;
+
+													$url_imagen = null;
+													$full_path = null;
+
+													if (isset($imagen_respuesta["url_imagen"])) {
+														$url_imagen = $imagen_respuesta["url_imagen"];
+														$full_path = $imagen_respuesta["full_path"];
+													
+														if (file_exists($full_path)) {
+															$template->setImageValue('imagen_resp_'.($cant_imagenes).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, array('path' => $url_imagen, 'width' => 269, 'height' => 200, 'ratio' => TRUE,'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER));
+															$cant_imagenes++;
+															#var_dump("entro aca");return;
+															#$table->addRow();
+															#$source = file_get_contents($url_imagen);
+															#$source = 'D:\Jaime Chacon\Escritorio\casa-en-ingles.jpg';
+															#var_dump($source);return;
+															#$table_carpetas->addCell()->addImage($source);
+															#$table_carpetas->addRow();
+															#$cell = $table_carpetas->addCell(1300);
+															#$cell->addImage($source, array('width' => 100));
+															#$textrun->addImage($source);
+															#$table->addCell()->addImage($full_path, $imageStyle);
+															#$textrun->addText($lipsumText);									            
+															#$template->setImageValue('imagen_resp_'.($i+1).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, array('path' => $url_imagen, 'width' => 269, 'height' => 200, 'ratio' => TRUE,'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER));
+												        }
+											    	}
+												}
+
+												$restante_img = (5-$cant_imagen_comentario);
+												if ($restante_img > 0) {
+													for ($i=0; $i < $restante_img; $i++) {
+														#echo 'restante_img '.$restante_img;
+														#echo 'cant_imagenes '.$cant_imagenes;
+														$template->setValue('imagen_resp_'.$cant_imagenes.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, '');
+														$cant_imagenes++;
+													}
+												}
+											}
+
 										}
 
-										
-									}
-								}else{
-									$respuestas = array();
-									$imagenes = array();
-									if ($filtro["cantidad_fotos"] > 0) {
-										
-										$url_imagen = base_url().'assets/files/image/'.$orig_name;
-										$imagenes = array("url_imagen" => $url_imagen, 'file_path' => $file_path, 'full_path' => $full_path);
+										$restante_com = (3-$cant_respuestas_imagenes);
+										if ($restante_com > 0) {
+											for ($i=0; $i < $restante_com; $i++) {
+												$template->setValue('comentario_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+												$template->setValue('id_severidad_l_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+												$template->setValue('id_severidad_g_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+												$cant_comentarios++;
+											}
+										}
+
+										$restante_img = (16-$cant_imagenes);
+										if ($restante_img > 0) {
+											for ($i=0; $i < $restante_img; $i++) {
+												$template->setValue('imagen_resp_'.$cant_imagenes.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
+												$cant_imagenes++;
+											}
+										}
 									}
 
-									$respuestas = array('inspeccion_checklist_resp_id' => $filtro["inspeccion_checklist_resp_id"], 'respuesta_obs' => $filtro["respuesta_obs"], 'id_severidad' => $filtro["id_severidad_respuesta"], 'severidad' => $filtro["severidad"], 'imagenes' => [$imagenes]);
 
-									$group[] = array("id_pregunta" => $filtro["id_pregunta"],
-													"codigo_pregunta" => $filtro["codigo_pregunta"],
-													"pregunta_obs" => $filtro["pregunta_obs"],
-													"orig_name" => $filtro["orig_name"],
-													"cantidad_fotos" => $filtro["cantidad_fotos"],
-													"respuesta_imagenes" => [$respuestas]
-												);
+
+									#$template->cloneBlock('block_comentario_1#1#1', 3);
+									#$template->setComplexBlock('comentario_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, $table_carpetas);
+
+
+
+
 								}
-					       	}
+								$contador_reporte++;
 
+
+
+
+					        }
+					       	
 
 
 
 					       	#var_dump($group[0]);
 					       	#var_dump($group[0]["imagenes"]);
+
+					       	#var_dump($titulo_categoria_reporte);
+					       	#var_dump($titulo_punto);
+					       	#var_dump(json_encode($array_filtrado));
 					       	#var_dump(json_encode($group));return;
 
-					        $cant_preguntas_respuestas = sizeof($group);
-					        #var_dump("llego aca");
-					        //var_dump('id_punto_1#'.$contador_reporte);
-
-					        $nombre_punto_1 = 'id_punto_1#'.$contador_reporte;
-					        var_dump($nombre_punto_1);return;
-							
-							$template->cloneRow('id_punto_1#'.$contador_reporte, $cant_preguntas_respuestas);
-					        #return;
-
-					        /*if ($cant_preguntas_respuestas > 0) {
-					        	$template->cloneRow('id_punto_1#'.$contador_reporte, $cant_preguntas_respuestas);
-					        }else{
-					        	$template->cloneRow('id_punto_1#'.$contador_reporte, 1);
-					        	$template->setValue('id_punto_1#'.$contador_reporte.'#1', '');
-					        	$template->setValue('generalidad_1#'.$contador_reporte.'#1', 'Sin observaciones.');
-					        	$template->setValue('comentario_1#'.$contador_reporte.'#1', '');
-					        	$template->setValue('imagen_resp_1#'.$contador_reporte.'#1', '');
-					        	$template->setValue('imagen_resp_2#'.$contador_reporte.'#1', '');
-					        	$template->setValue('imagen_resp_3#'.$contador_reporte.'#1', '');
-					        	$template->setValue('imagen_resp_4#'.$contador_reporte.'#1', '');
-					        	$template->setValue('imagen_resp_5#'.$contador_reporte.'#1', '');
-								$template->setValue('id_severidad_1#'.$contador_reporte.'#1', '');
-								$template->setValue('id_severidad_2#'.$contador_reporte.'#1', '');
-					        }*/
-
-
-					        $id_pregunta = null;
 					        
-					        $cant_pregunta_categoria = 0;
-					        /*foreach ($group as $pregunta_respuesta) {
-					        	$es_grave = null;
-					        	$es_leve = null;
-					        	$cant_pregunta_categoria++;
-					        	$cant_imagen = 0;
-
-								$id_pregunta = $pregunta_respuesta["id_pregunta"];
-								$codigo_pregunta = $pregunta_respuesta["codigo_pregunta"];
-								$pregunta_obs = $pregunta_respuesta["pregunta_obs"];
-
-								$template->setValue('id_punto_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, $codigo_pregunta);
-								$template->setValue('generalidad_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, $pregunta_obs);
-
-								$cant_respuestas_imagenes = sizeof($pregunta_respuesta["respuesta_imagenes"]);
-
-								#$template->cloneBlock('block_comentario#'.$contador_reporte.'#'.$cant_pregunta_categoria, $cant_respuestas_imagenes);
-								#$estilo_carpetas_titulo = array('bold'=>true, 'size'=>10, 'name'=>'Arial');
-								#$estilo_carpetas = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
-								#$table_carpetas = new Table(array('borderSize' => 0, 'borderColor' => 'ffffff', 'width' => 9500, 'unit' => TblWidth::TWIP, 'align' => 'center'));
-								#$table_carpetas->addRow();
-								#$table_carpetas->addCell(20)->addText('Cumple', $estilo_carpetas_titulo, array('align' => 'center'));
-
-								$cant_comentarios = 1;
-								$cant_imagenes = 1;
-								#$orden_comentario = 1;
-								if ($cant_respuestas_imagenes > 0) {
-									foreach ($pregunta_respuesta["respuesta_imagenes"] as $respuesta_imagen) {
-
-
-										#var_dump($respuesta_imagen);return;
-
-
-										$cant_imagen_comentario = sizeof($respuesta_imagen["imagenes"]);
-
-										if ($cant_comentarios < 4) {
-											$template->setValue('comentario_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, $respuesta_imagen["respuesta_obs"]);
-
-											if (isset($respuesta_imagen["id_severidad"])) {
-												$id_severidad = $respuesta_imagen["id_severidad"];
-												$severidad = $respuesta_imagen["severidad"];
-												$estilo_grave = array('bold'=>true, '', 'size'=>10, 'name'=>'Arial', 'underline' => 'single', 'color' => 'red');
-												$estilo_leve = array('bold'=>false, 'size'=>10, 'name'=>'Arial');
-												
-												if (isset($id_severidad) && is_numeric($id_severidad) && $id_severidad == 1) {
-													$template->setValue('id_severidad_l_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, $severidad);
-													$template->setValue('id_severidad_g_'.($cant_comentarios).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
-												}elseif (isset($id_severidad) && is_numeric($id_severidad) && $id_severidad == 2) {
-													$template->setValue('id_severidad_l_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
-													$template->setValue('id_severidad_g_'.($cant_comentarios).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, $severidad);
-												}
-											}else{
-												$template->setValue('id_severidad_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
-												$template->setValue('id_severidad_2#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
-											}
-
-											$cant_comentarios++;
-										}
-
-										
-										if (sizeof($respuesta_imagen["imagenes"]) > 0) {
-											foreach ($respuesta_imagen["imagenes"] as $imagen_respuesta) {
-												#var_dump($imagen_respuesta);return;
-
-												$url_imagen = null;
-												$full_path = null;
-
-												if (isset($imagen_respuesta["url_imagen"])) {
-													$url_imagen = $imagen_respuesta["url_imagen"];
-													$full_path = $imagen_respuesta["full_path"];
-												
-													if (file_exists($full_path)) {
-														$template->setImageValue('imagen_resp_'.($cant_imagenes).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, array('path' => $url_imagen, 'width' => 269, 'height' => 200, 'ratio' => TRUE,'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER));
-														$cant_imagenes++;
-														#var_dump("entro aca");return;
-														#$table->addRow();
-														#$source = file_get_contents($url_imagen);
-														#$source = 'D:\Jaime Chacon\Escritorio\casa-en-ingles.jpg';
-														#var_dump($source);return;
-														#$table_carpetas->addCell()->addImage($source);
-														#$table_carpetas->addRow();
-														#$cell = $table_carpetas->addCell(1300);
-														#$cell->addImage($source, array('width' => 100));
-														#$textrun->addImage($source);
-														#$table->addCell()->addImage($full_path, $imageStyle);
-														#$textrun->addText($lipsumText);									            
-														#$template->setImageValue('imagen_resp_'.($i+1).'#'.$contador_reporte.'#'.$cant_pregunta_categoria, array('path' => $url_imagen, 'width' => 269, 'height' => 200, 'ratio' => TRUE,'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER));
-											        }
-										    	}
-											}
-
-											$restante_img = (5-$cant_imagen_comentario);
-											if ($restante_img > 0) {
-												for ($i=0; $i < $restante_img; $i++) {
-													#echo 'restante_img '.$restante_img;
-													#echo 'cant_imagenes '.$cant_imagenes;
-													$template->setValue('imagen_resp_'.$cant_imagenes.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, '');
-													$cant_imagenes++;
-												}
-											}
-										}
-
-									}
-
-									$restante_com = (3-$cant_respuestas_imagenes);
-									if ($restante_com > 0) {
-										for ($i=0; $i < $restante_com; $i++) {
-											$template->setValue('comentario_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
-											$template->setValue('id_severidad_l_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
-											$template->setValue('id_severidad_g_'.$cant_comentarios.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
-											$cant_comentarios++;
-										}
-									}
-
-									$restante_img = (16-$cant_imagenes);
-									if ($restante_img > 0) {
-										for ($i=0; $i < $restante_img; $i++) {
-											$template->setValue('imagen_resp_'.$cant_imagenes.'#'.$contador_reporte.'#'.$cant_pregunta_categoria, "");
-											$cant_imagenes++;
-										}
-									}
-								}
-
-
-
-								#$template->cloneBlock('block_comentario_1#1#1', 3);
-								#$template->setComplexBlock('comentario_1#'.$contador_reporte.'#'.$cant_pregunta_categoria, $table_carpetas);
-
-
-
-
-							}*/
 
 
 
 
 						}
+
+
 
 					}
 
